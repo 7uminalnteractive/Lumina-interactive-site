@@ -2,60 +2,135 @@
 <html lang="pt-BR">
 
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Lumina Admin</title>
 
 <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
 
 <nav class="navbar">
-  <div class="logo">LUMINA ADMIN</div>
 
-  <div class="menu">
-    <a href="index.html">Site</a>
-    <a href="minha-conta.html">Minha conta</a>
-  </div>
+<div class="logo">
+LUMINA ADMIN
+</div>
+
+<div class="menu">
+
+<a href="index.html">
+Site
+</a>
+
+<a href="minha-conta.html">
+Minha conta
+</a>
+
+</div>
+
 </nav>
 
 <main class="container">
 
 <section>
 
-<h1>Painel administrativo</h1>
+<h1>
+Painel administrativo
+</h1>
 
 <div class="cards">
 
-  <div class="card">
-    <h3>Total de pedidos</h3>
-    <div class="price" id="totalPedidos">0</div>
-  </div>
+<div class="card">
 
-  <div class="card">
-    <h3>Assinaturas ativas</h3>
-    <div class="price" id="totalAtivos">0</div>
-  </div>
+<h3>
+Total de pedidos
+</h3>
 
-  <div class="card">
-    <h3>Pendentes</h3>
-    <div class="price" id="totalPendentes">0</div>
-  </div>
+<div
+class="price"
+id="totalPedidos"
+>
+
+0
 
 </div>
 
-<div class="form-card" style="margin-top:30px;">
+</div>
 
-<h2>Filtrar pedidos</h2>
+<div class="card">
 
-<select id="filtroStatus" onchange="carregarPedidos()">
-  <option value="todos">Todos</option>
-  <option value="pendente">Pendentes</option>
-  <option value="ativa">Ativos</option>
-  <option value="recusada">Recusados</option>
-  <option value="cancelada">Cancelados</option>
+<h3>
+Assinaturas ativas
+</h3>
+
+<div
+class="price"
+id="totalAtivos"
+>
+
+0
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>
+Pendentes
+</h3>
+
+<div
+class="price"
+id="totalPendentes"
+>
+
+0
+
+</div>
+
+</div>
+
+</div>
+
+<div
+class="form-card"
+style="margin-top:30px;"
+>
+
+<h2>
+Filtrar pedidos
+</h2>
+
+<select
+id="filtroStatus"
+onchange="carregarPedidos()"
+>
+
+<option value="todos">
+Todos
+</option>
+
+<option value="pendente">
+Pendentes
+</option>
+
+<option value="ativa">
+Ativos
+</option>
+
+<option value="recusada">
+Recusados
+</option>
+
+<option value="cancelada">
+Cancelados
+</option>
+
 </select>
 
 </div>
@@ -78,368 +153,426 @@ const SUPABASE_KEY =
 
 const supabaseClient =
 supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
+SUPABASE_URL,
+SUPABASE_KEY
 );
 
 async function carregarPedidos(){
 
-  const area =
-  document.getElementById("pedidosArea");
+const area =
+document.getElementById(
+"pedidosArea"
+);
 
-  const filtro =
-  document.getElementById("filtroStatus").value;
+const filtro =
+document.getElementById(
+"filtroStatus"
+).value;
 
-  let query =
-  supabaseClient
-  .from("pedidos")
-  .select("*")
-  .order("id", { ascending:false });
+let query =
+supabaseClient
+.from("pedidos")
+.select("*")
+.order("id",{ascending:false});
 
-  if(filtro !== "todos"){
-    query = query.eq("status", filtro);
-  }
+if(filtro !== "todos"){
 
-  const { data, error } = await query;
+query =
+query.eq("status",filtro);
 
-  if(error){
-    area.innerHTML = `
-      <div class="card">
-        Erro ao carregar pedidos.
-      </div>
-    `;
-    console.log(error);
-    return;
-  }
+}
 
-  atualizarResumo();
+const {
+data,
+error
+}
+=
+await query;
 
-  if(data.length === 0){
-    area.innerHTML = `
-      <div class="card">
-        Nenhum pedido encontrado.
-      </div>
-    `;
-    return;
-  }
+if(error){
 
-  area.innerHTML = "";
+area.innerHTML =
+"Erro ao carregar pedidos.";
 
-  data.forEach((p)=>{
+return;
 
-    const ativo =
-    p.status === "ativa" &&
-    p.acesso_liberado === true;
+}
 
-    area.innerHTML += `
+atualizarResumo();
 
-      <div class="card">
+if(data.length === 0){
 
-        <span class="badge">
-          ${p.status || "pendente"}
-        </span>
+area.innerHTML = `
 
-        <h3>
-          ${p.produto || "Produto"}
-        </h3>
+<div class="card">
+Nenhum pedido encontrado.
+</div>
 
-        <p>
-          <strong>Cliente:</strong>
-          ${p.nome_cliente || "Não informado"}
-        </p>
+`;
 
-        <p>
-          <strong>Email:</strong>
-          ${p.email || "Não informado"}
-        </p>
+return;
 
-        <p>
-          <strong>WhatsApp:</strong>
-          ${p.whatsapp || "Não informado"}
-        </p>
+}
 
-        <p>
-          <strong>Valor:</strong>
-          R$ ${Number(p.valor || 0).toFixed(2)}
-        </p>
+area.innerHTML = "";
 
-        <p>
-          <strong>Pagamento:</strong>
-          ${p.metodo_pagamento || "Manual"}
-        </p>
+data.forEach((p)=>{
 
-        <p>
-          <strong>Acesso liberado:</strong>
-          ${p.acesso_liberado ? "Sim" : "Não"}
-        </p>
+area.innerHTML += `
 
-        <p>
-          <strong>Data do pagamento:</strong>
-          ${p.data_pagamento || "Não aprovado"}
-        </p>
+<div class="card">
 
-        <p>
-          <strong>Válido até:</strong>
-          ${p.data_fim || "Não definido"}
-        </p>
+<span class="badge">
+${p.status || "pendente"}
+</span>
 
-        <p>
-          <strong>Recibo enviado:</strong>
-          ${p.recibo_enviado ? "Sim" : "Não"}
-        </p>
+<h3>
+${p.produto || "Produto"}
+</h3>
 
-        <label>
-          Link do download
-        </label>
+<p>
+<strong>Cliente:</strong>
+${p.nome_cliente || ""}
+</p>
 
-        <input
-          type="text"
-          id="download-${p.id}"
-          value="${p.download_url || ""}"
-          placeholder="Cole o link de download"
-        >
+<p>
+<strong>Email:</strong>
+${p.email || ""}
+</p>
 
-        <div style="
-          display:grid;
-          grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-          gap:10px;
-          margin-top:15px;
-        ">
+<p>
+<strong>WhatsApp:</strong>
+${p.whatsapp || ""}
+</p>
 
-          <button
-            class="btn primary"
-            onclick="aprovar(${p.id})"
-          >
-            Aprovar +30 dias
-          </button>
+<p>
+<strong>Válido até:</strong>
+${p.data_fim || "Não definido"}
+</p>
 
-          <button
-            class="btn secondary"
-            onclick="renovar(${p.id})"
-          >
-            Renovar +30 dias
-          </button>
+<p>
+<strong>Comprovante:</strong>
+</p>
 
-          <button
-            class="btn secondary"
-            onclick="marcarRecibo(${p.id})"
-          >
-            Marcar recibo enviado
-          </button>
+<a
+href="${p.comprovante_url || '#'}"
+target="_blank"
+class="btn secondary"
+style="margin-bottom:15px;"
+>
 
-          <button
-            class="btn secondary"
-            onclick="recusar(${p.id})"
-          >
-            Recusar
-          </button>
+Ver comprovante
 
-          <button
-            class="btn danger"
-            onclick="cancelar(${p.id})"
-          >
-            Cancelar acesso
-          </button>
+</a>
 
-          <button
-            class="btn danger"
-            onclick="excluirPedido(${p.id})"
-          >
-            Excluir pedido
-          </button>
+<label>
+Link do download
+</label>
 
-        </div>
+<input
+type="text"
+id="download-${p.id}"
+placeholder="Cole o link do download"
+value="${p.download_url || ""}"
+>
 
-      </div>
+<div style="
+display:grid;
+grid-template-columns:
+repeat(auto-fit,minmax(180px,1fr));
+gap:10px;
+margin-top:15px;
+">
 
-    `;
+<button
+class="btn primary"
+onclick="aprovar(${p.id})"
+>
 
-  });
+Aprovar +30 dias
+
+</button>
+
+<button
+class="btn secondary"
+onclick="renovar(${p.id})"
+>
+
+Renovar +30 dias
+
+</button>
+
+<button
+class="btn secondary"
+onclick="recusar(${p.id})"
+>
+
+Recusar
+
+</button>
+
+<button
+class="btn danger"
+onclick="cancelar(${p.id})"
+>
+
+Cancelar acesso
+
+</button>
+
+<button
+class="btn danger"
+onclick="excluirPedido(${p.id})"
+>
+
+Excluir pedido
+
+</button>
+
+</div>
+
+</div>
+
+`;
+
+});
 
 }
 
 async function atualizarResumo(){
 
-  const { data, error } =
-  await supabaseClient
-  .from("pedidos")
-  .select("*");
+const {
+data
+}
+=
+await supabaseClient
+.from("pedidos")
+.select("*");
 
-  if(error || !data) return;
+document.getElementById(
+"totalPedidos"
+).innerText =
+data.length;
 
-  document.getElementById("totalPedidos").innerText =
-  data.length;
+document.getElementById(
+"totalAtivos"
+).innerText =
+data.filter(
+p =>
+p.status === "ativa"
+).length;
 
-  document.getElementById("totalAtivos").innerText =
-  data.filter(p => p.status === "ativa" && p.acesso_liberado === true).length;
-
-  document.getElementById("totalPendentes").innerText =
-  data.filter(p => p.status === "pendente").length;
+document.getElementById(
+"totalPendentes"
+).innerText =
+data.filter(
+p =>
+p.status === "pendente"
+).length;
 
 }
 
 async function aprovar(id){
 
-  const link =
-  document.getElementById(`download-${id}`).value;
+const link =
+document.getElementById(
+`download-${id}`
+).value;
 
-  if(!link){
-    alert("Coloque o link de download antes de aprovar.");
-    return;
-  }
+if(!link){
 
-  const hoje =
-  new Date();
+alert(
+"Coloque o link do download."
+);
 
-  const fim =
-  new Date();
+return;
 
-  fim.setDate(fim.getDate() + 30);
+}
 
-  const { error } =
-  await supabaseClient
-  .from("pedidos")
-  .update({
-    status:"ativa",
-    acesso_liberado:true,
-    download_url:link,
-    data_pagamento:hoje.toISOString(),
-    data_fim:fim.toISOString()
-  })
-  .eq("id", id);
+const hoje =
+new Date();
 
-  if(error){
-    alert(error.message);
-    return;
-  }
+const fim =
+new Date();
 
-  alert("Assinatura aprovada por 30 dias!");
-  carregarPedidos();
+fim.setDate(
+fim.getDate() + 30
+);
+
+const {
+error
+}
+=
+await supabaseClient
+.from("pedidos")
+.update({
+
+status:"ativa",
+
+acesso_liberado:true,
+
+download_url:link,
+
+data_pagamento:
+hoje.toISOString(),
+
+data_fim:
+fim.toISOString()
+
+})
+.eq("id",id);
+
+if(error){
+
+alert(error.message);
+return;
+
+}
+
+alert(
+"Assinatura aprovada!"
+);
+
+carregarPedidos();
 
 }
 
 async function renovar(id){
 
-  const hoje =
-  new Date();
+const fim =
+new Date();
 
-  const fim =
-  new Date();
+fim.setDate(
+fim.getDate() + 30
+);
 
-  fim.setDate(fim.getDate() + 30);
+const {
+error
+}
+=
+await supabaseClient
+.from("pedidos")
+.update({
 
-  const { error } =
-  await supabaseClient
-  .from("pedidos")
-  .update({
-    status:"ativa",
-    acesso_liberado:true,
-    data_fim:fim.toISOString()
-  })
-  .eq("id", id);
+status:"ativa",
 
-  if(error){
-    alert(error.message);
-    return;
-  }
+acesso_liberado:true,
 
-  alert("Assinatura renovada por +30 dias!");
-  carregarPedidos();
+data_fim:
+fim.toISOString()
+
+})
+.eq("id",id);
+
+if(error){
+
+alert(error.message);
+return;
+
+}
+
+alert(
+"Assinatura renovada!"
+);
+
+carregarPedidos();
 
 }
 
 async function recusar(id){
 
-  const confirmar =
-  confirm("Tem certeza que deseja recusar esse pedido?");
+const {
+error
+}
+=
+await supabaseClient
+.from("pedidos")
+.update({
 
-  if(!confirmar) return;
+status:"recusada",
 
-  const { error } =
-  await supabaseClient
-  .from("pedidos")
-  .update({
-    status:"recusada",
-    acesso_liberado:false
-  })
-  .eq("id", id);
+acesso_liberado:false
 
-  if(error){
-    alert(error.message);
-    return;
-  }
+})
+.eq("id",id);
 
-  alert("Pedido recusado!");
-  carregarPedidos();
+if(error){
+
+alert(error.message);
+return;
+
+}
+
+alert(
+"Pedido recusado!"
+);
+
+carregarPedidos();
 
 }
 
 async function cancelar(id){
 
-  const confirmar =
-  confirm("Deseja cancelar o acesso desse cliente?");
+const {
+error
+}
+=
+await supabaseClient
+.from("pedidos")
+.update({
 
-  if(!confirmar) return;
+status:"cancelada",
 
-  const { error } =
-  await supabaseClient
-  .from("pedidos")
-  .update({
-    status:"cancelada",
-    acesso_liberado:false
-  })
-  .eq("id", id);
+acesso_liberado:false
 
-  if(error){
-    alert(error.message);
-    return;
-  }
+})
+.eq("id",id);
 
-  alert("Acesso cancelado!");
-  carregarPedidos();
+if(error){
+
+alert(error.message);
+return;
 
 }
 
-async function marcarRecibo(id){
+alert(
+"Acesso cancelado!"
+);
 
-  const { error } =
-  await supabaseClient
-  .from("pedidos")
-  .update({
-    recibo_enviado:true
-  })
-  .eq("id", id);
-
-  if(error){
-    alert(error.message);
-    return;
-  }
-
-  alert("Recibo marcado como enviado!");
-  carregarPedidos();
+carregarPedidos();
 
 }
 
 async function excluirPedido(id){
 
-  const confirmar =
-  confirm("Tem certeza que deseja excluir esse pedido? Essa ação não pode ser desfeita.");
+const confirmar =
+confirm(
+"Excluir pedido?"
+);
 
-  if(!confirmar) return;
+if(!confirmar) return;
 
-  const { error } =
-  await supabaseClient
-  .from("pedidos")
-  .delete()
-  .eq("id", id);
+const {
+error
+}
+=
+await supabaseClient
+.from("pedidos")
+.delete()
+.eq("id",id);
 
-  if(error){
-    alert(error.message);
-    return;
-  }
+if(error){
 
-  alert("Pedido excluído!");
-  carregarPedidos();
+alert(error.message);
+return;
+
+}
+
+alert(
+"Pedido excluído!"
+);
+
+carregarPedidos();
 
 }
 
