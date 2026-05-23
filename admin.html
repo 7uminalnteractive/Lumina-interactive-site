@@ -1,19 +1,235 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Admin | Lumina</title><link rel="stylesheet" href="style.css"></head>
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Lumina Admin</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
 <body>
-<nav class="navbar"><div class="logo">LUMINA ADMIN</div><div class="menu"><a href="index.html">Site</a></div></nav>
-<main class="container">
-<section>
-<h1 style="font-size:48px">Painel de pedidos</h1>
-<p class="desc">Pedidos registrados pelo checkout.</p>
-<div class="tabela-container">
-<table class="table">
-<thead><tr><th>ID</th><th>Cliente</th><th>Produto</th><th>Valor</th><th>Status</th><th>WhatsApp</th></tr></thead>
-<tbody id="pedidos-admin"><tr><td colspan="6">Carregando...</td></tr></tbody>
-</table>
+
+<nav class="navbar">
+
+<div class="logo">
+LUMINA ADMIN
 </div>
+
+</nav>
+
+<main class="container">
+
+<section>
+
+<h1>
+Painel administrativo
+</h1>
+
+<div id="pedidosArea"></div>
+
 </section>
+
 </main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script><script src="app.js"></script>
-</body></html>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+<script>
+
+const SUPABASE_URL =
+"https://tqsalhscgkepttbczyjq.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK";
+
+const supabaseClient =
+supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+async function carregarPedidos(){
+
+const area =
+document.getElementById("pedidosArea");
+
+const { data, error } =
+await supabaseClient
+.from("pedidos")
+.select("*")
+.order("id",{ascending:false});
+
+if(error){
+
+area.innerHTML =
+"Erro ao carregar";
+
+return;
+
+}
+
+area.innerHTML = "";
+
+data.forEach((p)=>{
+
+area.innerHTML += `
+
+<div class="card">
+
+<h3>
+${p.produto}
+</h3>
+
+<p>
+Cliente:
+${p.nome_cliente || ""}
+</p>
+
+<p>
+Email:
+${p.email || ""}
+</p>
+
+<p>
+WhatsApp:
+${p.whatsapp || ""}
+</p>
+
+<p>
+Status:
+${p.status || "pendente"}
+</p>
+
+<input
+type="text"
+id="download-${p.id}"
+placeholder="Link do download"
+value="${p.download_url || ""}"
+>
+
+<div style="
+display:flex;
+gap:10px;
+margin-top:15px;
+flex-wrap:wrap;
+">
+
+<button
+class="btn primary"
+onclick="aprovar(${p.id})"
+>
+
+Aprovar
+
+</button>
+
+<button
+class="btn secondary"
+onclick="recusar(${p.id})"
+>
+
+Recusar
+
+</button>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+}
+
+async function aprovar(id){
+
+const link =
+document.getElementById(
+`download-${id}`
+).value;
+
+const hoje =
+new Date();
+
+const fim =
+new Date();
+
+fim.setDate(
+fim.getDate() + 30
+);
+
+const { error } =
+await supabaseClient
+.from("pedidos")
+.update({
+
+status:"ativa",
+
+acesso_liberado:true,
+
+download_url:link,
+
+data_pagamento:
+hoje.toISOString(),
+
+data_fim:
+fim.toISOString()
+
+})
+.eq("id",id);
+
+if(error){
+
+alert(error.message);
+return;
+
+}
+
+alert(
+"Assinatura aprovada!"
+);
+
+carregarPedidos();
+
+}
+
+async function recusar(id){
+
+const { error } =
+await supabaseClient
+.from("pedidos")
+.update({
+
+status:"recusada",
+
+acesso_liberado:false
+
+})
+.eq("id",id);
+
+if(error){
+
+alert(error.message);
+return;
+
+}
+
+alert(
+"Pedido recusado!"
+);
+
+carregarPedidos();
+
+}
+
+carregarPedidos();
+
+</script>
+
+</body>
+</html>
