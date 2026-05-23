@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Comprovante</title>
+<title>Enviar comprovante</title>
 
 <link rel="stylesheet" href="style.css">
 
@@ -18,6 +18,22 @@
 
 <div class="logo">
 LUMINA INTERACTIVE™
+</div>
+
+<div class="menu">
+
+<a href="index.html">
+Início
+</a>
+
+<a href="plus.html">
+Lumina Plus
+</a>
+
+<a href="login.html">
+Login
+</a>
+
 </div>
 
 </nav>
@@ -38,7 +54,7 @@ Enviar comprovante
 </h2>
 
 <label>
-Nome
+Nome completo
 </label>
 
 <input
@@ -138,6 +154,8 @@ padding:18px;
 border-radius:18px;
 background:#070b1c;
 word-break:break-all;
+font-size:14px;
+line-height:1.6;
 ">
 
 <span id="pixCode">
@@ -149,6 +167,7 @@ word-break:break-all;
 </div>
 
 <button
+type="button"
 class="btn primary"
 style="margin-top:15px;"
 onclick="copiarPix()"
@@ -210,7 +229,60 @@ async (e)=>{
 
 e.preventDefault();
 
-const comprovante = {
+const arquivo =
+document.getElementById(
+"arquivo"
+).files[0];
+
+if(!arquivo){
+
+alert(
+"Selecione um comprovante."
+);
+
+return;
+
+}
+
+const nomeArquivo =
+Date.now() +
+"-" +
+arquivo.name;
+
+const {
+error:uploadError
+}
+=
+await supabaseClient
+.storage
+.from("comprovantes")
+.upload(
+nomeArquivo,
+arquivo
+);
+
+if(uploadError){
+
+alert(uploadError.message);
+return;
+
+}
+
+const {
+data:urlData
+}
+=
+supabaseClient
+.storage
+.from("comprovantes")
+.getPublicUrl(
+nomeArquivo
+);
+
+const comprovanteUrl =
+urlData.publicUrl;
+
+const pedido = {
 
 nome_cliente:
 document.getElementById(
@@ -232,15 +304,19 @@ document.getElementById(
 "produto"
 ).value,
 
-status:
-"aguardando"
+status:"pendente",
+
+acesso_liberado:false,
+
+comprovante_url:
+comprovanteUrl
 
 };
 
 const { error } =
 await supabaseClient
 .from("pedidos")
-.insert([comprovante]);
+.insert([pedido]);
 
 if(error){
 
@@ -250,7 +326,7 @@ return;
 }
 
 alert(
-"Comprovante enviado!"
+"Comprovante enviado com sucesso!"
 );
 
 window.location.href =
