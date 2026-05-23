@@ -1,5 +1,6 @@
-const SUPABASE_URL = "COLE_SUA_SUPABASE_URL_AQUI";
-const SUPABASE_KEY = "COLE_SUA_SUPABASE_ANON_KEY_AQUI";
+const SUPABASE_URL = "https://tqsalhscgkepttbczyjq.supabase.co";
+
+const SUPABASE_KEY = "sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK";
 
 let supabaseClient = null;
 
