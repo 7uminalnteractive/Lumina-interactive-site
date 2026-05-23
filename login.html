@@ -11,7 +11,6 @@
 
 <nav class="navbar">
   <div class="logo">LUMINA INTERACTIVE™</div>
-
   <div class="menu">
     <a href="index.html">Início</a>
     <a href="patches.html">Patchs</a>
@@ -24,84 +23,43 @@
 
 <section>
 
-<div style="
-max-width:520px;
-margin:0 auto;
-background:#0d1226;
-border:1px solid rgba(255,255,255,.08);
-border-radius:28px;
-padding:28px;
-">
+<div class="form-card" style="max-width:520px;margin:auto;">
 
-<h1 style="
-font-size:42px;
-margin-bottom:12px;
-">
+<h2 style="font-size:42px;margin-bottom:12px;">
 Entrar na Lumina
-</h1>
+</h2>
 
-<p style="
-color:#aeb8d6;
-font-size:18px;
-line-height:1.6;
-margin-bottom:28px;
-">
+<p class="desc" style="font-size:17px;">
 Entre na sua conta para acessar suas assinaturas e downloads.
 </p>
 
-<form id="loginForm" style="
-display:flex;
-flex-direction:column;
-gap:18px;
-">
+<form id="loginForm">
 
-<div style="display:flex;flex-direction:column;gap:8px;">
-<label style="font-weight:800;color:#d8def5;">E-mail</label>
+<label>E-mail</label>
 <input
 type="email"
 id="email"
 placeholder="seuemail@gmail.com"
 required
-style="
-height:58px;
-border-radius:16px;
-background:#070b1c;
-color:white;
-border:1px solid rgba(255,255,255,.08);
-padding:0 18px;
-font-size:17px;
-outline:none;
-">
-</div>
+>
 
-<div style="display:flex;flex-direction:column;gap:8px;">
-<label style="font-weight:800;color:#d8def5;">Senha</label>
+<label>Senha</label>
 <input
 type="password"
 id="senha"
 placeholder="Sua senha"
 required
-style="
-height:58px;
-border-radius:16px;
-background:#070b1c;
-color:white;
-border:1px solid rgba(255,255,255,.08);
-padding:0 18px;
-font-size:17px;
-outline:none;
-">
-</div>
+>
 
-<button class="btn primary" type="submit" style="width:100%;height:60px;">
+<button class="btn primary" type="submit" style="width:100%;margin-top:10px;">
 Entrar
 </button>
 
-<button class="btn secondary" type="button" onclick="registrar()" style="width:100%;height:60px;">
+<button class="btn secondary" type="button" onclick="registrar()" style="width:100%;margin-top:12px;">
 Registrar conta
 </button>
 
-<button class="btn primary" type="button" onclick="loginGoogle()" style="width:100%;height:60px;">
+<button class="btn primary" type="button" onclick="loginGoogle()" style="width:100%;margin-top:12px;">
 Entrar com Google
 </button>
 
