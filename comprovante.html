@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
 
 <meta charset="UTF-8">
@@ -34,30 +35,60 @@ LUMINA INTERACTIVE™
 <div class="section-title">
 
 <div>
-<h2>Enviar comprovante</h2>
+
+<h2>
+Enviar comprovante
+</h2>
 
 <p>
 Após realizar o pagamento via PIX/PicPay,
 envie o comprovante para liberar seu acesso.
 </p>
+
 </div>
 
 </div>
 
 <div class="checkout-layout">
 
+<!-- FORMULÁRIO -->
+
 <form class="form-card" id="formComprovante">
 
-<label>Nome</label>
-<input type="text" id="nome" required>
+<label>
+Nome
+</label>
 
-<label>E-mail</label>
-<input type="email" id="email" required>
+<input
+type="text"
+id="nome"
+required
+>
 
-<label>WhatsApp</label>
-<input type="text" id="whatsapp" required>
+<label>
+E-mail
+</label>
 
-<label>Produto</label>
+<input
+type="email"
+id="email"
+required
+>
+
+<label>
+WhatsApp
+</label>
+
+<input
+type="text"
+id="whatsapp"
+required
+>
+
+<label>
+Produto
+</label>
+
 <select id="produto">
 
 <option value="Lumina Plus">
@@ -74,7 +105,9 @@ Brazukas Patch
 
 </select>
 
-<label>Link do comprovante</label>
+<label>
+Link do comprovante
+</label>
 
 <input
 type="text"
@@ -83,35 +116,101 @@ placeholder="Cole aqui o link da imagem do comprovante"
 required
 >
 
-<button class="btn primary" type="submit">
+<button
+class="btn primary"
+type="submit"
+style="width:100%;"
+>
+
 Enviar comprovante
+
 </button>
 
 </form>
 
-<div class="summary-card">
+<!-- PIX -->
+
+<div>
+
+<div class="summary-card" style="margin-bottom:30px;text-align:center;">
 
 <span class="badge">
 PIX / PICPAY
 </span>
 
 <h2>
-Pagamento manual
+Pagamento via Pix
 </h2>
 
-<p>
-Após análise do comprovante,
-o download será liberado automaticamente.
+<p style="
+margin-bottom:25px;
+color:var(--muted);
+">
+
+Escaneie o QR Code
+ou copie o código Pix abaixo.
+
 </p>
 
-<div class="price">
-Análise rápida
+<img
+src="1005625839.jpg"
+style="
+width:100%;
+max-width:320px;
+border-radius:24px;
+margin:auto;
+display:block;
+background:white;
+padding:15px;
+"
+>
+
+<div style="
+margin-top:25px;
+background:#070b1c;
+padding:18px;
+border-radius:18px;
+border:1px solid rgba(255,255,255,.08);
+word-break:break-all;
+font-size:14px;
+line-height:1.6;
+">
+
+<span id="pixCode">
+
+00020126740014br.gov.bcb.pix0111099248645900237Cofrinho de Luan Vinicius Da Silva Me5204000053039865802BR5925Luan Vinicius Da Silva Me6015Feira de Santan61084409220062270523COFRNDgzNzA5NDAxMDAwMDQ6304CC1B
+
+</span>
+
 </div>
 
-<p style="color:var(--muted)">
-Status inicial:
-AGUARDANDO ANÁLISE
+<button
+type="button"
+class="btn primary"
+style="
+margin-top:20px;
+width:100%;
+"
+onclick="copiarPix()"
+>
+
+Copiar código Pix
+
+</button>
+
+<p style="
+margin-top:18px;
+color:var(--muted);
+font-size:14px;
+">
+
+Após o pagamento,
+envie o comprovante ao lado
+para liberar o download.
+
 </p>
+
+</div>
 
 </div>
 
@@ -136,6 +235,17 @@ supabase.createClient(
 SUPABASE_URL,
 SUPABASE_KEY
 );
+
+function copiarPix(){
+
+const texto =
+document.getElementById("pixCode").innerText;
+
+navigator.clipboard.writeText(texto);
+
+alert("Código Pix copiado!");
+
+}
 
 const form =
 document.getElementById("formComprovante");
