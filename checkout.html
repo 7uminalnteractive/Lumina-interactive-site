@@ -1,50 +1,365 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Pagamento | Lumina</title><link rel="stylesheet" href="style.css"></head>
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Checkout | Lumina Interactive</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
 <body>
-<nav class="navbar"><div class="logo">LUMINA INTERACTIVE™</div><div class="menu"><a href="index.html">Início</a><a href="patches.html">Patchs</a><a href="plus.html">Lumina Plus</a></div></nav>
+
+<nav class="navbar">
+
+<div class="logo">
+LUMINA INTERACTIVE™
+</div>
+
+<div class="menu">
+<a href="index.html">Início</a>
+<a href="patches.html">Patchs</a>
+<a href="plus.html">Lumina Plus</a>
+</div>
+
+</nav>
 
 <main class="container">
+
 <section>
-<div class="section-title"><div><h2>Finalizar pedido</h2><p>Tela de pagamento visual pronta para integrar com Mercado Pago ou Stripe.</p></div></div>
+
+<div class="section-title">
+
+<div>
+
+<h2>
+Finalizar pedido
+</h2>
+
+<p>
+Finalize seu pedido para continuar.
+</p>
+
+</div>
+
+</div>
 
 <div class="checkout-layout">
-<form class="form-card" id="checkout-form">
-<label>Nome</label>
-<input id="nome" required placeholder="Seu nome">
 
-<label>E-mail</label>
-<input id="email" type="email" required placeholder="seuemail@gmail.com">
+<!-- FORM -->
 
-<label>WhatsApp</label>
-<input id="whatsapp" required placeholder="(75) 99999-9999">
+<form
+class="form-card"
+id="checkout-form"
+>
 
-<label>Método de pagamento</label>
+<label>
+Nome
+</label>
+
+<input
+type="text"
+id="nome"
+required
+placeholder="Seu nome"
+>
+
+<label>
+E-mail
+</label>
+
+<input
+type="email"
+id="email"
+required
+placeholder="seuemail@gmail.com"
+>
+
+<label>
+WhatsApp
+</label>
+
+<input
+type="text"
+id="whatsapp"
+required
+placeholder="(75) 99999-9999"
+>
+
+<label>
+Método de pagamento
+</label>
+
 <select id="pagamento">
-<option value="pix">PIX</option>
-<option value="cartao">Cartão</option>
-<option value="whatsapp">Combinar no WhatsApp</option>
+
+<option value="pix">
+PIX
+</option>
+
+<option value="cartao">
+Cartão
+</option>
+
 </select>
 
 <div class="pay-method">
-<button type="button">PIX</button>
-<button type="button">Cartão</button>
+
+<button
+type="button"
+>
+
+PIX
+
+</button>
+
+<button
+type="button"
+>
+
+Cartão
+
+</button>
+
 </div>
 
-<button class="btn primary" type="submit">Confirmar pedido</button>
+<button
+class="btn primary"
+type="submit"
+style="width:100%;"
+>
+
+Confirmar pedido
+
+</button>
+
 </form>
 
+<!-- RESUMO -->
+
 <div class="summary-card">
-<span class="badge">RESUMO</span>
-<h2 id="checkout-produto">Produto</h2>
-<p id="checkout-desc">Descrição</p>
-<div class="price" id="checkout-preco">R$ 0,00</div>
-<p style="color:var(--muted)">Após confirmar, seu pedido será registrado no Supabase.</p>
+
+<span class="badge">
+RESUMO
+</span>
+
+<h2 id="checkout-produto">
+Lumina Plus
+</h2>
+
+<p id="checkout-desc">
+Acesso premium da Lumina Interactive.
+</p>
+
+<div
+class="price"
+id="checkout-preco"
+>
+
+R$ 9,90
+
 </div>
+
+<p style="color:var(--muted)">
+Após confirmar,
+você será redirecionado
+para o pagamento PIX.
+</p>
+
 </div>
+
+</div>
+
 </section>
+
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-<script src="app.js"></script>
-</body></html>
+
+<script>
+
+const SUPABASE_URL =
+"https://tqsalhscgkepttbczyjq.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK";
+
+const supabaseClient =
+supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+function moeda(valor){
+
+return Number(valor || 0)
+.toLocaleString(
+"pt-BR",
+{
+style:"currency",
+currency:"BRL"
+}
+);
+
+}
+
+function getParam(nome){
+
+return new URLSearchParams(
+window.location.search
+).get(nome);
+
+}
+
+function produtoPadrao(slug){
+
+const produtos = {
+
+"brazukas": {
+
+nome:"Brazukas Patch",
+preco:0,
+descricao:
+"O patch brasileiro definitivo."
+
+},
+
+"lpfl-normal": {
+
+nome:"LPFL Normal",
+preco:0,
+descricao:
+"Experiência clássica."
+
+},
+
+"lpfl-pro": {
+
+nome:"LPFL PRO",
+preco:0,
+descricao:
+"Versão premium do LPFL."
+
+},
+
+"lumina-plus": {
+
+nome:"Lumina Plus",
+preco:9.90,
+descricao:
+"Acesso premium da Lumina Interactive."
+
+}
+
+};
+
+return produtos[slug]
+|| produtos["lumina-plus"];
+
+}
+
+async function iniciarCheckout(){
+
+const form =
+document.querySelector(
+"#checkout-form"
+);
+
+const slug =
+getParam("produto")
+|| "lumina-plus";
+
+let produto =
+produtoPadrao(slug);
+
+document.querySelector(
+"#checkout-produto"
+).innerText = produto.nome;
+
+document.querySelector(
+"#checkout-desc"
+).innerText = produto.descricao;
+
+document.querySelector(
+"#checkout-preco"
+).innerText =
+moeda(produto.preco);
+
+form.addEventListener(
+"submit",
+async (e)=>{
+
+e.preventDefault();
+
+const pedido = {
+
+nome_cliente:
+document.querySelector(
+"#nome"
+).value,
+
+email:
+document.querySelector(
+"#email"
+).value,
+
+whatsapp:
+document.querySelector(
+"#whatsapp"
+).value,
+
+produto:
+produto.nome,
+
+plano:
+slug,
+
+valor:
+Number(
+produto.preco || 0
+),
+
+status:
+"pendente",
+
+metodo_pagamento:
+document.querySelector(
+"#pagamento"
+).value
+
+};
+
+const { error } =
+await supabaseClient
+.from("pedidos")
+.insert([pedido]);
+
+if(error){
+
+alert(
+"Erro ao registrar pedido: "
++ error.message
+);
+
+console.log(error);
+
+return;
+
+}
+
+window.location.href =
+"comprovante.html";
+
+});
+
+}
+
+iniciarCheckout();
+
+</script>
+
+</body>
+</html>
