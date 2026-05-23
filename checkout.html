@@ -1,146 +1,88 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Checkout | Lumina Interactive</title>
-
 <link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="forms.css">
-
 </head>
 
 <body>
 
 <nav class="navbar">
-
-<div class="logo">
-LUMINA INTERACTIVE™
-</div>
-
-<div class="menu">
-
-<a href="index.html">Início</a>
-<a href="patches.html">Patchs</a>
-<a href="plus.html">Lumina Plus</a>
-<a href="login.html">Login</a>
-
-</div>
-
+  <div class="logo">LUMINA INTERACTIVE™</div>
+  <div class="menu">
+    <a href="index.html">Início</a>
+    <a href="patches.html">Patchs</a>
+    <a href="plus.html">Lumina Plus</a>
+    <a href="login.html">Login</a>
+  </div>
 </nav>
 
 <main class="container">
 
 <section>
+  <div class="section-title">
+    <div>
+      <h2>Checkout</h2>
+      <p>Finalize sua assinatura da Lumina Interactive.</p>
+    </div>
+  </div>
 
-<div class="form-card" style="max-width:700px;margin:auto;">
+  <div style=" display:grid; grid-template-columns:1fr; gap:45px; margin-top:25px; ">
 
-<h2>
-Checkout
-</h2>
+    <form id="checkoutForm" style="
+      background:#0d1226;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:28px;
+      padding:28px;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    ">
 
-<p>
-Finalize sua assinatura da Lumina Interactive.
-</p>
+      <h2 style="font-size:34px;margin-bottom:10px;">Dados do cliente</h2>
 
-<form id="checkoutForm">
+      <label>Nome completo</label>
+      <input type="text" id="nome" required style="height:58px;border-radius:16px;background:#070b1c;color:white;border:1px solid rgba(255,255,255,.08);padding:0 18px;font-size:17px;">
 
-<div class="form-grid">
+      <label>E-mail</label>
+      <input type="email" id="email" required style="height:58px;border-radius:16px;background:#070b1c;color:white;border:1px solid rgba(255,255,255,.08);padding:0 18px;font-size:17px;">
 
-<div>
+      <label>WhatsApp</label>
+      <input type="text" id="whatsapp" required style="height:58px;border-radius:16px;background:#070b1c;color:white;border:1px solid rgba(255,255,255,.08);padding:0 18px;font-size:17px;">
 
-<label>Nome completo</label>
+      <label>Produto</label>
+      <select id="produto" style="height:58px;border-radius:16px;background:#070b1c;color:white;border:1px solid rgba(255,255,255,.08);padding:0 18px;font-size:17px;">
+        <option value="Lumina Plus">Lumina Plus</option>
+        <option value="LPFL PRO">LPFL PRO</option>
+        <option value="Brazukas Patch">Brazukas Patch</option>
+        <option value="LPFL Normal">LPFL Normal</option>
+      </select>
 
-<input
-type="text"
-id="nome"
-required
->
+      <label>Método de pagamento</label>
+      <select id="metodo" style="height:58px;border-radius:16px;background:#070b1c;color:white;border:1px solid rgba(255,255,255,.08);padding:0 18px;font-size:17px;">
+        <option value="PIX">PIX</option>
+        <option value="PicPay">PicPay</option>
+      </select>
 
-</div>
+      <button class="btn primary" type="submit" style="width:100%;height:60px;margin-top:10px;">
+        Confirmar pedido
+      </button>
 
-<div>
+    </form>
 
-<label>E-mail</label>
+    <div class="summary-card">
+      <span class="badge">RESUMO</span>
+      <h2>Lumina Plus</h2>
+      <p class="desc">Acesso premium da Lumina Interactive.</p>
+      <div class="price">R$ 9,90</div>
+      <p style="color:var(--muted);line-height:1.6;">
+        Após confirmar, você será levado para o pagamento Pix.
+      </p>
+    </div>
 
-<input
-type="email"
-id="email"
-required
->
-
-</div>
-
-<div>
-
-<label>WhatsApp</label>
-
-<input
-type="text"
-id="whatsapp"
-required
->
-
-</div>
-
-<div>
-
-<label>Produto</label>
-
-<select id="produto">
-
-<option value="Lumina Plus">
-Lumina Plus
-</option>
-
-<option value="LPFL PRO">
-LPFL PRO
-</option>
-
-<option value="Brazukas Patch">
-Brazukas Patch
-</option>
-
-</select>
-
-</div>
-
-<div class="form-full">
-
-<label>Método de pagamento</label>
-
-<select id="metodo">
-
-<option value="PIX">
-PIX
-</option>
-
-<option value="PicPay">
-PicPay
-</option>
-
-</select>
-
-</div>
-
-</div>
-
-<button
-class="btn primary"
-type="submit"
-style="width:100%;margin-top:12px;"
->
-
-Continuar para pagamento
-
-</button>
-
-</form>
-
-</div>
-
+  </div>
 </section>
 
 </main>
@@ -148,73 +90,36 @@ Continuar para pagamento
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <script>
+const SUPABASE_URL = "https://tqsalhscgkepttbczyjq.supabase.co";
+const SUPABASE_KEY = "sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const SUPABASE_URL =
-"https://tqsalhscgkepttbczyjq.supabase.co";
+document.getElementById("checkoutForm").addEventListener("submit", async (e)=>{
+  e.preventDefault();
 
-const SUPABASE_KEY =
-"sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK";
+  const pedido = {
+    nome_cliente: document.getElementById("nome").value,
+    email: document.getElementById("email").value,
+    whatsapp: document.getElementById("whatsapp").value,
+    produto: document.getElementById("produto").value,
+    metodo_pagamento: document.getElementById("metodo").value,
+    status: "aguardando_pagamento",
+    valor: 9.90,
+    acesso_liberado: false
+  };
 
-const supabaseClient =
-supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
-);
+  const { data, error } = await supabaseClient
+    .from("pedidos")
+    .insert([pedido])
+    .select();
 
-document
-.getElementById("checkoutForm")
-.addEventListener(
-"submit",
-async (e)=>{
+  if(error){
+    alert(error.message);
+    return;
+  }
 
-e.preventDefault();
-
-const pedido = {
-
-nome_cliente:
-document.getElementById("nome").value,
-
-email:
-document.getElementById("email").value,
-
-whatsapp:
-document.getElementById("whatsapp").value,
-
-produto:
-document.getElementById("produto").value,
-
-metodo_pagamento:
-document.getElementById("metodo").value,
-
-status:
-"aguardando_pagamento",
-
-valor:9.90,
-
-acesso_liberado:false
-
-};
-
-const { data, error } =
-await supabaseClient
-.from("pedidos")
-.insert([pedido])
-.select();
-
-if(error){
-
-alert(error.message);
-return;
-
-}
-
-window.location.href =
-"comprovante.html?pedido_id=" +
-data[0].id;
-
-}
-);
-
+  window.location.href = "comprovante.html?pedido_id=" + data[0].id;
+});
 </script>
 
 </body>
