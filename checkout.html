@@ -1,333 +1,227 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Checkout • Lumina Interactive</title>
-
+<title>Checkout | Lumina Interactive™</title>
 <link rel="stylesheet" href="style.css">
-
 </head>
-
 <body>
 
-<!-- NAVBAR -->
-
 <nav class="navbar">
-
-<div class="logo">
-LUMINA INTERACTIVE™
-</div>
+<div class="logo">LUMINA INTERACTIVE™</div>
 
 <div class="nav-right">
-
 <a href="minha-conta.html" class="profile-btn">
-
 <img
 src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
 class="profile-icon"
 alt="Perfil"
 >
-
 </a>
 
-<button class="menu-toggle" onclick="toggleMenu()">
-
+<button class="menu-toggle" onclick="toggleMenu()" aria-label="Abrir menu">
 <span></span>
 <span></span>
 <span></span>
-
 </button>
-
 </div>
-
 </nav>
 
-<!-- MENU MOBILE -->
-
 <div class="mobile-menu" id="mobileMenu">
-
 <a href="index.html">Início</a>
 <a href="patches.html">Patchs</a>
 <a href="downloads.html">Downloads</a>
 <a href="plus.html">Lumina Plus</a>
-
+<a href="lpfl-pro.html">Comprar</a>
 </div>
-
-<!-- CONTEÚDO -->
 
 <main class="container">
 
-<section class="hero">
-
+<section>
+<div class="section-title">
 <div>
-
-<p class="tag">
-CHECKOUT
-</p>
-
-<h1>
-Checkout
-</h1>
-
-<p class="desc">
-
-Finalize sua assinatura da Lumina Interactive.
-
-</p>
-
+<h2>Checkout</h2>
+<p>Finalize sua assinatura da Lumina Interactive.</p>
+</div>
 </div>
 
-</section>
+<div class="checkout-layout">
 
-<!-- DADOS -->
+<form class="form-card" id="checkoutForm">
 
-<section class="checkout-box">
-
-<h2 style="
-font-size:52px;
-margin-bottom:30px;
-">
+<h2 style="font-size:34px;margin-bottom:22px;">
 Dados do cliente
 </h2>
 
-<form
-class="checkout-form"
-id="checkoutForm"
->
+<label>Nome completo</label>
+<input type="text" id="nome" required placeholder="Seu nome completo">
 
-<div>
+<label>E-mail</label>
+<input type="email" id="email" required placeholder="seuemail@gmail.com">
 
-<label>
-Nome completo
-</label>
+<label>WhatsApp</label>
+<input type="text" id="whatsapp" required placeholder="(75) 99999-9999">
 
-<input
-type="text"
-id="nome"
-placeholder="Digite seu nome"
-required
->
-
-</div>
-
-<div>
-
-<label>
-E-mail
-</label>
-
-<input
-type="email"
-id="email"
-placeholder="Digite seu e-mail"
-required
->
-
-</div>
-
-<div>
-
-<label>
-WhatsApp
-</label>
-
-<input
-type="text"
-id="whatsapp"
-placeholder="(75) 99999-9999"
-required
->
-
-</div>
-
-<div>
-
-<label>
-Produto
-</label>
-
+<label>Produto</label>
 <select id="produto">
-
-<option value="Lumina Plus">
-Lumina Plus
-</option>
-
-<option value="LPFL PRO">
-LPFL PRO
-</option>
-
-<option value="Brazukas Patch">
-Brazukas Patch
-</option>
-
-<option value="LPFL Normal">
-LPFL Normal
-</option>
-
+<option value="Lumina Plus">Lumina Plus</option>
+<option value="LPFL PRO">LPFL PRO</option>
+<option value="Brazukas Patch">Brazukas Patch</option>
+<option value="LPFL Normal">LPFL Normal</option>
 </select>
 
-</div>
-
-<div>
-
-<label>
-Método de pagamento
-</label>
-
+<label>Método de pagamento</label>
 <select id="metodo">
-
-<option value="PIX">
-PIX
-</option>
-
-<option value="PIC PAY">
-PIC PAY
-</option>
-
+<option value="PIX">PIX</option>
+<option value="PicPay">PicPay</option>
 </select>
 
-</div>
-
-<button
-type="submit"
-class="btn primary"
-style="
-width:100%;
-margin-top:15px;
-font-size:20px;
-padding:20px;
-"
->
-
+<button class="btn primary" type="submit" style="width:100%;margin-top:10px;">
 Continuar para pagamento
-
 </button>
 
 </form>
 
-</section>
-
-<!-- RESUMO -->
-
-<section class="checkout-resumo">
+<div class="summary-card">
 
 <span class="badge">
 RESUMO
 </span>
 
-<h2
-id="produtoNome"
-style="
-font-size:56px;
-margin-top:20px;
-"
->
-
+<h2 id="resumoProduto" style="font-size:42px;margin-top:10px;">
 Lumina Plus
-
 </h2>
 
-<p class="desc">
-
+<p class="desc" id="resumoDescricao" style="font-size:17px;margin-bottom:10px;">
 Acesso premium da Lumina Interactive.
-
 </p>
 
-<div
-class="price"
-style="
-font-size:70px;
-font-weight:900;
-margin-top:20px;
-"
->
-
+<div class="price" id="resumoPreco">
 R$ 9,90
+</div>
+
+<p style="color:var(--muted);line-height:1.6;">
+Após continuar, seu pedido será registrado e você será levado para a tela do Pix e envio do comprovante.
+</p>
 
 </div>
 
+</div>
 </section>
 
 </main>
 
-<!-- FOOTER -->
-
 <footer class="footer">
-
-<div>
-Lumina Interactive™
-</div>
-
-<div>
-Levando o futebol portátil a outro nível.
-</div>
-
+<div>Lumina Interactive™</div>
+<div>Levando o futebol portátil a outro nível.</div>
 </footer>
 
-<!-- MENU SCRIPT -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <script>
-
-function toggleMenu() {
-
-const menu =
-document.getElementById(
-"mobileMenu"
-);
-
-menu.classList.toggle(
-"active"
-);
-
+function toggleMenu(){
+  const menu = document.getElementById("mobileMenu");
+  menu.classList.toggle("active");
 }
 
-</script>
+const SUPABASE_URL = "https://tqsalhscgkepttbczyjq.supabase.co";
+const SUPABASE_KEY = "sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK";
 
-<!-- CHECKOUT SCRIPT -->
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-<script>
+const produtos = {
+  "lumina-plus": {
+    nome:"Lumina Plus",
+    preco:9.90,
+    descricao:"Acesso premium da Lumina Interactive."
+  },
+  "lpfl-pro": {
+    nome:"LPFL PRO",
+    preco:9.90,
+    descricao:"A versão premium da experiência LPFL."
+  },
+  "LPFL PRO": {
+    nome:"LPFL PRO",
+    preco:9.90,
+    descricao:"A versão premium da experiência LPFL."
+  },
+  "brazukas": {
+    nome:"Brazukas Patch",
+    preco:0,
+    descricao:"O patch brasileiro definitivo."
+  },
+  "lpfl-normal": {
+    nome:"LPFL Normal",
+    preco:0,
+    descricao:"Experiência clássica LPFL gratuita."
+  }
+};
 
-const produtoInput =
-document.getElementById(
-"produto"
-);
-
-const produtoNome =
-document.getElementById(
-"produtoNome"
-);
-
-produtoInput.addEventListener(
-"change",
-() => {
-
-produtoNome.innerHTML =
-produtoInput.value;
-
+function moeda(valor){
+  return Number(valor || 0).toLocaleString("pt-BR", {
+    style:"currency",
+    currency:"BRL"
+  });
 }
-);
 
-document
-.getElementById(
-"checkoutForm"
-)
-.addEventListener(
-"submit",
-function(e){
-
-e.preventDefault();
-
-alert(
-"Pagamento iniciado!"
-);
-
+function getParam(nome){
+  return new URLSearchParams(window.location.search).get(nome);
 }
-);
 
+const slug = getParam("produto") || "lumina-plus";
+const produtoInicial = produtos[slug] || produtos["lumina-plus"];
+
+document.getElementById("produto").value = produtoInicial.nome;
+document.getElementById("resumoProduto").innerText = produtoInicial.nome;
+document.getElementById("resumoDescricao").innerText = produtoInicial.descricao;
+document.getElementById("resumoPreco").innerText = moeda(produtoInicial.preco);
+
+document.getElementById("produto").addEventListener("change", () => {
+  const nome = document.getElementById("produto").value;
+  const item = Object.values(produtos).find(p => p.nome === nome) || {
+    nome,
+    preco:9.90,
+    descricao:"Produto Lumina Interactive."
+  };
+
+  document.getElementById("resumoProduto").innerText = item.nome;
+  document.getElementById("resumoDescricao").innerText = item.descricao;
+  document.getElementById("resumoPreco").innerText = moeda(item.preco);
+});
+
+document.getElementById("checkoutForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const produtoNome = document.getElementById("produto").value;
+  const item = Object.values(produtos).find(p => p.nome === produtoNome) || {
+    nome:produtoNome,
+    preco:9.90
+  };
+
+  const pedido = {
+    nome_cliente: document.getElementById("nome").value,
+    email: document.getElementById("email").value,
+    whatsapp: document.getElementById("whatsapp").value,
+    produto: item.nome,
+    metodo_pagamento: document.getElementById("metodo").value,
+    status:"aguardando_pagamento",
+    valor: Number(item.preco || 0),
+    acesso_liberado:false
+  };
+
+  const { data, error } = await supabaseClient
+    .from("pedidos")
+    .insert([pedido])
+    .select();
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  window.location.href = "comprovante.html?pedido_id=" + data[0].id;
+});
 </script>
 
 </body>
