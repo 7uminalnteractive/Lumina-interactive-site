@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Checkout | Lumina Interactive</title>
 
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="forms.css">
+
 </head>
 
 <body>
-
-<!-- NAVBAR -->
 
 <nav class="navbar">
 
@@ -19,49 +20,22 @@
 LUMINA INTERACTIVE™
 </div>
 
-<div class="nav-right">
+<div class="menu">
 
-<a href="minha-conta.html" class="profile-btn">
-
-<img
-src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
-class="profile-icon"
->
-
-</a>
-
-<button class="menu-toggle" onclick="toggleMenu()">
-
-<span></span>
-<span></span>
-<span></span>
-
-</button>
+<a href="index.html">Início</a>
+<a href="patches.html">Patchs</a>
+<a href="plus.html">Lumina Plus</a>
+<a href="login.html">Login</a>
 
 </div>
 
 </nav>
 
-<!-- MENU -->
-
-<div class="mobile-menu" id="mobileMenu">
-
-<a href="index.html">Início</a>
-<a href="patches.html">Patchs</a>
-<a href="downloads.html">Downloads</a>
-<a href="plus.html">Lumina Plus</a>
-
-</div>
-
-<!-- CONTAINER -->
-
 <main class="container">
 
 <section>
 
-<div class="section-title">
-
-<div>
+<div class="form-card" style="max-width:700px;margin:auto;">
 
 <h2>
 Checkout
@@ -71,180 +45,51 @@ Checkout
 Finalize sua assinatura da Lumina Interactive.
 </p>
 
-</div>
+<form id="checkoutForm">
 
-</div>
+<div class="form-grid">
 
-<!-- GRID -->
+<div>
 
-<div style="
-display:grid;
-grid-template-columns:1fr;
-gap:45px;
-margin-top:25px;
-">
-
-<!-- FORM -->
-
-<form id="checkoutForm" style="
-background:#0d1226;
-border:1px solid rgba(255,255,255,.08);
-border-radius:28px;
-padding:28px;
-
-display:flex;
-flex-direction:column;
-gap:22px;
-">
-
-<h2 style="
-font-size:34px;
-margin-bottom:5px;
-">
-
-Dados do cliente
-
-</h2>
-
-<!-- NOME -->
-
-<div style="
-display:flex;
-flex-direction:column;
-gap:8px;
-">
-
-<label>
-Nome completo
-</label>
+<label>Nome completo</label>
 
 <input
 type="text"
 id="nome"
 required
-
-style="
-height:58px;
-
-border-radius:16px;
-
-background:#070b1c;
-
-color:white;
-
-border:1px solid rgba(255,255,255,.08);
-
-padding:0 18px;
-
-font-size:17px;
-"
 >
 
 </div>
 
-<!-- EMAIL -->
+<div>
 
-<div style="
-display:flex;
-flex-direction:column;
-gap:8px;
-">
-
-<label>
-E-mail
-</label>
+<label>E-mail</label>
 
 <input
 type="email"
 id="email"
 required
-
-style="
-height:58px;
-
-border-radius:16px;
-
-background:#070b1c;
-
-color:white;
-
-border:1px solid rgba(255,255,255,.08);
-
-padding:0 18px;
-
-font-size:17px;
-"
 >
 
 </div>
 
-<!-- WHATSAPP -->
+<div>
 
-<div style="
-display:flex;
-flex-direction:column;
-gap:8px;
-">
-
-<label>
-WhatsApp
-</label>
+<label>WhatsApp</label>
 
 <input
 type="text"
 id="whatsapp"
 required
-
-style="
-height:58px;
-
-border-radius:16px;
-
-background:#070b1c;
-
-color:white;
-
-border:1px solid rgba(255,255,255,.08);
-
-padding:0 18px;
-
-font-size:17px;
-"
 >
 
 </div>
 
-<!-- PRODUTO -->
+<div>
 
-<div style="
-display:flex;
-flex-direction:column;
-gap:8px;
-">
+<label>Produto</label>
 
-<label>
-Produto
-</label>
-
-<select
-id="produto"
-
-style="
-height:58px;
-
-border-radius:16px;
-
-background:#070b1c;
-
-color:white;
-
-border:1px solid rgba(255,255,255,.08);
-
-padding:0 18px;
-
-font-size:17px;
-"
->
+<select id="produto">
 
 <option value="Lumina Plus">
 Lumina Plus
@@ -258,45 +103,15 @@ LPFL PRO
 Brazukas Patch
 </option>
 
-<option value="LPFL Normal">
-LPFL Normal
-</option>
-
 </select>
 
 </div>
 
-<!-- PAGAMENTO -->
+<div class="form-full">
 
-<div style="
-display:flex;
-flex-direction:column;
-gap:8px;
-">
+<label>Método de pagamento</label>
 
-<label>
-Método de pagamento
-</label>
-
-<select
-id="metodo"
-
-style="
-height:58px;
-
-border-radius:16px;
-
-background:#070b1c;
-
-color:white;
-
-border:1px solid rgba(255,255,255,.08);
-
-padding:0 18px;
-
-font-size:17px;
-"
->
+<select id="metodo">
 
 <option value="PIX">
 PIX
@@ -310,17 +125,12 @@ PicPay
 
 </div>
 
-<!-- BOTÃO -->
+</div>
 
 <button
 class="btn primary"
 type="submit"
-
-style="
-width:100%;
-height:60px;
-margin-top:5px;
-"
+style="width:100%;margin-top:12px;"
 >
 
 Continuar para pagamento
@@ -329,70 +139,11 @@ Continuar para pagamento
 
 </form>
 
-<!-- RESUMO -->
-
-<div class="summary-card">
-
-<span class="badge">
-RESUMO
-</span>
-
-<h2 style="
-font-size:48px;
-margin-top:15px;
-">
-
-Lumina Plus
-
-</h2>
-
-<p class="desc">
-
-Acesso premium da Lumina Interactive.
-
-</p>
-
-<div class="price">
-R$ 9,90
-</div>
-
-<p style="
-color:var(--muted);
-line-height:1.7;
-">
-
-Após confirmar,
-você será levado para o pagamento Pix.
-
-</p>
-
-</div>
-
 </div>
 
 </section>
 
 </main>
-
-<!-- SCRIPT MENU -->
-
-<script>
-
-function toggleMenu(){
-
-document
-.getElementById(
-"mobileMenu"
-)
-.classList.toggle(
-"active"
-);
-
-}
-
-</script>
-
-<!-- SUPABASE -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
@@ -411,9 +162,7 @@ SUPABASE_KEY
 );
 
 document
-.getElementById(
-"checkoutForm"
-)
+.getElementById("checkoutForm")
 .addEventListener(
 "submit",
 async (e)=>{
@@ -423,29 +172,19 @@ e.preventDefault();
 const pedido = {
 
 nome_cliente:
-document.getElementById(
-"nome"
-).value,
+document.getElementById("nome").value,
 
 email:
-document.getElementById(
-"email"
-).value,
+document.getElementById("email").value,
 
 whatsapp:
-document.getElementById(
-"whatsapp"
-).value,
+document.getElementById("whatsapp").value,
 
 produto:
-document.getElementById(
-"produto"
-).value,
+document.getElementById("produto").value,
 
 metodo_pagamento:
-document.getElementById(
-"metodo"
-).value,
+document.getElementById("metodo").value,
 
 status:
 "aguardando_pagamento",
@@ -470,8 +209,8 @@ return;
 }
 
 window.location.href =
-"comprovante.html?pedido_id="
-+ data[0].id;
+"comprovante.html?pedido_id=" +
+data[0].id;
 
 }
 );
