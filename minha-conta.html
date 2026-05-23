@@ -166,6 +166,27 @@ data.forEach((a)=>{
 const ativo =
 a.acesso_liberado === true;
 
+const dataFormatada =
+a.data_fim
+
+?
+
+new Date(a.data_fim)
+.toLocaleString(
+"pt-BR",
+{
+day:"2-digit",
+month:"long",
+year:"numeric",
+hour:"2-digit",
+minute:"2-digit"
+}
+)
+
+:
+
+"Não definido";
+
 area.innerHTML += `
 
 <div class="card">
@@ -185,7 +206,7 @@ ${a.status || "pendente"}
 
 <p>
 <strong>Válido até:</strong>
-${a.data_fim || "Não definido"}
+${dataFormatada}
 </p>
 
 ${
