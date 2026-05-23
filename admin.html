@@ -1,150 +1,65 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Lumina Admin</title>
-
 <link rel="stylesheet" href="style.css">
-
 </head>
 
 <body>
 
 <nav class="navbar">
-
-<div class="logo">
-LUMINA ADMIN
-</div>
-
-<div class="menu">
-
-<a href="index.html">
-Site
-</a>
-
-<a href="minha-conta.html">
-Minha conta
-</a>
-
-</div>
-
+  <div class="logo">LUMINA ADMIN</div>
+  <div class="menu">
+    <a href="index.html">Site</a>
+    <a href="minha-conta.html">Minha conta</a>
+  </div>
 </nav>
 
 <main class="container">
-
 <section>
 
-<h1>
-Painel administrativo
-</h1>
+<h1>Painel administrativo</h1>
 
 <div class="cards">
+  <div class="card">
+    <h3>Total de pedidos</h3>
+    <div class="price" id="totalPedidos">0</div>
+  </div>
 
-<div class="card">
+  <div class="card">
+    <h3>Assinaturas ativas</h3>
+    <div class="price" id="totalAtivos">0</div>
+  </div>
 
-<h3>
-Total de pedidos
-</h3>
-
-<div
-class="price"
-id="totalPedidos"
->
-
-0
-
+  <div class="card">
+    <h3>Pendentes</h3>
+    <div class="price" id="totalPendentes">0</div>
+  </div>
 </div>
 
-</div>
+<div class="form-card" style="margin-top:30px;">
+  <h2>Filtrar pedidos</h2>
 
-<div class="card">
-
-<h3>
-Assinaturas ativas
-</h3>
-
-<div
-class="price"
-id="totalAtivos"
->
-
-0
-
-</div>
-
-</div>
-
-<div class="card">
-
-<h3>
-Pendentes
-</h3>
-
-<div
-class="price"
-id="totalPendentes"
->
-
-0
-
-</div>
-
-</div>
-
-</div>
-
-<div
-class="form-card"
-style="margin-top:30px;"
->
-
-<h2>
-Filtrar pedidos
-</h2>
-
-<select
-id="filtroStatus"
-onchange="carregarPedidos()"
->
-
-<option value="todos">
-Todos
-</option>
-
-<option value="pendente">
-Pendentes
-</option>
-
-<option value="ativa">
-Ativos
-</option>
-
-<option value="recusada">
-Recusados
-</option>
-
-<option value="cancelada">
-Cancelados
-</option>
-
-</select>
-
+  <select id="filtroStatus" onchange="carregarPedidos()">
+    <option value="todos">Todos</option>
+    <option value="pendente">Pendentes</option>
+    <option value="ativa">Ativos</option>
+    <option value="recusada">Recusados</option>
+    <option value="cancelada">Cancelados</option>
+    <option value="aguardando_pagamento">Aguardando pagamento</option>
+  </select>
 </div>
 
 <div id="pedidosArea"></div>
 
 </section>
-
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <script>
-
 const SUPABASE_URL =
 "https://tqsalhscgkepttbczyjq.supabase.co";
 
@@ -153,466 +68,402 @@ const SUPABASE_KEY =
 
 const supabaseClient =
 supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
+  SUPABASE_URL,
+  SUPABASE_KEY
 );
+
+function formatarData(data){
+  if(!data) return "Não definido";
+
+  return new Date(data).toLocaleString(
+    "pt-BR",
+    {
+      day:"2-digit",
+      month:"long",
+      year:"numeric",
+      hour:"2-digit",
+      minute:"2-digit"
+    }
+  );
+}
 
 async function carregarPedidos(){
 
-const area =
-document.getElementById(
-"pedidosArea"
-);
+  const area =
+  document.getElementById("pedidosArea");
 
-const filtro =
-document.getElementById(
-"filtroStatus"
-).value;
+  const filtro =
+  document.getElementById("filtroStatus").value;
 
-let query =
-supabaseClient
-.from("pedidos")
-.select("*")
-.order("id",{ascending:false});
+  let query =
+  supabaseClient
+  .from("pedidos")
+  .select("*")
+  .order("id",{ascending:false});
 
-if(filtro !== "todos"){
+  if(filtro !== "todos"){
+    query = query.eq("status",filtro);
+  }
 
-query =
-query.eq("status",filtro);
+  const { data, error } = await query;
 
-}
+  if(error){
+    area.innerHTML = `
+      <div class="card">
+        Erro ao carregar pedidos.
+      </div>
+    `;
+    console.log(error);
+    return;
+  }
 
-const {
-data,
-error
-}
-=
-await query;
+  atualizarResumo();
 
-if(error){
+  if(data.length === 0){
+    area.innerHTML = `
+      <div class="card">
+        Nenhum pedido encontrado.
+      </div>
+    `;
+    return;
+  }
 
-area.innerHTML =
-"Erro ao carregar pedidos.";
+  area.innerHTML = "";
 
-console.log(error);
+  data.forEach((p)=>{
 
-return;
+    area.innerHTML += `
 
-}
+      <div class="card">
 
-atualizarResumo();
+        <span class="badge">
+          ${p.status || "pendente"}
+        </span>
 
-if(data.length === 0){
+        <h3>
+          ${p.produto || "Produto"}
+        </h3>
 
-area.innerHTML = `
+        <p>
+          <strong>Cliente:</strong>
+          ${p.nome_cliente || ""}
+        </p>
 
-<div class="card">
-Nenhum pedido encontrado.
-</div>
+        <p>
+          <strong>Email:</strong>
+          ${p.email || ""}
+        </p>
 
-`;
+        <p>
+          <strong>WhatsApp:</strong>
+          ${p.whatsapp || ""}
+        </p>
 
-return;
+        <p>
+          <strong>Valor:</strong>
+          R$ ${Number(p.valor || 0).toFixed(2)}
+        </p>
 
-}
+        <p>
+          <strong>Pagamento:</strong>
+          ${p.metodo_pagamento || "Manual"}
+        </p>
 
-area.innerHTML = "";
+        <p>
+          <strong>Acesso liberado:</strong>
+          ${p.acesso_liberado ? "Sim" : "Não"}
+        </p>
 
-data.forEach((p)=>{
+        <p>
+          <strong>Data do pagamento:</strong>
+          ${formatarData(p.data_pagamento)}
+        </p>
 
-area.innerHTML += `
+        <p>
+          <strong>Válido até:</strong>
+          ${formatarData(p.data_fim)}
+        </p>
 
-<div class="card">
+        <p>
+          <strong>Comprovante:</strong>
+        </p>
 
-<span class="badge">
-${p.status || "pendente"}
-</span>
+        ${
+          p.comprovante_url
+          ?
+          `
+          <a
+          href="${p.comprovante_url}"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn secondary"
+          style="margin-bottom:15px;"
+          >
+            Ver comprovante
+          </a>
+          `
+          :
+          `
+          <p style="color:#f59e0b;">
+            Comprovante não enviado.
+          </p>
+          `
+        }
 
-<h3>
-${p.produto || "Produto"}
-</h3>
+        <p>
+          <strong>Download liberado:</strong>
+          ${p.download_url ? "Sim" : "Não"}
+        </p>
 
-<p>
-<strong>Cliente:</strong>
-${p.nome_cliente || ""}
-</p>
+        <div style="
+          display:grid;
+          grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+          gap:10px;
+          margin-top:15px;
+        ">
 
-<p>
-<strong>Email:</strong>
-${p.email || ""}
-</p>
+          <button
+          class="btn primary"
+          onclick="aprovar(${p.id})"
+          >
+            Aprovar +30 dias
+          </button>
 
-<p>
-<strong>WhatsApp:</strong>
-${p.whatsapp || ""}
-</p>
+          <button
+          class="btn secondary"
+          onclick="renovar(${p.id})"
+          >
+            Renovar +30 dias
+          </button>
 
-<p>
-<strong>Valor:</strong>
-R$ ${Number(p.valor || 0).toFixed(2)}
-</p>
+          <button
+          class="btn secondary"
+          onclick="recusar(${p.id})"
+          >
+            Recusar
+          </button>
 
-<p>
-<strong>Pagamento:</strong>
-${p.metodo_pagamento || "Manual"}
-</p>
+          <button
+          class="btn danger"
+          onclick="cancelar(${p.id})"
+          >
+            Cancelar acesso
+          </button>
 
-<p>
-<strong>Acesso liberado:</strong>
-${p.acesso_liberado ? "Sim" : "Não"}
-</p>
+          <button
+          class="btn danger"
+          onclick="excluirPedido(${p.id})"
+          >
+            Excluir pedido
+          </button>
 
-<p>
-<strong>Data do pagamento:</strong>
-${p.data_pagamento || "Não aprovado"}
-</p>
+        </div>
 
-<p>
-<strong>Válido até:</strong>
-${p.data_fim || "Não definido"}
-</p>
+      </div>
 
-<p>
-<strong>Comprovante:</strong>
-</p>
+    `;
 
-${
-p.comprovante_url
-?
-`
-<a
-href="${p.comprovante_url}"
-target="_blank"
-rel="noopener noreferrer"
-class="btn secondary"
-style="margin-bottom:15px;"
->
-
-Ver comprovante
-
-</a>
-`
-:
-`
-<p style="color:#f59e0b;">
-Comprovante não enviado.
-</p>
-`
-}
-
-<label>
-Link do download
-</label>
-
-<input
-type="text"
-id="download-${p.id}"
-placeholder="Cole o link do download"
-value="${p.download_url || ""}"
->
-
-<div style="
-display:grid;
-grid-template-columns:
-repeat(auto-fit,minmax(180px,1fr));
-gap:10px;
-margin-top:15px;
-">
-
-<button
-class="btn primary"
-onclick="aprovar(${p.id})"
->
-
-Aprovar +30 dias
-
-</button>
-
-<button
-class="btn secondary"
-onclick="renovar(${p.id})"
->
-
-Renovar +30 dias
-
-</button>
-
-<button
-class="btn secondary"
-onclick="recusar(${p.id})"
->
-
-Recusar
-
-</button>
-
-<button
-class="btn danger"
-onclick="cancelar(${p.id})"
->
-
-Cancelar acesso
-
-</button>
-
-<button
-class="btn danger"
-onclick="excluirPedido(${p.id})"
->
-
-Excluir pedido
-
-</button>
-
-</div>
-
-</div>
-
-`;
-
-});
+  });
 
 }
 
 async function atualizarResumo(){
 
-const {
-data
-}
-=
-await supabaseClient
-.from("pedidos")
-.select("*");
+  const { data, error } =
+  await supabaseClient
+  .from("pedidos")
+  .select("*");
 
-document.getElementById(
-"totalPedidos"
-).innerText =
-data.length;
+  if(error || !data) return;
 
-document.getElementById(
-"totalAtivos"
-).innerText =
-data.filter(
-p =>
-p.status === "ativa"
-).length;
+  document.getElementById("totalPedidos").innerText =
+  data.length;
 
-document.getElementById(
-"totalPendentes"
-).innerText =
-data.filter(
-p =>
-p.status === "pendente"
-).length;
+  document.getElementById("totalAtivos").innerText =
+  data.filter(
+    p => p.status === "ativa" &&
+    p.acesso_liberado === true
+  ).length;
+
+  document.getElementById("totalPendentes").innerText =
+  data.filter(
+    p => p.status === "pendente" ||
+    p.status === "aguardando_pagamento"
+  ).length;
 
 }
 
 async function aprovar(id){
 
-const link =
-document.getElementById(
-`download-${id}`
-).value;
+  const { data:pedido, error:pedidoError } =
+  await supabaseClient
+  .from("pedidos")
+  .select("*")
+  .eq("id",id)
+  .single();
 
-if(!link){
+  if(pedidoError || !pedido){
+    alert("Pedido não encontrado.");
+    return;
+  }
 
-alert(
-"Coloque o link do download."
-);
+  const { data:download, error:downloadError } =
+  await supabaseClient
+  .from("downloads_padrao")
+  .select("*")
+  .eq("produto",pedido.produto)
+  .eq("ativo",true)
+  .single();
 
-return;
+  if(downloadError || !download){
+    alert("Download padrão não encontrado para este produto.");
+    return;
+  }
 
-}
+  const hoje = new Date();
 
-const hoje =
-new Date();
+  const fim = new Date();
+  fim.setDate(fim.getDate() + 30);
 
-const fim =
-new Date();
+  const { error } =
+  await supabaseClient
+  .from("pedidos")
+  .update({
+    status:"ativa",
+    acesso_liberado:true,
+    download_url:download.download_url,
+    data_pagamento:hoje.toISOString(),
+    data_fim:fim.toISOString()
+  })
+  .eq("id",id);
 
-fim.setDate(
-fim.getDate() + 30
-);
+  if(error){
+    alert(error.message);
+    return;
+  }
 
-const {
-error
-}
-=
-await supabaseClient
-.from("pedidos")
-.update({
-
-status:"ativa",
-
-acesso_liberado:true,
-
-download_url:link,
-
-data_pagamento:
-hoje.toISOString(),
-
-data_fim:
-fim.toISOString()
-
-})
-.eq("id",id);
-
-if(error){
-
-alert(error.message);
-return;
-
-}
-
-alert(
-"Assinatura aprovada!"
-);
-
-carregarPedidos();
+  alert("Assinatura aprovada com download automático!");
+  carregarPedidos();
 
 }
 
 async function renovar(id){
 
-const fim =
-new Date();
+  const { data:pedido } =
+  await supabaseClient
+  .from("pedidos")
+  .select("*")
+  .eq("id",id)
+  .single();
 
-fim.setDate(
-fim.getDate() + 30
-);
+  const { data:download } =
+  await supabaseClient
+  .from("downloads_padrao")
+  .select("*")
+  .eq("produto",pedido.produto)
+  .eq("ativo",true)
+  .single();
 
-const {
-error
-}
-=
-await supabaseClient
-.from("pedidos")
-.update({
+  const fim = new Date();
+  fim.setDate(fim.getDate() + 30);
 
-status:"ativa",
+  const { error } =
+  await supabaseClient
+  .from("pedidos")
+  .update({
+    status:"ativa",
+    acesso_liberado:true,
+    download_url:download ? download.download_url : pedido.download_url,
+    data_fim:fim.toISOString()
+  })
+  .eq("id",id);
 
-acesso_liberado:true,
+  if(error){
+    alert(error.message);
+    return;
+  }
 
-data_fim:
-fim.toISOString()
-
-})
-.eq("id",id);
-
-if(error){
-
-alert(error.message);
-return;
-
-}
-
-alert(
-"Assinatura renovada!"
-);
-
-carregarPedidos();
+  alert("Assinatura renovada por +30 dias!");
+  carregarPedidos();
 
 }
 
 async function recusar(id){
 
-const {
-error
-}
-=
-await supabaseClient
-.from("pedidos")
-.update({
+  const confirmar =
+  confirm("Tem certeza que deseja recusar esse pedido?");
 
-status:"recusada",
+  if(!confirmar) return;
 
-acesso_liberado:false
+  const { error } =
+  await supabaseClient
+  .from("pedidos")
+  .update({
+    status:"recusada",
+    acesso_liberado:false
+  })
+  .eq("id",id);
 
-})
-.eq("id",id);
+  if(error){
+    alert(error.message);
+    return;
+  }
 
-if(error){
-
-alert(error.message);
-return;
-
-}
-
-alert(
-"Pedido recusado!"
-);
-
-carregarPedidos();
+  alert("Pedido recusado!");
+  carregarPedidos();
 
 }
 
 async function cancelar(id){
 
-const {
-error
-}
-=
-await supabaseClient
-.from("pedidos")
-.update({
+  const confirmar =
+  confirm("Deseja cancelar o acesso desse cliente?");
 
-status:"cancelada",
+  if(!confirmar) return;
 
-acesso_liberado:false
+  const { error } =
+  await supabaseClient
+  .from("pedidos")
+  .update({
+    status:"cancelada",
+    acesso_liberado:false
+  })
+  .eq("id",id);
 
-})
-.eq("id",id);
+  if(error){
+    alert(error.message);
+    return;
+  }
 
-if(error){
-
-alert(error.message);
-return;
-
-}
-
-alert(
-"Acesso cancelado!"
-);
-
-carregarPedidos();
+  alert("Acesso cancelado!");
+  carregarPedidos();
 
 }
 
 async function excluirPedido(id){
 
-const confirmar =
-confirm(
-"Excluir pedido?"
-);
+  const confirmar =
+  confirm("Tem certeza que deseja excluir esse pedido?");
 
-if(!confirmar) return;
+  if(!confirmar) return;
 
-const {
-error
-}
-=
-await supabaseClient
-.from("pedidos")
-.delete()
-.eq("id",id);
+  const { error } =
+  await supabaseClient
+  .from("pedidos")
+  .delete()
+  .eq("id",id);
 
-if(error){
+  if(error){
+    alert(error.message);
+    return;
+  }
 
-alert(error.message);
-return;
-
-}
-
-alert(
-"Pedido excluído!"
-);
-
-carregarPedidos();
+  alert("Pedido excluído!");
+  carregarPedidos();
 
 }
 
 carregarPedidos();
-
 </script>
 
 </body>
