@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Pagamento | Lumina</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<nav class="navbar"><div class="logo">LUMINA INTERACTIVE™</div><div class="menu"><a href="index.html">Início</a><a href="patches.html">Patchs</a><a href="plus.html">Lumina Plus</a></div></nav>
+
+<main class="container">
+<section>
+<div class="section-title"><div><h2>Finalizar pedido</h2><p>Tela de pagamento visual pronta para integrar com Mercado Pago ou Stripe.</p></div></div>
+
+<div class="checkout-layout">
+<form class="form-card" id="checkout-form">
+<label>Nome</label>
+<input id="nome" required placeholder="Seu nome">
+
+<label>E-mail</label>
+<input id="email" type="email" required placeholder="seuemail@gmail.com">
+
+<label>WhatsApp</label>
+<input id="whatsapp" required placeholder="(75) 99999-9999">
+
+<label>Método de pagamento</label>
+<select id="pagamento">
+<option value="pix">PIX</option>
+<option value="cartao">Cartão</option>
+<option value="whatsapp">Combinar no WhatsApp</option>
+</select>
+
+<div class="pay-method">
+<button type="button">PIX</button>
+<button type="button">Cartão</button>
+</div>
+
+<button class="btn primary" type="submit">Confirmar pedido</button>
+</form>
+
+<div class="summary-card">
+<span class="badge">RESUMO</span>
+<h2 id="checkout-produto">Produto</h2>
+<p id="checkout-desc">Descrição</p>
+<div class="price" id="checkout-preco">R$ 0,00</div>
+<p style="color:var(--muted)">Após confirmar, seu pedido será registrado no Supabase.</p>
+</div>
+</div>
+</section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="app.js"></script>
+</body></html>
