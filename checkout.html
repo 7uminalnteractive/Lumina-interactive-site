@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Checkout | Lumina Interactive</title>
+<title>Checkout • Lumina Interactive</title>
 
 <link rel="stylesheet" href="style.css">
 
@@ -14,64 +14,83 @@
 
 <body>
 
+<!-- NAVBAR -->
+
 <nav class="navbar">
 
 <div class="logo">
 LUMINA INTERACTIVE™
 </div>
 
-<div class="menu">
+<div class="nav-right">
 
-<a href="index.html">
-Início
+<a href="minha-conta.html" class="profile-btn">
+
+<img
+src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
+class="profile-icon"
+>
+
 </a>
 
-<a href="patches.html">
-Patchs
-</a>
+<button class="menu-toggle" onclick="toggleMenu()">
 
-<a href="plus.html">
-Lumina Plus
-</a>
+<span></span>
+<span></span>
+<span></span>
 
-<a href="login.html">
-Login
-</a>
+</button>
 
 </div>
 
 </nav>
 
+<!-- MENU MOBILE -->
+
+<div class="mobile-menu" id="mobileMenu">
+
+<a href="index.html">Início</a>
+<a href="patches.html">Patchs</a>
+<a href="downloads.html">Downloads</a>
+<a href="plus.html">Lumina Plus</a>
+
+</div>
+
+<!-- CONTEÚDO -->
+
 <main class="container">
 
-<section>
+<section class="hero">
 
-<div class="section-title">
-
-<div>
-
-<h2>
-Checkout
-</h2>
-
-<p>
-Finalize sua assinatura da Lumina Interactive.
+<p class="tag">
+CHECKOUT
 </p>
 
-</div>
+<h1 style="font-size:56px">
+Finalize sua assinatura
+</h1>
 
-</div>
+<p class="desc">
 
-<div class="checkout-layout">
+Preencha seus dados abaixo para continuar
+o pagamento da Lumina Interactive.
+
+</p>
+
+</section>
+
+<section class="checkout-box">
+
+<h2 class="section-title">
+Dados do cliente
+</h2>
 
 <form
-class="form-card"
+class="checkout-form"
 id="checkoutForm"
 >
 
-<h2>
-Dados do cliente
-</h2>
+<div>
 
 <label>
 Nome completo
@@ -80,8 +99,13 @@ Nome completo
 <input
 type="text"
 id="nome"
+placeholder="Seu nome"
 required
 >
+
+</div>
+
+<div>
 
 <label>
 E-mail
@@ -90,8 +114,13 @@ E-mail
 <input
 type="email"
 id="email"
+placeholder="Seu e-mail"
 required
 >
+
+</div>
+
+<div>
 
 <label>
 WhatsApp
@@ -100,8 +129,13 @@ WhatsApp
 <input
 type="text"
 id="whatsapp"
+placeholder="(75) 99999-9999"
 required
 >
+
+</div>
+
+<div>
 
 <label>
 Produto
@@ -121,7 +155,15 @@ LPFL PRO
 Brazukas Patch
 </option>
 
+<option value="LPFL Normal">
+LPFL Normal
+</option>
+
 </select>
+
+</div>
+
+<div>
 
 <label>
 Método de pagamento
@@ -133,15 +175,18 @@ Método de pagamento
 PIX
 </option>
 
-<option value="PicPay">
-PicPay
+<option value="PIC PAY">
+PIC PAY
 </option>
 
 </select>
 
+</div>
+
 <button
 type="submit"
 class="btn primary"
+style="width:100%;margin-top:15px"
 >
 
 Continuar para pagamento
@@ -150,17 +195,21 @@ Continuar para pagamento
 
 </form>
 
-<div class="summary-card">
+</section>
+
+<!-- RESUMO -->
+
+<section class="checkout-resumo">
 
 <span class="badge">
 RESUMO
 </span>
 
-<h2>
+<h2 id="produtoNome">
 Lumina Plus
 </h2>
 
-<p>
+<p class="desc">
 Acesso premium da Lumina Interactive.
 </p>
 
@@ -168,108 +217,69 @@ Acesso premium da Lumina Interactive.
 R$ 9,90
 </div>
 
-<p style="
-margin-top:20px;
-color:var(--muted);
-">
-
-Após continuar, você será levado
-para a tela de pagamento Pix.
-
-</p>
-
-</div>
-
-</div>
-
 </section>
 
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<!-- SCRIPT MENU -->
 
 <script>
 
-const SUPABASE_URL =
-"https://tqsalhscgkepttbczyjq.supabase.co";
+function toggleMenu() {
 
-const SUPABASE_KEY =
-"sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK";
-
-const supabaseClient =
-supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
+const menu =
+document.getElementById(
+"mobileMenu"
 );
 
+menu.classList.toggle(
+"active"
+);
+
+}
+
+</script>
+
+<!-- SCRIPT CHECKOUT -->
+
+<script>
+
+const produtoInput =
 document.getElementById(
+"produto"
+);
+
+const produtoNome =
+document.getElementById(
+"produtoNome"
+);
+
+produtoInput.addEventListener(
+"change",
+() => {
+
+produtoNome.innerHTML =
+produtoInput.value;
+
+}
+);
+
+document
+.getElementById(
 "checkoutForm"
-).addEventListener(
+)
+.addEventListener(
 "submit",
-async (e)=>{
+function(e){
 
 e.preventDefault();
 
-const pedido = {
-
-nome_cliente:
-document.getElementById(
-"nome"
-).value,
-
-email:
-document.getElementById(
-"email"
-).value,
-
-whatsapp:
-document.getElementById(
-"whatsapp"
-).value,
-
-produto:
-document.getElementById(
-"produto"
-).value,
-
-metodo_pagamento:
-document.getElementById(
-"metodo"
-).value,
-
-status:"aguardando_pagamento",
-
-valor:9.90,
-
-acesso_liberado:false
-
-};
-
-const {
-data,
-error
-}
-=
-await supabaseClient
-.from("pedidos")
-.insert([pedido])
-.select();
-
-if(error){
-
-alert(error.message);
-return;
+alert(
+"Pagamento iniciado!"
+);
 
 }
-
-const pedidoId =
-data[0].id;
-
-window.location.href =
-"comprovante.html?pedido_id=" +
-pedidoId;
-
-});
+);
 
 </script>
 
