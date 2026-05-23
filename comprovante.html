@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Enviar Comprovante | Lumina Interactive</title>
+<title>Comprovante</title>
 
 <link rel="stylesheet" href="style.css">
 
@@ -20,40 +20,22 @@
 LUMINA INTERACTIVE™
 </div>
 
-<div class="menu">
-<a href="index.html">Início</a>
-<a href="patches.html">Patchs</a>
-<a href="plus.html">Lumina Plus</a>
-</div>
-
 </nav>
 
 <main class="container">
 
 <section>
 
-<div class="section-title">
+<div class="checkout-layout">
 
-<div>
+<form
+class="form-card"
+id="formComprovante"
+>
 
 <h2>
 Enviar comprovante
 </h2>
-
-<p>
-Após realizar o pagamento via PIX/PicPay,
-envie o comprovante para liberar seu acesso.
-</p>
-
-</div>
-
-</div>
-
-<div class="checkout-layout">
-
-<!-- FORMULÁRIO -->
-
-<form class="form-card" id="formComprovante">
 
 <label>
 Nome
@@ -91,15 +73,15 @@ Produto
 
 <select id="produto">
 
-<option value="Lumina Plus">
+<option>
 Lumina Plus
 </option>
 
-<option value="LPFL PRO">
+<option>
 LPFL PRO
 </option>
 
-<option value="Brazukas Patch">
+<option>
 Brazukas Patch
 </option>
 
@@ -119,7 +101,6 @@ required
 <button
 class="btn primary"
 type="submit"
-style="width:100%;"
 >
 
 Enviar comprovante
@@ -128,17 +109,7 @@ Enviar comprovante
 
 </form>
 
-<!-- PIX -->
-
-<div>
-
-<div
-class="summary-card"
-style="
-margin-bottom:30px;
-text-align:center;
-"
->
+<div class="summary-card">
 
 <span class="badge">
 PIX / PICPAY
@@ -148,38 +119,25 @@ PIX / PICPAY
 Pagamento via Pix
 </h2>
 
-<p style="
-margin-bottom:25px;
-color:var(--muted);
-">
-
-Escaneie o QR Code
-ou copie o código Pix abaixo.
-
-</p>
-
 <img
 src="1005625839.jpg"
 style="
 width:100%;
 max-width:320px;
-border-radius:24px;
 margin:auto;
 display:block;
+border-radius:24px;
 background:white;
 padding:15px;
 "
 >
 
 <div style="
-margin-top:25px;
-background:#070b1c;
+margin-top:20px;
 padding:18px;
 border-radius:18px;
-border:1px solid rgba(255,255,255,.08);
+background:#070b1c;
 word-break:break-all;
-font-size:14px;
-line-height:1.6;
 ">
 
 <span id="pixCode">
@@ -191,32 +149,14 @@ line-height:1.6;
 </div>
 
 <button
-type="button"
 class="btn primary"
-style="
-margin-top:20px;
-width:100%;
-"
+style="margin-top:15px;"
 onclick="copiarPix()"
 >
 
-Copiar código Pix
+Copiar Pix
 
 </button>
-
-<p style="
-margin-top:18px;
-color:var(--muted);
-font-size:14px;
-">
-
-Após o pagamento,
-envie o comprovante ao lado
-para liberar o download.
-
-</p>
-
-</div>
 
 </div>
 
@@ -245,40 +185,52 @@ SUPABASE_KEY
 function copiarPix(){
 
 const texto =
-document.getElementById("pixCode").innerText;
+document.getElementById(
+"pixCode"
+).innerText;
 
-navigator.clipboard.writeText(texto);
+navigator.clipboard.writeText(
+texto
+);
 
-alert("Código Pix copiado!");
+alert(
+"Pix copiado!"
+);
 
 }
 
 const form =
-document.getElementById("formComprovante");
+document.getElementById(
+"formComprovante"
+);
 
-form.addEventListener("submit", async (e)=>{
+form.addEventListener(
+"submit",
+async (e)=>{
 
 e.preventDefault();
-
-const arquivo =
-document.getElementById("arquivo").files[0];
 
 const comprovante = {
 
 nome_cliente:
-document.getElementById("nome").value,
+document.getElementById(
+"nome"
+).value,
 
 email:
-document.getElementById("email").value,
+document.getElementById(
+"email"
+).value,
 
 whatsapp:
-document.getElementById("whatsapp").value,
+document.getElementById(
+"whatsapp"
+).value,
 
 produto:
-document.getElementById("produto").value,
-
-arquivo_url:
-arquivo?.name || "",
+document.getElementById(
+"produto"
+).value,
 
 status:
 "aguardando"
@@ -287,28 +239,22 @@ status:
 
 const { error } =
 await supabaseClient
-.from("comprovantes")
+.from("pedidos")
 .insert([comprovante]);
 
 if(error){
 
-alert(
-"Erro ao enviar comprovante: "
-+ error.message
-);
-
-console.log(error);
-
+alert(error.message);
 return;
 
 }
 
 alert(
-"Comprovante enviado com sucesso!"
+"Comprovante enviado!"
 );
 
 window.location.href =
-"index.html";
+"minha-conta.html";
 
 });
 
