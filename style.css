@@ -14,7 +14,8 @@ overflow-x:hidden;
 .hero{
 min-height:100vh;
 padding:40px;
-background:radial-gradient(circle at top,#1f4fff 0%,#050816 60%);
+background:
+radial-gradient(circle at top,#1f4fff 0%,#050816 60%);
 }
 
 .navbar{
@@ -33,6 +34,7 @@ letter-spacing:2px;
 .menu{
 display:flex;
 gap:20px;
+flex-wrap:wrap;
 }
 
 .menu a{
@@ -44,6 +46,7 @@ transition:.3s;
 
 .menu a:hover{
 opacity:1;
+color:#6ea8ff;
 }
 
 .hero-content{
@@ -58,7 +61,7 @@ letter-spacing:2px;
 }
 
 .hero h1{
-font-size:70px;
+font-size:68px;
 line-height:1;
 margin-bottom:25px;
 }
@@ -67,6 +70,7 @@ margin-bottom:25px;
 font-size:20px;
 opacity:.8;
 margin-bottom:35px;
+line-height:1.5;
 }
 
 .buttons{
@@ -99,12 +103,14 @@ transform:translateY(-3px);
 }
 
 .patches,
+.plus,
 .sobre,
 .contato{
 padding:90px 40px;
 }
 
 .patches h2,
+.plus h2,
 .sobre h2,
 .contato h2{
 font-size:42px;
@@ -117,7 +123,8 @@ grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
 gap:25px;
 }
 
-.card{
+.card,
+.plus-box{
 background:#0d1226;
 padding:30px;
 border-radius:20px;
@@ -125,29 +132,34 @@ border:1px solid rgba(255,255,255,.08);
 transition:.3s;
 }
 
-.card:hover{
+.card:hover,
+.plus-box:hover{
 transform:translateY(-5px);
 border-color:#2563ff;
 }
 
-.card h3{
+.card h3,
+.plus-box h3{
 font-size:24px;
 margin-bottom:15px;
 }
 
-.card p{
+.card p,
+.plus-box p{
 opacity:.8;
-line-height:1.5;
+line-height:1.6;
 }
 
-.features{
+.features,
+.plus-features{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
 gap:20px;
+margin-top:25px;
 }
 
 .feature{
-background:#0d1226;
+background:#111935;
 padding:25px;
 border-radius:18px;
 font-size:18px;
