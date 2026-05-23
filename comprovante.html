@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Enviar Comprovante | Lumina Interactive</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<nav class="navbar">
+
+<div class="logo">
+LUMINA INTERACTIVE™
+</div>
+
+<div class="menu">
+<a href="index.html">Início</a>
+<a href="patches.html">Patchs</a>
+<a href="plus.html">Lumina Plus</a>
+</div>
+
+</nav>
+
+<main class="container">
+
+<section>
+
+<div class="section-title">
+
+<div>
+<h2>Enviar comprovante</h2>
+
+<p>
+Após realizar o pagamento via PIX/PicPay,
+envie o comprovante para liberar seu acesso.
+</p>
+</div>
+
+</div>
+
+<div class="checkout-layout">
+
+<form class="form-card" id="formComprovante">
+
+<label>Nome</label>
+<input type="text" id="nome" required>
+
+<label>E-mail</label>
+<input type="email" id="email" required>
+
+<label>WhatsApp</label>
+<input type="text" id="whatsapp" required>
+
+<label>Produto</label>
+<select id="produto">
+
+<option value="Lumina Plus">
+Lumina Plus
+</option>
+
+<option value="LPFL PRO">
+LPFL PRO
+</option>
+
+<option value="Brazukas Patch">
+Brazukas Patch
+</option>
+
+</select>
+
+<label>Link do comprovante</label>
+
+<input
+type="text"
+id="arquivo"
+placeholder="Cole aqui o link da imagem do comprovante"
+required
+>
+
+<button class="btn primary" type="submit">
+Enviar comprovante
+</button>
+
+</form>
+
+<div class="summary-card">
+
+<span class="badge">
+PIX / PICPAY
+</span>
+
+<h2>
+Pagamento manual
+</h2>
+
+<p>
+Após análise do comprovante,
+o download será liberado automaticamente.
+</p>
+
+<div class="price">
+Análise rápida
+</div>
+
+<p style="color:var(--muted)">
+Status inicial:
+AGUARDANDO ANÁLISE
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+<script>
+
+const SUPABASE_URL =
+"https://tqsalhscgkepttbczyjq.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK";
+
+const supabaseClient =
+supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+const form =
+document.getElementById("formComprovante");
+
+form.addEventListener("submit", async (e)=>{
+
+e.preventDefault();
+
+const comprovante = {
+
+nome_cliente:
+document.getElementById("nome").value,
+
+email:
+document.getElementById("email").value,
+
+whatsapp:
+document.getElementById("whatsapp").value,
+
+produto:
+document.getElementById("produto").value,
+
+arquivo_url:
+document.getElementById("arquivo").value,
+
+status:
+"aguardando"
+
+};
+
+const { error } =
+await supabaseClient
+.from("comprovantes")
+.insert([comprovante]);
+
+if(error){
+
+alert(
+"Erro ao enviar comprovante: "
++ error.message
+);
+
+console.log(error);
+
+return;
+
+}
+
+alert(
+"Comprovante enviado com sucesso!"
+);
+
+window.location.href =
+"index.html";
+
+});
+
+</script>
+
+</body>
+</html>
