@@ -10,219 +10,116 @@
 <body>
 
 <nav class="navbar">
-
-<div class="logo">
-LUMINA INTERACTIVE™
-</div>
-
-<div class="nav-right">
-
-<a href="minha-conta.html" class="profile-btn">
-
-<img
-src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
-class="profile-icon"
->
-
-</a>
-
-<button class="menu-toggle" onclick="toggleMenu()">
-
-<span></span>
-<span></span>
-<span></span>
-
-</button>
-
-</div>
-
+  <div class="logo">LUMINA INTERACTIVE™</div>
+  <div class="menu">
+    <a href="index.html">Início</a>
+    <a href="patches.html">Patchs</a>
+    <a href="plus.html">Lumina Plus</a>
+    <a href="login.html">Login</a>
+  </div>
 </nav>
-
-<div class="mobile-menu" id="mobileMenu">
-
-<a href="index.html">Início</a>
-<a href="patches.html">Patchs</a>
-<a href="downloads.html">Downloads</a>
-<a href="plus.html">Lumina Plus</a>
-
-</div>
 
 <main class="container">
 
 <section>
+  <div class="section-title">
+    <div>
+      <h2>Checkout</h2>
+      <p>Finalize sua assinatura da Lumina Interactive.</p>
+    </div>
+  </div>
 
-<div class="section-title">
+  <div style="display:grid;grid-template-columns:1fr;gap:25px;">
 
-<div>
+    <form id="checkoutForm" style="
+      background:#0d1226;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:28px;
+      padding:28px;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    ">
 
-<h2>Checkout</h2>
+      <h2 style="font-size:34px;margin-bottom:10px;">Dados do cliente</h2>
 
-<p>
-Finalize sua assinatura da Lumina Interactive.
-</p>
+      <label>Nome completo</label>
+      <input type="text" id="nome" required style="height:58px;border-radius:16px;background:#070b1c;color:white;border:1px solid rgba(255,255,255,.08);padding:0 18px;font-size:17px;">
 
-</div>
+      <label>E-mail</label>
+      <input type="email" id="email" required style="height:58px;border-radius:16px;background:#070b1c;color:white;border:1px solid rgba(255,255,255,.08);padding:0 18px;font-size:17px;">
 
-</div>
+      <label>WhatsApp</label>
+      <input type="text" id="whatsapp" required style="height:58px;border-radius:16px;background:#070b1c;color:white;border:1px solid rgba(255,255,255,.08);padding:0 18px;font-size:17px;">
 
-<div class="checkout-layout">
+      <label>Produto</label>
+      <select id="produto" style="height:58px;border-radius:16px;background:#070b1c;color:white;border:1px solid rgba(255,255,255,.08);padding:0 18px;font-size:17px;">
+        <option value="Lumina Plus">Lumina Plus</option>
+        <option value="LPFL PRO">LPFL PRO</option>
+        <option value="Brazukas Patch">Brazukas Patch</option>
+        <option value="LPFL Normal">LPFL Normal</option>
+      </select>
 
-<!-- FORM -->
+      <label>Método de pagamento</label>
+      <select id="metodo" style="height:58px;border-radius:16px;background:#070b1c;color:white;border:1px solid rgba(255,255,255,.08);padding:0 18px;font-size:17px;">
+        <option value="PIX">PIX</option>
+        <option value="PicPay">PicPay</option>
+      </select>
 
-<form id="checkoutForm" class="checkout-clean">
+      <button class="btn primary" type="submit" style="width:100%;height:60px;margin-top:10px;">
+        Confirmar pedido
+      </button>
 
-<h2>
-Dados do cliente
-</h2>
+    </form>
 
-<div class="field">
+    <div class="summary-card">
+      <span class="badge">RESUMO</span>
+      <h2>Lumina Plus</h2>
+      <p class="desc">Acesso premium da Lumina Interactive.</p>
+      <div class="price">R$ 9,90</div>
+      <p style="color:var(--muted);line-height:1.6;">
+        Após confirmar, você será levado para o pagamento Pix.
+      </p>
+    </div>
 
-<label>
-Nome completo
-</label>
-
-<input
-type="text"
-id="nome"
-required
->
-
-</div>
-
-<div class="field">
-
-<label>
-E-mail
-</label>
-
-<input
-type="email"
-id="email"
-required
->
-
-</div>
-
-<div class="field">
-
-<label>
-WhatsApp
-</label>
-
-<input
-type="text"
-id="whatsapp"
-required
->
-
-</div>
-
-<div class="field">
-
-<label>
-Produto
-</label>
-
-<select id="produto">
-
-<option value="Lumina Plus">
-Lumina Plus
-</option>
-
-<option value="LPFL PRO">
-LPFL PRO
-</option>
-
-<option value="Brazukas Patch">
-Brazukas Patch
-</option>
-
-<option value="LPFL Normal">
-LPFL Normal
-</option>
-
-</select>
-
-</div>
-
-<div class="field">
-
-<label>
-Método de pagamento
-</label>
-
-<select id="metodo">
-
-<option value="PIX">
-PIX
-</option>
-
-<option value="PicPay">
-PicPay
-</option>
-
-</select>
-
-</div>
-
-<button class="btn primary" type="submit">
-
-Confirmar pedido
-
-</button>
-
-</form>
-
-<!-- RESUMO -->
-
-<div class="summary-card">
-
-<span class="badge">
-RESUMO
-</span>
-
-<h2 id="resumoProduto">
-Lumina Plus
-</h2>
-
-<p class="desc">
-
-Acesso premium da Lumina Interactive.
-
-</p>
-
-<div class="price">
-R$ 9,90
-</div>
-
-<p style="color:var(--muted);line-height:1.6;">
-
-Após confirmar, seu pedido será registrado no Supabase.
-
-</p>
-
-</div>
-
-</div>
-
+  </div>
 </section>
 
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
 <script>
+const SUPABASE_URL = "https://tqsalhscgkepttbczyjq.supabase.co";
+const SUPABASE_KEY = "sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-function toggleMenu(){
+document.getElementById("checkoutForm").addEventListener("submit", async (e)=>{
+  e.preventDefault();
 
-document
-.getElementById(
-"mobileMenu"
-)
-.classList.toggle(
-"active"
-);
+  const pedido = {
+    nome_cliente: document.getElementById("nome").value,
+    email: document.getElementById("email").value,
+    whatsapp: document.getElementById("whatsapp").value,
+    produto: document.getElementById("produto").value,
+    metodo_pagamento: document.getElementById("metodo").value,
+    status: "aguardando_pagamento",
+    valor: 9.90,
+    acesso_liberado: false
+  };
 
-}
+  const { data, error } = await supabaseClient
+    .from("pedidos")
+    .insert([pedido])
+    .select();
 
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  window.location.href = "comprovante.html?pedido_id=" + data[0].id;
+});
 </script>
 
 </body>
