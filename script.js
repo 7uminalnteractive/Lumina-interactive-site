@@ -1,0 +1,1 @@
+console.log('Lumina Interactive carregada');
