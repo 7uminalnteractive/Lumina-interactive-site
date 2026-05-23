@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Minha Conta</title>
+<title>Minha Conta | Lumina Interactive</title>
 
 <link rel="stylesheet" href="style.css">
 
@@ -24,6 +24,10 @@ LUMINA INTERACTIVE™
 
 <a href="index.html">
 Início
+</a>
+
+<a href="patches.html">
+Patchs
 </a>
 
 <a href="plus.html">
@@ -59,7 +63,7 @@ Sair
 
 </div>
 
-<h2>
+<h2 style="margin-top:40px;">
 Minhas assinaturas
 </h2>
 
@@ -109,7 +113,11 @@ document.getElementById(
 ).innerText =
 user.email;
 
-const { data, error } =
+const {
+data,
+error
+}
+=
 await supabaseClient
 .from("pedidos")
 .select("*")
@@ -123,8 +131,15 @@ document.getElementById(
 
 if(error){
 
-area.innerHTML =
-"Erro ao carregar.";
+area.innerHTML = `
+
+<div class="card">
+Erro ao carregar assinaturas.
+</div>
+
+`;
+
+console.log(error);
 
 return;
 
@@ -155,22 +170,27 @@ area.innerHTML += `
 
 <div class="card">
 
+<span class="badge">
+${a.status || "pendente"}
+</span>
+
 <h3>
-${a.produto}
+${a.produto || "Produto"}
 </h3>
 
 <p>
-Status:
-${a.status}
+<strong>Status:</strong>
+${a.status || "pendente"}
 </p>
 
 <p>
-Válido até:
+<strong>Válido até:</strong>
 ${a.data_fim || "Não definido"}
 </p>
 
 ${
 ativo
+
 ?
 
 `
@@ -184,6 +204,29 @@ target="_blank"
 Baixar agora
 
 </a>
+
+`
+
+:
+
+a.comprovante_url
+
+?
+
+`
+
+<button
+class="btn secondary"
+disabled
+style="
+opacity:.7;
+cursor:not-allowed;
+"
+>
+
+Em análise
+
+</button>
 
 `
 
