@@ -1,1 +1,1 @@
-console.log('Lumina Interactive carregada');
+console.log('Lumina Interactive carregada com sucesso');
