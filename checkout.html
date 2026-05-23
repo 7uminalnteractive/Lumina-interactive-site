@@ -3,211 +3,134 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Checkout | Lumina Interactive™</title>
+<title>Checkout | Lumina Interactive</title>
 <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <nav class="navbar">
-<div class="logo">LUMINA INTERACTIVE™</div>
+  <div class="logo">LUMINA INTERACTIVE™</div>
 
-<div class="nav-right">
-<a href="minha-conta.html" class="profile-btn">
-<img
-src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
-class="profile-icon"
-alt="Perfil"
->
-</a>
+  <div class="nav-right">
+    <a href="minha-conta.html" class="profile-btn">
+      <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" class="profile-icon">
+    </a>
 
-<button class="menu-toggle" onclick="toggleMenu()" aria-label="Abrir menu">
-<span></span>
-<span></span>
-<span></span>
-</button>
-</div>
+    <button class="menu-toggle" onclick="toggleMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
 </nav>
 
 <div class="mobile-menu" id="mobileMenu">
-<a href="index.html">Início</a>
-<a href="patches.html">Patchs</a>
-<a href="downloads.html">Downloads</a>
-<a href="plus.html">Lumina Plus</a>
-<a href="lpfl-pro.html">Comprar</a>
+  <a href="index.html">Início</a>
+  <a href="patches.html">Patchs</a>
+  <a href="downloads.html">Downloads</a>
+  <a href="plus.html">Lumina Plus</a>
+  <a href="lpfl-pro.html">Comprar</a>
 </div>
 
 <main class="container">
 
 <section>
-<div class="section-title">
-<div>
-<h2>Checkout</h2>
-<p>Finalize sua assinatura da Lumina Interactive.</p>
-</div>
-</div>
+  <div class="section-title">
+    <div>
+      <h2>Checkout</h2>
+      <p>Finalize sua assinatura da Lumina Interactive.</p>
+    </div>
+  </div>
 
-<div class="checkout-layout">
+  <div class="checkout-layout">
 
-<form class="form-card" id="checkoutForm">
+    <form class="form-card" id="checkoutForm">
 
-<h2 style="font-size:34px;margin-bottom:22px;">
-Dados do cliente
-</h2>
+      <h2>Dados do cliente</h2>
 
-<label>Nome completo</label>
-<input type="text" id="nome" required placeholder="Seu nome completo">
+      <label>Nome completo</label>
+      <input type="text" id="nome" required>
 
-<label>E-mail</label>
-<input type="email" id="email" required placeholder="seuemail@gmail.com">
+      <label>E-mail</label>
+      <input type="email" id="email" required>
 
-<label>WhatsApp</label>
-<input type="text" id="whatsapp" required placeholder="(75) 99999-9999">
+      <label>WhatsApp</label>
+      <input type="text" id="whatsapp" required>
 
-<label>Produto</label>
-<select id="produto">
-<option value="Lumina Plus">Lumina Plus</option>
-<option value="LPFL PRO">LPFL PRO</option>
-<option value="Brazukas Patch">Brazukas Patch</option>
-<option value="LPFL Normal">LPFL Normal</option>
-</select>
+      <label>Produto</label>
+      <select id="produto">
+        <option value="Lumina Plus">Lumina Plus</option>
+        <option value="LPFL PRO">LPFL PRO</option>
+        <option value="Brazukas Patch">Brazukas Patch</option>
+        <option value="LPFL Normal">LPFL Normal</option>
+      </select>
 
-<label>Método de pagamento</label>
-<select id="metodo">
-<option value="PIX">PIX</option>
-<option value="PicPay">PicPay</option>
-</select>
+      <label>Método de pagamento</label>
+      <select id="metodo">
+        <option value="PIX">PIX</option>
+        <option value="PicPay">PicPay</option>
+      </select>
 
-<button class="btn primary" type="submit" style="width:100%;margin-top:10px;">
-Continuar para pagamento
-</button>
+      <div class="pay-method">
+        <button type="button">PIX</button>
+        <button type="button">Cartão</button>
+      </div>
 
-</form>
+      <button class="btn primary" type="submit" style="width:100%;">
+        Confirmar pedido
+      </button>
 
-<div class="summary-card">
+    </form>
 
-<span class="badge">
-RESUMO
-</span>
+    <div class="summary-card">
 
-<h2 id="resumoProduto" style="font-size:42px;margin-top:10px;">
-Lumina Plus
-</h2>
+      <span class="badge">RESUMO</span>
 
-<p class="desc" id="resumoDescricao" style="font-size:17px;margin-bottom:10px;">
-Acesso premium da Lumina Interactive.
-</p>
+      <h2 id="resumoProduto">Lumina Plus</h2>
 
-<div class="price" id="resumoPreco">
-R$ 9,90
-</div>
+      <p class="desc" id="resumoDescricao" style="font-size:17px;">
+        Acesso premium da Lumina Interactive.
+      </p>
 
-<p style="color:var(--muted);line-height:1.6;">
-Após continuar, seu pedido será registrado e você será levado para a tela do Pix e envio do comprovante.
-</p>
+      <div class="price" id="resumoPreco">
+        R$ 9,90
+      </div>
 
-</div>
+      <p style="color:var(--muted);line-height:1.6;">
+        Após confirmar, seu pedido será registrado no Supabase.
+      </p>
 
-</div>
+    </div>
+
+  </div>
 </section>
 
 </main>
-
-<footer class="footer">
-<div>Lumina Interactive™</div>
-<div>Levando o futebol portátil a outro nível.</div>
-</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <script>
 function toggleMenu(){
-  const menu = document.getElementById("mobileMenu");
-  menu.classList.toggle("active");
+  document.getElementById("mobileMenu").classList.toggle("active");
 }
 
 const SUPABASE_URL = "https://tqsalhscgkepttbczyjq.supabase.co";
 const SUPABASE_KEY = "sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK";
-
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const produtos = {
-  "lumina-plus": {
-    nome:"Lumina Plus",
-    preco:9.90,
-    descricao:"Acesso premium da Lumina Interactive."
-  },
-  "lpfl-pro": {
-    nome:"LPFL PRO",
-    preco:9.90,
-    descricao:"A versão premium da experiência LPFL."
-  },
-  "LPFL PRO": {
-    nome:"LPFL PRO",
-    preco:9.90,
-    descricao:"A versão premium da experiência LPFL."
-  },
-  "brazukas": {
-    nome:"Brazukas Patch",
-    preco:0,
-    descricao:"O patch brasileiro definitivo."
-  },
-  "lpfl-normal": {
-    nome:"LPFL Normal",
-    preco:0,
-    descricao:"Experiência clássica LPFL gratuita."
-  }
-};
-
-function moeda(valor){
-  return Number(valor || 0).toLocaleString("pt-BR", {
-    style:"currency",
-    currency:"BRL"
-  });
-}
-
-function getParam(nome){
-  return new URLSearchParams(window.location.search).get(nome);
-}
-
-const slug = getParam("produto") || "lumina-plus";
-const produtoInicial = produtos[slug] || produtos["lumina-plus"];
-
-document.getElementById("produto").value = produtoInicial.nome;
-document.getElementById("resumoProduto").innerText = produtoInicial.nome;
-document.getElementById("resumoDescricao").innerText = produtoInicial.descricao;
-document.getElementById("resumoPreco").innerText = moeda(produtoInicial.preco);
-
-document.getElementById("produto").addEventListener("change", () => {
-  const nome = document.getElementById("produto").value;
-  const item = Object.values(produtos).find(p => p.nome === nome) || {
-    nome,
-    preco:9.90,
-    descricao:"Produto Lumina Interactive."
-  };
-
-  document.getElementById("resumoProduto").innerText = item.nome;
-  document.getElementById("resumoDescricao").innerText = item.descricao;
-  document.getElementById("resumoPreco").innerText = moeda(item.preco);
-});
-
-document.getElementById("checkoutForm").addEventListener("submit", async (e) => {
+document.getElementById("checkoutForm").addEventListener("submit", async (e)=>{
   e.preventDefault();
-
-  const produtoNome = document.getElementById("produto").value;
-  const item = Object.values(produtos).find(p => p.nome === produtoNome) || {
-    nome:produtoNome,
-    preco:9.90
-  };
 
   const pedido = {
     nome_cliente: document.getElementById("nome").value,
     email: document.getElementById("email").value,
     whatsapp: document.getElementById("whatsapp").value,
-    produto: item.nome,
+    produto: document.getElementById("produto").value,
     metodo_pagamento: document.getElementById("metodo").value,
-    status:"aguardando_pagamento",
-    valor: Number(item.preco || 0),
-    acesso_liberado:false
+    status: "aguardando_pagamento",
+    valor: 9.90,
+    acesso_liberado: false
   };
 
   const { data, error } = await supabaseClient
