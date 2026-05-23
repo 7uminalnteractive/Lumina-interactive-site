@@ -194,6 +194,8 @@ if(error){
 area.innerHTML =
 "Erro ao carregar pedidos.";
 
+console.log(error);
+
 return;
 
 }
@@ -246,6 +248,26 @@ ${p.whatsapp || ""}
 </p>
 
 <p>
+<strong>Valor:</strong>
+R$ ${Number(p.valor || 0).toFixed(2)}
+</p>
+
+<p>
+<strong>Pagamento:</strong>
+${p.metodo_pagamento || "Manual"}
+</p>
+
+<p>
+<strong>Acesso liberado:</strong>
+${p.acesso_liberado ? "Sim" : "Não"}
+</p>
+
+<p>
+<strong>Data do pagamento:</strong>
+${p.data_pagamento || "Não aprovado"}
+</p>
+
+<p>
 <strong>Válido até:</strong>
 ${p.data_fim || "Não definido"}
 </p>
@@ -254,9 +276,14 @@ ${p.data_fim || "Não definido"}
 <strong>Comprovante:</strong>
 </p>
 
+${
+p.comprovante_url
+?
+`
 <a
-href="${p.comprovante_url || '#'}"
+href="${p.comprovante_url}"
 target="_blank"
+rel="noopener noreferrer"
 class="btn secondary"
 style="margin-bottom:15px;"
 >
@@ -264,6 +291,14 @@ style="margin-bottom:15px;"
 Ver comprovante
 
 </a>
+`
+:
+`
+<p style="color:#f59e0b;">
+Comprovante não enviado.
+</p>
+`
+}
 
 <label>
 Link do download
