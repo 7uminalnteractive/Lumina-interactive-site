@@ -1,230 +1,81 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Login | Lumina Interactive</title>
-
 <link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="forms.css">
-
+<style>
+.lumina-form-page{padding:70px 0}
+.lumina-form-card{width:100%;max-width:520px;margin:0 auto;background:#0d1226;border:1px solid rgba(255,255,255,.08);border-radius:28px;padding:28px;box-shadow:0 0 40px rgba(0,0,0,.25)}
+.lumina-form-card h2{font-size:42px;color:white;margin-bottom:12px}
+.lumina-form-card p{color:#aeb8d6;line-height:1.6;margin-bottom:28px}
+.lumina-form{display:flex;flex-direction:column;gap:18px}
+.lumina-field{display:flex;flex-direction:column;gap:8px}
+.lumina-field label{color:#dbe3ff;font-size:15px;font-weight:800}
+.lumina-field input{width:100%;height:58px;border-radius:16px;border:1px solid rgba(255,255,255,.08);background:#070b1c;color:white;padding:0 18px;font-size:17px;outline:none}
+.lumina-action{width:100%;height:60px;border-radius:18px;font-size:18px;font-weight:900;cursor:pointer}
+.lumina-primary{border:0;background:#2f63ff;color:white;box-shadow:0 0 30px rgba(47,99,255,.35)}
+.lumina-secondary{background:transparent;color:white;border:1px solid rgba(255,255,255,.12)}
+</style>
 </head>
-
 <body>
 
 <nav class="navbar">
-
-<div class="logo">
-LUMINA INTERACTIVE™
-</div>
-
-<div class="menu">
-
-<a href="index.html">Início</a>
-<a href="patches.html">Patchs</a>
-<a href="plus.html">Lumina Plus</a>
-<a href="minha-conta.html">Minha conta</a>
-
-</div>
-
+  <div class="logo">LUMINA INTERACTIVE™</div>
+  <div class="menu">
+    <a href="index.html">Início</a>
+    <a href="patches.html">Patchs</a>
+    <a href="plus.html">Lumina Plus</a>
+    <a href="minha-conta.html">Minha conta</a>
+  </div>
 </nav>
 
 <main class="container">
+<section class="lumina-form-page">
+<div class="lumina-form-card">
+<h2>Entrar na Lumina</h2>
+<p>Entre na sua conta para acessar suas assinaturas e downloads.</p>
 
-<section>
-
-<div class="form-card" style="max-width:520px;margin:auto;">
-
-<h2>
-Entrar na Lumina
-</h2>
-
-<p>
-Entre na sua conta para acessar suas assinaturas e downloads.
-</p>
-
-<form id="loginForm">
-
-<div>
-
-<label>E-mail</label>
-
-<input
-type="email"
-id="email"
-placeholder="seuemail@gmail.com"
-required
->
-
-</div>
-
-<div>
-
-<label>Senha</label>
-
-<input
-type="password"
-id="senha"
-placeholder="Sua senha"
-required
->
-
-</div>
-
-<button class="btn primary" type="submit">
-Entrar
-</button>
-
-<button
-class="btn secondary"
-type="button"
-onclick="registrar()"
->
-Registrar conta
-</button>
-
-<button
-class="btn primary"
-type="button"
-onclick="loginGoogle()"
->
-Entrar com Google
-</button>
-
+<form id="loginForm" class="lumina-form">
+<div class="lumina-field"><label>E-mail</label><input type="email" id="email" placeholder="seuemail@gmail.com" required></div>
+<div class="lumina-field"><label>Senha</label><input type="password" id="senha" placeholder="Sua senha" required></div>
+<button class="lumina-action lumina-primary" type="submit">Entrar</button>
+<button class="lumina-action lumina-secondary" type="button" onclick="registrar()">Registrar conta</button>
+<button class="lumina-action lumina-primary" type="button" onclick="loginGoogle()">Entrar com Google</button>
 </form>
-
 </div>
-
 </section>
-
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-
 <script>
+const SUPABASE_URL="https://tqsalhscgkepttbczyjq.supabase.co";
+const SUPABASE_KEY="sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK";
+const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-const SUPABASE_URL =
-"https://tqsalhscgkepttbczyjq.supabase.co";
-
-const SUPABASE_KEY =
-"sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK";
-
-const supabaseClient =
-supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
-);
-
-document
-.getElementById("loginForm")
-.addEventListener(
-"submit",
-async (e)=>{
-
+document.getElementById("loginForm").addEventListener("submit",async(e)=>{
 e.preventDefault();
-
-const email =
-document.getElementById("email").value;
-
-const senha =
-document.getElementById("senha").value;
-
-const { error } =
-await supabaseClient.auth.signInWithPassword({
-
-email:email,
-password:senha
-
+const email=document.getElementById("email").value;
+const senha=document.getElementById("senha").value;
+const {error}=await supabaseClient.auth.signInWithPassword({email,password:senha});
+if(error){alert(error.message);return;}
+window.location.href="minha-conta.html";
 });
-
-if(error){
-
-alert(error.message);
-return;
-
-}
-
-window.location.href =
-"minha-conta.html";
-
-}
-);
 
 async function registrar(){
-
-const email =
-document.getElementById("email").value;
-
-const senha =
-document.getElementById("senha").value;
-
-if(!email || !senha){
-
-alert(
-"Digite e-mail e senha."
-);
-
-return;
-
-}
-
-const { error } =
-await supabaseClient.auth.signUp({
-
-email:email,
-password:senha,
-
-options:{
-
-emailRedirectTo:
-window.location.origin +
-"/minha-conta.html"
-
-}
-
-});
-
-if(error){
-
-alert(error.message);
-return;
-
-}
-
-alert(
-"Conta criada com sucesso!"
-);
-
+const email=document.getElementById("email").value;
+const senha=document.getElementById("senha").value;
+if(!email||!senha){alert("Digite e-mail e senha.");return;}
+const {error}=await supabaseClient.auth.signUp({email,password:senha,options:{emailRedirectTo:window.location.origin+"/minha-conta.html"}});
+if(error){alert(error.message);return;}
+alert("Conta criada com sucesso!");
 }
 
 async function loginGoogle(){
-
-const { error } =
-await supabaseClient.auth.signInWithOAuth({
-
-provider:"google",
-
-options:{
-
-redirectTo:
-window.location.origin +
-"/minha-conta.html"
-
+const {error}=await supabaseClient.auth.signInWithOAuth({provider:"google",options:{redirectTo:window.location.origin+"/minha-conta.html"}});
+if(error){alert(error.message);}
 }
-
-});
-
-if(error){
-
-alert(error.message);
-
-}
-
-}
-
 </script>
-
 </body>
 </html>
