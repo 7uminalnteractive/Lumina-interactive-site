@@ -1,264 +1,57 @@
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
-
-body{
-font-family:Arial,sans-serif;
-background:#050816;
-color:white;
-overflow-x:hidden;
-}
-
-/* HERO */
-
-.hero{
-min-height:100vh;
-padding:40px 24px;
-background:
-radial-gradient(circle at top,#1f4fff 0%,#050816 60%);
-display:flex;
-flex-direction:column;
-justify-content:center;
-}
-
-.navbar{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:120px;
-flex-wrap:wrap;
-gap:20px;
-}
-
-.logo{
-font-size:20px;
-font-weight:bold;
-letter-spacing:2px;
-}
-
-.menu{
-display:flex;
-gap:20px;
-flex-wrap:wrap;
-}
-
-.menu a{
-color:white;
-text-decoration:none;
-opacity:.8;
-transition:.3s;
-font-size:15px;
-}
-
-.menu a:hover{
-opacity:1;
-color:#6ea8ff;
-}
-
-.hero-content{
-max-width:700px;
-}
-
-.tag{
-color:#6ea8ff;
-margin-bottom:20px;
-font-weight:bold;
-letter-spacing:2px;
-font-size:14px;
-}
-
-.hero h1{
-font-size:68px;
-line-height:1;
-margin-bottom:25px;
-}
-
-.desc{
-font-size:20px;
-opacity:.8;
-margin-bottom:35px;
-line-height:1.6;
-max-width:600px;
-}
-
-.buttons{
-display:flex;
-gap:20px;
-flex-wrap:wrap;
-}
-
-.btn{
-padding:16px 30px;
-border-radius:14px;
-text-decoration:none;
-font-weight:bold;
-transition:.3s;
-display:inline-block;
-}
-
-.primary{
-background:#2563ff;
-color:white;
-box-shadow:0 0 20px rgba(37,99,255,.4);
-}
-
-.secondary{
-border:1px solid #2563ff;
-color:white;
-}
-
-.btn:hover{
-transform:translateY(-4px);
-}
-
-/* SECTIONS */
-
-.patches,
-.plus,
-.sobre,
-.contato{
-padding:120px 24px;
-}
-
-.patches h2,
-.plus h2,
-.sobre h2,
-.contato h2{
-font-size:42px;
-margin-bottom:45px;
-}
-
-/* PATCH CARDS */
-
-.cards{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-gap:25px;
-}
-
-.card{
-background:#0d1226;
-padding:35px 28px;
-border-radius:24px;
-border:1px solid rgba(255,255,255,.08);
-transition:.3s;
-}
-
-.card:hover{
-transform:translateY(-6px);
-border-color:#2563ff;
-box-shadow:0 0 25px rgba(37,99,255,.2);
-}
-
-.card h3{
-font-size:24px;
-margin-bottom:15px;
-}
-
-.card p{
-opacity:.8;
-line-height:1.6;
-}
-
-/* LUMINA PLUS */
-
-.plus-box{
-background:linear-gradient(
-180deg,
-#111935 0%,
-#0b1023 100%
-);
-
-padding:45px 30px;
-border-radius:28px;
-border:1px solid rgba(255,255,255,.08);
-
-display:flex;
-flex-direction:column;
-gap:25px;
-
-box-shadow:
-0 0 40px rgba(37,99,255,.15);
-}
-
-.plus-box h3{
-font-size:30px;
-}
-
-.plus-box p{
-opacity:.85;
-line-height:1.7;
-font-size:18px;
-}
-
-.plus-features{
-display:grid;
-grid-template-columns:1fr;
-gap:14px;
-}
-
-.feature{
-background:#111935;
-padding:18px 22px;
-border-radius:18px;
-font-size:18px;
-border:1px solid rgba(255,255,255,.05);
-}
-
-/* SOBRE */
-
-.features{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:20px;
-}
-
-/* CONTATO */
-
-.contato{
-text-align:center;
-}
-
-.contato p{
-margin-bottom:25px;
-opacity:.8;
-font-size:18px;
-}
-
-/* RESPONSIVO */
-
-@media(max-width:768px){
-
-.hero{
-padding:30px 20px;
-}
-
-.navbar{
-flex-direction:column;
-align-items:flex-start;
-margin-bottom:70px;
-}
-
-.hero h1{
-font-size:42px;
-}
-
-.desc{
-font-size:17px;
-}
-
-.patches h2,
-.plus h2,
-.sobre h2,
-.contato h2{
-font-size:32px;
-}
-
-.btn{
-width:100%;
-text-align:center;
-}
-
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#050816;--panel:#0d1226;--panel2:#111935;--blue:#2563ff;--blue2:#6ea8ff;--text:#ffffff;--muted:#aeb8d6;--green:#22c55e;--red:#ef4444;--orange:#f59e0b}
+html{scroll-behavior:smooth}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;background:radial-gradient(circle at 20% 0%,rgba(37,99,255,.35),transparent 35%),radial-gradient(circle at 90% 20%,rgba(110,168,255,.18),transparent 30%);pointer-events:none;z-index:-1}
+.navbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(18px);background:rgba(5,8,22,.75);border-bottom:1px solid rgba(255,255,255,.08);padding:18px 6%;display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:900;letter-spacing:2px}
+.menu{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.menu a{color:white;text-decoration:none;opacity:.8;font-weight:700;font-size:14px}
+.menu a:hover{opacity:1;color:var(--blue2)}
+.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border:0;border-radius:14px;padding:15px 26px;font-weight:900;cursor:pointer;transition:.25s}
+.btn:hover{transform:translateY(-3px)}
+.primary{background:var(--blue);color:white;box-shadow:0 0 28px rgba(37,99,255,.35)}
+.secondary{border:1px solid rgba(110,168,255,.6);color:white;background:rgba(255,255,255,.04)}
+.success{background:var(--green);color:#001845}
+.danger{background:var(--red);color:white}
+.container{width:90%;max-width:1180px;margin:auto}
+.hero{min-height:92vh;display:grid;align-items:center;padding:70px 0}
+.hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:40px;align-items:center}
+.tag{color:var(--blue2);font-weight:900;letter-spacing:2px;margin-bottom:22px}
+h1{font-size:76px;line-height:.95;margin-bottom:24px;letter-spacing:-3px}
+.desc{font-size:20px;color:var(--muted);line-height:1.65;max-width:660px;margin-bottom:32px}
+.hero-card{background:linear-gradient(180deg,rgba(17,25,53,.94),rgba(13,18,38,.7));border:1px solid rgba(255,255,255,.1);border-radius:34px;padding:30px;box-shadow:0 0 60px rgba(37,99,255,.18)}
+.badge{display:inline-block;padding:8px 12px;border-radius:999px;background:rgba(37,99,255,.18);color:var(--blue2);font-weight:900;margin-bottom:16px}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
+.stat{background:rgba(255,255,255,.05);padding:18px;border-radius:18px}
+.stat strong{font-size:28px;display:block}
+section{padding:95px 0}
+.section-title{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:34px}
+.section-title h2{font-size:44px}
+.section-title p{color:var(--muted);max-width:580px;line-height:1.5}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid rgba(255,255,255,.08);border-radius:28px;padding:28px;transition:.25s}
+.card:hover{transform:translateY(-6px);border-color:var(--blue);box-shadow:0 0 38px rgba(37,99,255,.18)}
+.card h3{font-size:26px;margin-bottom:12px}
+.card p{color:var(--muted);line-height:1.6;margin-bottom:20px}
+.price{font-size:38px;font-weight:900;margin:20px 0}
+.plus-panel{background:linear-gradient(135deg,rgba(37,99,255,.25),rgba(13,18,38,.95));border:1px solid rgba(110,168,255,.35);border-radius:34px;padding:38px;display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center}
+.features{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.feature{background:rgba(255,255,255,.06);padding:18px;border-radius:18px;color:white;font-weight:700}
+.checkout-layout{display:grid;grid-template-columns:1fr .8fr;gap:25px;align-items:start}
+.form-card,.summary-card{background:var(--panel);border:1px solid rgba(255,255,255,.08);border-radius:28px;padding:28px}
+input,select,textarea{width:100%;padding:15px 16px;margin:9px 0 15px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:#070b1c;color:white;font-size:16px}
+label{font-weight:800;color:#d8def5}
+.pay-method{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+.pay-method button{padding:16px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:#111935;color:white;font-weight:900}
+.table{width:100%;border-collapse:collapse;background:var(--panel);border-radius:20px;overflow:hidden}
+.table th,.table td{padding:14px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
+.footer{padding:40px 6%;border-top:1px solid rgba(255,255,255,.08);color:var(--muted);display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.mobile-bottom{display:none}
+@media(max-width:850px){
+.navbar{position:relative;align-items:flex-start;flex-direction:column}.menu{gap:14px}
+.hero-grid,.plus-panel,.checkout-layout{grid-template-columns:1fr}
+h1{font-size:46px}.desc{font-size:17px}.cards{grid-template-columns:1fr}.features{grid-template-columns:1fr}
+.section-title{display:block}.section-title h2{font-size:34px;margin-bottom:12px}
+.hero{padding:45px 0}.container{width:92%}
 }
