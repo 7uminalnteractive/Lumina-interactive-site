@@ -74,7 +74,7 @@ font-size:22px;
 line-height:1.1;
 }
 
-/* NAV NOVA */
+/* NAVBAR NOVA */
 
 .nav-right{
 display:flex;
@@ -120,7 +120,7 @@ background:white;
 border-radius:10px;
 }
 
-/* MOBILE MENU */
+/* MENU MOBILE */
 
 .mobile-menu{
 display:none;
@@ -139,7 +139,6 @@ display:flex;
 
 .mobile-menu a{
 color:white;
-text-decoration:none;
 font-size:18px;
 font-weight:700;
 }
@@ -182,7 +181,7 @@ max-width:660px;
 margin-bottom:32px;
 }
 
-/* BUTTONS */
+/* BOTÕES */
 
 .btn{
 display:inline-flex;
@@ -211,76 +210,6 @@ box-shadow:0 0 28px rgba(37,99,255,.35);
 border:1px solid rgba(110,168,255,.6);
 background:rgba(255,255,255,.04);
 color:white;
-}
-
-/* HERO CARD */
-
-.hero-card{
-background:linear-gradient(
-180deg,
-rgba(17,25,53,.94),
-rgba(13,18,38,.7)
-);
-
-border:1px solid rgba(255,255,255,.1);
-
-border-radius:34px;
-
-padding:30px;
-
-box-shadow:0 0 60px rgba(37,99,255,.18);
-}
-
-.badge{
-display:inline-block;
-padding:8px 12px;
-border-radius:999px;
-background:rgba(37,99,255,.18);
-color:var(--blue2);
-font-weight:900;
-margin-bottom:16px;
-}
-
-.stat-grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:14px;
-margin-top:20px;
-}
-
-.stat{
-background:rgba(255,255,255,.05);
-padding:18px;
-border-radius:18px;
-}
-
-.stat strong{
-font-size:28px;
-display:block;
-}
-
-/* SECTIONS */
-
-section{
-padding:95px 0;
-}
-
-.section-title{
-display:flex;
-justify-content:space-between;
-align-items:end;
-gap:20px;
-margin-bottom:34px;
-}
-
-.section-title h2{
-font-size:44px;
-}
-
-.section-title p{
-color:var(--muted);
-max-width:580px;
-line-height:1.5;
 }
 
 /* CARDS */
@@ -324,41 +253,6 @@ line-height:1.6;
 margin-bottom:20px;
 }
 
-/* PLUS PANEL */
-
-.plus-panel{
-background:linear-gradient(
-135deg,
-rgba(37,99,255,.25),
-rgba(13,18,38,.95)
-);
-
-border:1px solid rgba(110,168,255,.35);
-
-border-radius:34px;
-
-padding:38px;
-
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:28px;
-align-items:center;
-}
-
-.features{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:14px;
-}
-
-.feature{
-background:rgba(255,255,255,.06);
-padding:18px;
-border-radius:18px;
-color:white;
-font-weight:700;
-}
-
 /* CHECKOUT */
 
 .checkout-layout{
@@ -368,57 +262,58 @@ gap:25px;
 align-items:start;
 }
 
-.form-card,
-.summary-card{
-background:var(--panel);
+.checkout-clean{
+background:#0d1226;
 border:1px solid rgba(255,255,255,.08);
 border-radius:28px;
 padding:28px;
+
+display:flex;
+flex-direction:column;
+gap:18px;
 }
 
-.form-card h2{
-font-size:42px;
-margin-bottom:22px;
+.checkout-clean h2{
+font-size:34px;
+margin-bottom:10px;
 }
 
-.form-card label{
-display:block;
-margin-top:8px;
-margin-bottom:6px;
+.checkout-clean .field{
+display:flex;
+flex-direction:column;
+gap:8px;
+}
+
+.checkout-clean label{
+font-size:16px;
 font-weight:800;
 color:#d8def5;
-font-size:17px;
 }
 
-.form-card input,
-.form-card select{
+.checkout-clean input,
+.checkout-clean select{
 width:100%;
-padding:18px;
-margin-bottom:15px;
-border:1px solid rgba(255,255,255,.08);
+height:58px;
+padding:0 18px;
 border-radius:16px;
+border:1px solid rgba(255,255,255,.08);
 background:#070b1c;
 color:white;
 font-size:17px;
 outline:none;
 }
 
-.pay-method{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:16px;
-margin:10px 0 20px;
+.checkout-clean button{
+width:100%;
+height:60px;
+margin-top:10px;
 }
 
-.pay-method button{
-padding:18px;
-border-radius:18px;
+.summary-card{
+background:#0d1226;
 border:1px solid rgba(255,255,255,.08);
-background:#111935;
-color:white;
-font-size:18px;
-font-weight:700;
-cursor:pointer;
+border-radius:28px;
+padding:28px;
 }
 
 .summary-card h2{
@@ -449,7 +344,6 @@ flex-wrap:wrap;
 @media(max-width:850px){
 
 .hero-grid,
-.plus-panel,
 .checkout-layout{
 grid-template-columns:1fr;
 }
@@ -466,19 +360,6 @@ font-size:17px;
 grid-template-columns:1fr;
 }
 
-.features{
-grid-template-columns:1fr;
-}
-
-.section-title{
-display:block;
-}
-
-.section-title h2{
-font-size:34px;
-margin-bottom:12px;
-}
-
 .hero{
 padding:45px 0;
 }
@@ -490,10 +371,6 @@ width:92%;
 .logo{
 font-size:18px;
 max-width:180px;
-}
-
-.form-card h2{
-font-size:34px;
 }
 
 .summary-card h2{
