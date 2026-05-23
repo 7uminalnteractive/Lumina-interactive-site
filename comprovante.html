@@ -106,13 +106,13 @@ Brazukas Patch
 </select>
 
 <label>
-Link do comprovante
+Anexar comprovante
 </label>
 
 <input
-type="text"
+type="file"
 id="arquivo"
-placeholder="Cole aqui o link da imagem do comprovante"
+accept="image/*"
 required
 >
 
@@ -132,7 +132,13 @@ Enviar comprovante
 
 <div>
 
-<div class="summary-card" style="margin-bottom:30px;text-align:center;">
+<div
+class="summary-card"
+style="
+margin-bottom:30px;
+text-align:center;
+"
+>
 
 <span class="badge">
 PIX / PICPAY
@@ -254,6 +260,9 @@ form.addEventListener("submit", async (e)=>{
 
 e.preventDefault();
 
+const arquivo =
+document.getElementById("arquivo").files[0];
+
 const comprovante = {
 
 nome_cliente:
@@ -269,7 +278,7 @@ produto:
 document.getElementById("produto").value,
 
 arquivo_url:
-document.getElementById("arquivo").value,
+arquivo?.name || "",
 
 status:
 "aguardando"
