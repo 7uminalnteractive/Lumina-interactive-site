@@ -1,97 +1,230 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Minha Conta | Lumina Interactive</title>
+
+<title>Minha Conta</title>
+
 <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
 
 <nav class="navbar">
-  <div class="logo">LUMINA INTERACTIVE™</div>
-  <div class="menu">
-    <a href="index.html">Início</a>
-    <a href="patches.html">Patchs</a>
-    <a href="plus.html">Lumina Plus</a>
-  </div>
+
+<div class="logo">
+LUMINA INTERACTIVE™
+</div>
+
+<div class="menu">
+
+<a href="index.html">
+Início
+</a>
+
+<a href="plus.html">
+Lumina Plus
+</a>
+
+</div>
+
 </nav>
 
 <main class="container">
+
 <section>
-  <h1>Minha Conta</h1>
 
-  <div class="summary-card">
-    <p id="userEmail">Carregando...</p>
-    <button class="btn danger" onclick="sair()">Sair</button>
-  </div>
+<h1>
+Minha Conta
+</h1>
 
-  <h2>Minhas assinaturas</h2>
-  <div id="assinaturasArea"></div>
+<div class="summary-card">
+
+<p id="userEmail">
+Carregando...
+</p>
+
+<button
+class="btn danger"
+onclick="sair()"
+>
+
+Sair
+
+</button>
+
+</div>
+
+<h2>
+Minhas assinaturas
+</h2>
+
+<div id="assinaturasArea"></div>
+
 </section>
+
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-<script src="auth.js"></script>
 
 <script>
+
+const SUPABASE_URL =
+"https://tqsalhscgkepttbczyjq.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK";
+
+const supabaseClient =
+supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
 async function carregarConta(){
-  const { data: { user } } = await supabaseClient.auth.getUser();
 
-  if(!user){
-    window.location.href = "login.html";
-    return;
-  }
+const {
+data:{user}
+}
+=
+await supabaseClient
+.auth
+.getUser();
 
-  document.getElementById("userEmail").innerText = user.email;
+if(!user){
 
-  const { data, error } = await supabaseClient
-    .from("assinaturas")
-    .select("*")
-    .eq("email", user.email)
-    .order("id", { ascending:false });
+window.location.href =
+"login.html";
 
-  const area = document.getElementById("assinaturasArea");
+return;
 
-  if(error){
-    area.innerHTML = "<p>Erro ao carregar assinaturas.</p>";
-    return;
-  }
+}
 
-  if(data.length === 0){
-    area.innerHTML = "<div class='card'>Nenhuma assinatura encontrada.</div>";
-    return;
-  }
+document.getElementById(
+"userEmail"
+).innerText =
+user.email;
 
-  area.innerHTML = "";
+const { data, error } =
+await supabaseClient
+.from("pedidos")
+.select("*")
+.eq("email",user.email)
+.order("id",{ascending:false});
 
-  data.forEach(a => {
-    const ativo = a.status === "ativa";
+const area =
+document.getElementById(
+"assinaturasArea"
+);
 
-    area.innerHTML += `
-      <div class="card">
-        <h3>${a.produto}</h3>
-        <p>Status: ${a.status}</p>
-        <p>Início: ${a.data_inicio || "Não informado"}</p>
-        <p>Fim: ${a.data_fim || "Não informado"}</p>
+if(error){
 
-        ${
-          ativo && a.download_url
-          ? `<a class="btn primary" href="${a.download_url}" target="_blank">Baixar agora</a>`
-          : `<a class="btn secondary" href="comprovante.html">Enviar comprovante</a>`
-        }
-      </div>
-    `;
-  });
+area.innerHTML =
+"Erro ao carregar.";
+
+return;
+
+}
+
+if(data.length === 0){
+
+area.innerHTML = `
+
+<div class="card">
+Nenhuma assinatura encontrada.
+</div>
+
+`;
+
+return;
+
+}
+
+area.innerHTML = "";
+
+data.forEach((a)=>{
+
+const ativo =
+a.acesso_liberado === true;
+
+area.innerHTML += `
+
+<div class="card">
+
+<h3>
+${a.produto}
+</h3>
+
+<p>
+Status:
+${a.status}
+</p>
+
+<p>
+Válido até:
+${a.data_fim || "Não definido"}
+</p>
+
+${
+ativo
+?
+
+`
+
+<a
+class="btn primary"
+href="${a.download_url}"
+target="_blank"
+>
+
+Baixar agora
+
+</a>
+
+`
+
+:
+
+`
+
+<a
+class="btn secondary"
+href="comprovante.html"
+>
+
+Enviar comprovante
+
+</a>
+
+`
+
+}
+
+</div>
+
+`;
+
+});
+
 }
 
 async function sair(){
-  await supabaseClient.auth.signOut();
-  window.location.href = "login.html";
+
+await supabaseClient
+.auth
+.signOut();
+
+window.location.href =
+"login.html";
+
 }
 
 carregarConta();
+
 </script>
 
 </body>
