@@ -1,128 +1,111 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Login | Lumina Interactive</title>
-
 <link rel="stylesheet" href="style.css">
-
 </head>
 
 <body>
 
 <nav class="navbar">
+  <div class="logo">LUMINA INTERACTIVE™</div>
 
-<div class="logo">
-LUMINA INTERACTIVE™
-</div>
-
-<div class="menu">
-
-<a href="index.html">
-Início
-</a>
-
-<a href="patches.html">
-Patchs
-</a>
-
-<a href="plus.html">
-Lumina Plus
-</a>
-
-<a href="minha-conta.html">
-Minha conta
-</a>
-
-</div>
-
+  <div class="menu">
+    <a href="index.html">Início</a>
+    <a href="patches.html">Patchs</a>
+    <a href="plus.html">Lumina Plus</a>
+    <a href="minha-conta.html">Minha conta</a>
+  </div>
 </nav>
 
 <main class="container">
 
 <section>
 
-<div
-class="form-card"
-style="
-max-width:500px;
-margin:auto;
-"
->
-
-<h2>
-Entrar na Lumina
-</h2>
-
-<p style="
-color:var(--muted);
-margin-bottom:25px;
+<div style="
+max-width:520px;
+margin:0 auto;
+background:#0d1226;
+border:1px solid rgba(255,255,255,.08);
+border-radius:28px;
+padding:28px;
 ">
 
-Entre na sua conta para acessar
-suas assinaturas e downloads.
+<h1 style="
+font-size:42px;
+margin-bottom:12px;
+">
+Entrar na Lumina
+</h1>
 
+<p style="
+color:#aeb8d6;
+font-size:18px;
+line-height:1.6;
+margin-bottom:28px;
+">
+Entre na sua conta para acessar suas assinaturas e downloads.
 </p>
 
-<label>
-E-mail
-</label>
+<form id="loginForm" style="
+display:flex;
+flex-direction:column;
+gap:18px;
+">
 
+<div style="display:flex;flex-direction:column;gap:8px;">
+<label style="font-weight:800;color:#d8def5;">E-mail</label>
 <input
 type="email"
 id="email"
 placeholder="seuemail@gmail.com"
->
+required
+style="
+height:58px;
+border-radius:16px;
+background:#070b1c;
+color:white;
+border:1px solid rgba(255,255,255,.08);
+padding:0 18px;
+font-size:17px;
+outline:none;
+">
+</div>
 
-<label>
-Senha
-</label>
-
+<div style="display:flex;flex-direction:column;gap:8px;">
+<label style="font-weight:800;color:#d8def5;">Senha</label>
 <input
 type="password"
 id="senha"
 placeholder="Sua senha"
->
-
-<div style="
-display:flex;
-flex-direction:column;
-gap:12px;
-margin-top:20px;
+required
+style="
+height:58px;
+border-radius:16px;
+background:#070b1c;
+color:white;
+border:1px solid rgba(255,255,255,.08);
+padding:0 18px;
+font-size:17px;
+outline:none;
 ">
-
-<button
-class="btn primary"
-onclick="entrar()"
->
-
-Entrar
-
-</button>
-
-<button
-class="btn secondary"
-onclick="criarConta()"
->
-
-Registrar conta
-
-</button>
-
-<button
-class="btn primary"
-onclick="loginGoogle()"
->
-
-Entrar com Google
-
-</button>
-
 </div>
+
+<button class="btn primary" type="submit" style="width:100%;height:60px;">
+Entrar
+</button>
+
+<button class="btn secondary" type="button" onclick="registrar()" style="width:100%;height:60px;">
+Registrar conta
+</button>
+
+<button class="btn primary" type="button" onclick="loginGoogle()" style="width:100%;height:60px;">
+Entrar com Google
+</button>
+
+</form>
 
 </div>
 
@@ -133,101 +116,70 @@ Entrar com Google
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <script>
+const SUPABASE_URL = "https://tqsalhscgkepttbczyjq.supabase.co";
+const SUPABASE_KEY = "sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK";
 
-const SUPABASE_URL =
-"https://tqsalhscgkepttbczyjq.supabase.co";
-
-const SUPABASE_KEY =
-"sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK";
-
-const supabaseClient =
-supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
 );
 
-async function criarConta(){
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-const email =
-document.getElementById("email").value;
+  const email = document.getElementById("email").value;
+  const senha = document.getElementById("senha").value;
 
-const senha =
-document.getElementById("senha").value;
+  const { error } = await supabaseClient.auth.signInWithPassword({
+    email: email,
+    password: senha
+  });
 
-const { error } =
-await supabaseClient.auth.signUp({
+  if(error){
+    alert(error.message);
+    return;
+  }
 
-email,
-password:senha
-
+  window.location.href = "minha-conta.html";
 });
 
-if(error){
+async function registrar(){
+  const email = document.getElementById("email").value;
+  const senha = document.getElementById("senha").value;
 
-alert(error.message);
-return;
+  if(!email || !senha){
+    alert("Digite e-mail e senha para registrar.");
+    return;
+  }
 
-}
+  const { error } = await supabaseClient.auth.signUp({
+    email: email,
+    password: senha,
+    options: {
+      emailRedirectTo: window.location.origin + "/minha-conta.html"
+    }
+  });
 
-alert(
-"Conta criada com sucesso!"
-);
+  if(error){
+    alert(error.message);
+    return;
+  }
 
-}
-
-async function entrar(){
-
-const email =
-document.getElementById("email").value;
-
-const senha =
-document.getElementById("senha").value;
-
-const { error } =
-await supabaseClient.auth.signInWithPassword({
-
-email,
-password:senha
-
-});
-
-if(error){
-
-alert(error.message);
-return;
-
-}
-
-window.location.href =
-"minha-conta.html";
-
+  alert("Conta criada! Verifique seu e-mail, se necessário.");
 }
 
 async function loginGoogle(){
+  const { error } = await supabaseClient.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: window.location.origin + "/minha-conta.html"
+    }
+  });
 
-const { error } =
-await supabaseClient.auth.signInWithOAuth({
-
-provider:"google",
-
-options:{
-
-redirectTo:
-window.location.origin +
-"/minha-conta.html"
-
+  if(error){
+    alert(error.message);
+  }
 }
-
-});
-
-if(error){
-
-alert(error.message);
-
-}
-
-}
-
 </script>
 
 </body>
