@@ -1,3 +1,4 @@
+alert("AUTH CARREGOU");
 (function () {
   if (window.__luminaAuthNavbarLoaded) return;
   window.__luminaAuthNavbarLoaded = true;
