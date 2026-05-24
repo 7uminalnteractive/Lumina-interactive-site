@@ -1,7 +1,39 @@
-<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Minha Conta | Lumina Interactive</title><link rel="stylesheet" href="style.css"></head><body><nav class="navbar"><div class="logo">LUMINA INTERACTIVE™</div><div class="menu"><a href="index.html">Início</a><a href="patches.html">Patchs</a><a href="downloads.html">Downloads</a><a href="plus.html">Lumina Plus</a><a href="login.html">Login</a></div></nav><main class="container"><section><h1>Minha Conta</h1><div class="summary-card"><p id="userEmail">Carregando...</p><button class="btn danger" onclick="sair()">Sair</button></div><h2 style="margin-top:40px">Minhas assinaturas</h2><div class="cards" id="assinaturasArea" style="margin-top:25px"></div></section></main><footer class="footer"><div>Lumina Interactive™</div><div>Levando o futebol portátil a outro nível.</div></footer><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script><script>
-const supabaseClient=supabase.createClient("https://tqsalhscgkepttbczyjq.supabase.co","sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK");
-function fmt(d){return d?new Date(d).toLocaleString("pt-BR",{day:"2-digit",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit"}):"Não definido"}
-async function carregarConta(){const {data:{user}}=await supabaseClient.auth.getUser();if(!user){location.href="login.html";return}userEmail.innerText=user.email;const {data,error}=await supabaseClient.from("pedidos").select("*").eq("email",user.email).order("id",{ascending:false});if(error){assinaturasArea.innerHTML="<div class='card'>Erro ao carregar.</div>";return}if(!data.length){assinaturasArea.innerHTML="<div class='card'>Nenhuma assinatura encontrada.</div>";return}assinaturasArea.innerHTML=data.map(a=>`<div class="card"><span class="badge">${a.status||"pendente"}</span><h3>${a.produto||"Produto"}</h3><p><strong>Status:</strong> ${a.status||"pendente"}</p><p><strong>Válido até:</strong> ${fmt(a.data_fim)}</p>${a.acesso_liberado?`<a class="btn primary" href="${a.download_url}" target="_blank">Baixar agora</a>`:a.comprovante_url?`<button class="btn secondary" disabled>Em análise</button>`:`<a class="btn secondary" href="comprovante.html">Enviar comprovante</a>`}</div>`).join("")}
-async function sair(){await supabaseClient.auth.signOut();location.href="login.html"}
-carregarConta();
-</script></body></html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minha conta</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+<nav class="navbar">
+
+<div class="logo">
+LUMINA INTERACTIVE™
+</div>
+
+<div class="menu">
+<a href="index.html">Início</a>
+<a href="patches.html">Patchs</a>
+<a href="downloads.html">Downloads</a>
+<a href="plus.html">Lumina Plus</a>
+<a href="minha-conta.html" id="contaLink">Minha conta</a>
+</div>
+
+</nav>
+
+<section class="container">
+
+<h1>Minha conta</h1>
+
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="auth.js"></script>
+
+</body>
+</html>
