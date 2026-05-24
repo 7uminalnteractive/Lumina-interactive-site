@@ -1,0 +1,55 @@
+
+<nav class="navbar">
+
+<div class="logo">
+LUMINA INTERACTIVE™
+</div>
+
+<div class="nav-right">
+
+<a href="minha-conta.html" class="profile-btn">
+
+<img
+src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
+class="profile-icon"
+>
+
+</a>
+
+<button class="menu-toggle" onclick="toggleMenu()">
+
+<span></span>
+<span></span>
+<span></span>
+
+</button>
+
+</div>
+
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+
+<a href="index.html">Início</a>
+<a href="patches.html">Patchs</a>
+<a href="downloads.html">Downloads</a>
+<a href="plus.html">Lumina Plus</a>
+<a href="login.html">Login</a>
+
+</div>
+
+<script>
+
+function toggleMenu(){
+
+document
+.getElementById(
+"mobileMenu"
+)
+.classList.toggle(
+"active"
+);
+
+}
+
+</script>
