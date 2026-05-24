@@ -1,37 +1,73 @@
-const SUPABASE_URL = "https://tqsalhscgkepttbczyjq.supabase.co";
-const SUPABASE_KEY = "sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK";
+(function () {
+  if (window.__luminaAuthNavbarLoaded) return;
+  window.__luminaAuthNavbarLoaded = true;
 
-const supabaseClient = supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+  const SUPABASE_URL = "https://tqsalhscgkepttbczyjq.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK";
 
-async function atualizarNavbar() {
+  function carregarSupabase() {
+    return new Promise((resolve) => {
+      if (window.supabase) {
+        resolve();
+        return;
+      }
 
-  const { data: { user } } =
-    await supabaseClient.auth.getUser();
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js";
+      script.onload = resolve;
+      document.head.appendChild(script);
+    });
+  }
 
-  const contaLink =
-    document.getElementById("contaLink");
+  async function atualizarNavbar() {
+    await carregarSupabase();
 
-  if (!contaLink) return;
+    const client = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
 
-  if (user) {
+    const { data: { user } } =
+      await client.auth.getUser();
 
-    contaLink.innerText = "Minha conta";
-    contaLink.href = "minha-conta.html";
+    const links =
+      document.querySelectorAll("a");
 
-  } else {
+    links.forEach((link) => {
 
-    contaLink.innerText = "Login";
-    contaLink.href = "login.html";
+      const texto =
+        link.textContent.trim().toLowerCase();
+
+      const href =
+        link.getAttribute("href") || "";
+
+      if (
+        texto === "login" ||
+        href.includes("login.html") ||
+        href.includes("minha-conta.html")
+      ) {
+
+        if (user) {
+
+          link.textContent = "Minha conta";
+          link.href = "minha-conta.html";
+
+        } else {
+
+          link.textContent = "Login";
+          link.href = "login.html";
+
+        }
+
+      }
+
+    });
 
   }
 
-}
+  document.addEventListener(
+    "DOMContentLoaded",
+    atualizarNavbar
+  );
 
-document.addEventListener("DOMContentLoaded", () => {
-
-  atualizarNavbar();
-
-});
+})();
