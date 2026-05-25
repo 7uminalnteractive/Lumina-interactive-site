@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patchs | Lumina Interactive</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="logo">LUMINA <span>INTERACTIVE</span>™</div>
+  <div class="menu">
+    <a href="index.html">Início</a>
+    <a href="patches.html" class="active">Patchs</a>
+    <a href="downloads.html">Downloads</a>
+    <a href="plus.html">Lumina Plus</a>
+    <a href="login.html" data-auth-link>Login</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="page-hero container">
+    <div class="page-hero-label">Nossos jogos</div>
+    <h1>Patchs Oficiais</h1>
+    <p>Escolha o patch ideal para a sua experiência de futebol portátil.</p>
+  </div>
+
+  <div class="section" style="padding-top:0">
+    <div class="patches-grid">
+
+      <div class="patch-card reveal">
+        <div class="patch-pill">Grátis</div>
+        <div class="patch-name">Brazukas Patch</div>
+        <p class="patch-desc">O patch brasileiro definitivo. Times, uniformes e escalações da temporada.</p>
+        <ul class="patch-features">
+          <li>Times brasileiros atualizados</li>
+          <li>Uniformes 2026</li>
+          <li>Escalações reais</li>
+          <li>Compatível com PPSSPP</li>
+        </ul>
+        <div class="patch-price">Grátis</div>
+        <a href="brazukas.html" class="btn-card">Ver mais →</a>
+      </div>
+
+      <div class="patch-card featured reveal">
+        <div class="patch-pill blue">Destaque</div>
+        <div class="patch-name">LPFL Normal</div>
+        <p class="patch-desc">A experiência clássica do LPFL com atualizações oficiais da Lumina.</p>
+        <ul class="patch-features">
+          <li>Liga própria — LPFL</li>
+          <li>Modo carreira completo</li>
+          <li>Escalações atualizadas</li>
+          <li>Atualizações contínuas</li>
+        </ul>
+        <div class="patch-price">Grátis</div>
+        <a href="lpfl-normal.html" class="btn-card">Ver mais →</a>
+      </div>
+
+      <div class="patch-card reveal">
+        <div class="patch-pill blue">Pro</div>
+        <div class="patch-name">LPFL PRO</div>
+        <p class="patch-desc">Versão premium com visual aprimorado e conteúdos exclusivos para assinantes.</p>
+        <ul class="patch-features">
+          <li>Tudo do LPFL Normal</li>
+          <li>Visual & gráficos aprimorados</li>
+          <li>Conteúdo exclusivo</li>
+          <li>Acesso antecipado</li>
+        </ul>
+        <div class="patch-price paid">Plus</div>
+        <a href="plus.html" class="btn-card">Assinar Plus →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-logo">LUMINA <span>INTERACTIVE</span>™</div>
+  <div class="footer-links">
+    <a href="index.html">Início</a><a href="patches.html">Patchs</a>
+    <a href="downloads.html">Downloads</a><a href="plus.html">Lumina Plus</a>
+    <a href="login.html" data-auth-link>Login</a>
+  </div>
+  <div class="footer-copy">© 2026 Lumina Interactive™. Todos os direitos reservados.</div>
+</footer>
+
+<script src="navbar-auth.js"></script>
+<script>
+const revealEls=document.querySelectorAll('.reveal');
+const obs=new IntersectionObserver((entries)=>{entries.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>e.target.classList.add('visible'),i*80);obs.unobserve(e.target);}});},{threshold:0.1});
+revealEls.forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
