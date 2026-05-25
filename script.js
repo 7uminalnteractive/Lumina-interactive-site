@@ -1,1 +1,0 @@
-console.log('Lumina Interactive carregada com sucesso');
