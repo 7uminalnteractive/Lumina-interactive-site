@@ -1,20 +1,7 @@
-const SUPABASE_URL =
-"https://tqsalhscgkepttbczyjq.supabase.co";
+window.addEventListener("load", () => {
 
-const SUPABASE_KEY =
-"sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK";
-
-const supabaseClient =
-supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
-async function atualizarConta() {
-
-  const {
-    data: { user }
-  } = await supabaseClient.auth.getUser();
+  const logado =
+    localStorage.getItem("lumina_logado");
 
   const links =
     document.querySelectorAll("a");
@@ -22,16 +9,19 @@ async function atualizarConta() {
   links.forEach((link) => {
 
     const texto =
-      link.textContent.trim();
+      link.textContent.trim().toLowerCase();
+
+    const href =
+      link.getAttribute("href") || "";
 
     if (
-      texto === "Login" ||
-      texto === "Minha conta"
+      texto === "login" ||
+      href.includes("login.html")
     ) {
 
-      if (user) {
+      if (logado === "sim") {
 
-        link.innerText =
+        link.textContent =
           "Minha conta";
 
         link.href =
@@ -39,7 +29,7 @@ async function atualizarConta() {
 
       } else {
 
-        link.innerText =
+        link.textContent =
           "Login";
 
         link.href =
@@ -51,9 +41,4 @@ async function atualizarConta() {
 
   });
 
-}
-
-window.addEventListener(
-  "load",
-  atualizarConta
-);
+});
