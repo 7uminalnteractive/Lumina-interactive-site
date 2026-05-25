@@ -1,10 +1,1 @@
-LUMINA INTERACTIVE™
-
-Projeto base inspirado na EA SPORTS.
-
-Arquivos:
-- index.html
-- style.css
-- script.js
-
-Pronto para GitHub e Vercel.
+Suba estes arquivos no GitHub substituindo o index atual. Depois faça redeploy na Vercel.
