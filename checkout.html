@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout | Lumina Interactive</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="navbar">
+  <div class="logo">LUMINA <span>INTERACTIVE</span>™</div>
+  <div class="menu">
+    <a href="index.html">Início</a><a href="patches.html">Patchs</a>
+    <a href="downloads.html">Downloads</a><a href="plus.html">Lumina Plus</a>
+    <a href="login.html">Login</a>
+  </div>
+</nav>
+<div class="page-wrap">
+  <div class="container">
+    <div class="checkout-layout">
+      <div class="form-card reveal">
+        <div class="badge">Pedido</div>
+        <h2>Dados do cliente</h2>
+        <p>Preencha seus dados para continuar para o pagamento.</p>
+        <form id="checkoutForm">
+          <div class="field"><label>Nome completo</label><input type="text" id="nome" required></div>
+          <div class="field"><label>E-mail</label><input type="email" id="email" required></div>
+          <div class="field"><label>WhatsApp</label><input type="text" id="whatsapp" required></div>
+          <div class="field">
+            <label>Produto</label>
+            <select id="produtoSelect" onchange="atualizarResumo()">
+              <option value="lumina-plus">Lumina Plus — R$ 9,90/mês</option>
+              <option value="lpfl-pro">LPFL PRO (requer Plus)</option>
+              <option value="brazukas">Brazukas Patch — Grátis</option>
+              <option value="lpfl-normal">LPFL Normal — Grátis</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Método de pagamento</label>
+            <select id="metodo">
+              <option>PIX</option>
+              <option>PicPay</option>
+            </select>
+          </div>
+          <button type="submit" class="btn primary" style="width:100%">Continuar para pagamento</button>
+        </form>
+      </div>
+      <div class="summary-card reveal">
+        <span class="badge">RESUMO</span>
+        <h2 id="resumoNome">—</h2>
+        <p id="resumoDesc">—</p>
+        <div class="price" id="resumoPreco">—</div>
+        <p>Após confirmar, você será levado para o pagamento.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<footer class="footer">
+  <div class="footer-logo">LUMINA <span>INTERACTIVE</span>™</div>
+  <div class="footer-links">
+    <a href="index.html">Início</a><a href="patches.html">Patchs</a>
+    <a href="downloads.html">Downloads</a><a href="plus.html">Lumina Plus</a>
+    <a href="login.html">Login</a>
+  </div>
+  <div class="footer-copy">© 2026 Lumina Interactive™. Todos os direitos reservados.</div>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+const _sb = supabase.createClient(
+  "https://tqsalhscgkepttbczyjq.supabase.co",
+  "sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK"
+);
+
+const PRODUTOS = {
+  "lumina-plus": { nome: "Lumina Plus",    descricao: "Acesso premium da Lumina Interactive.", preco: 9.90 },
+  "lpfl-pro":    { nome: "LPFL PRO",       descricao: "Versão premium exclusiva para assinantes.", preco: 0 },
+  "brazukas":    { nome: "Brazukas Patch", descricao: "O patch brasileiro definitivo.", preco: 0 },
+  "lpfl-normal": { nome: "LPFL Normal",    descricao: "Experiência clássica do LPFL.", preco: 0 }
+};
+
+function slugSelecionado() {
+  return document.getElementById("produtoSelect").value;
+}
+
+function atualizarResumo() {
+  const p = PRODUTOS[slugSelecionado()] || PRODUTOS["lumina-plus"];
+  document.getElementById("resumoNome").innerText  = p.nome;
+  document.getElementById("resumoDesc").innerText  = p.descricao;
+  document.getElementById("resumoPreco").innerText = p.preco > 0
+    ? "R$ " + p.preco.toFixed(2).replace(".", ",")
+    : "Grátis";
+}
+
+// Pré-selecionar produto da URL
+document.addEventListener("DOMContentLoaded", () => {
+  const slug = new URLSearchParams(window.location.search).get("produto") || "lumina-plus";
+  const sel = document.getElementById("produtoSelect");
+  if (sel.querySelector(`option[value="${slug}"]`)) sel.value = slug;
+  atualizarResumo();
+
+  document.getElementById("checkoutForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const slug = slugSelecionado();
+    const p    = PRODUTOS[slug] || PRODUTOS["lumina-plus"];
+    const btn  = e.submitter;
+    btn.disabled = true;
+    btn.innerText = "Enviando...";
+
+    const pedido = {
+      nome_cliente:      document.getElementById("nome").value.trim(),
+      email:             document.getElementById("email").value.trim(),
+      whatsapp:          document.getElementById("whatsapp").value.trim(),
+      produto:           p.nome,
+      plano:             slug,
+      valor:             p.preco,
+      metodo_pagamento:  document.getElementById("metodo").value,
+      status:            "aguardando_pagamento",
+      acesso_liberado:   false
+    };
+
+    const { data, error } = await _sb.from("pedidos").insert([pedido]).select();
+    if (error) {
+      alert("Erro ao registrar pedido: " + error.message);
+      btn.disabled = false;
+      btn.innerText = "Continuar para pagamento";
+      return;
+    }
+    window.location.href = "comprovante.html?pedido_id=" + data[0].id;
+  });
+});
+</script>
+<script>
+const revealEls=document.querySelectorAll('.reveal');
+const obs=new IntersectionObserver((e)=>{e.forEach((x,i)=>{if(x.isIntersecting){setTimeout(()=>x.target.classList.add('visible'),i*80);obs.unobserve(x.target);}});},{threshold:0.1});
+revealEls.forEach(el=>obs.observe(el));
+</script>
+<script src="auth.js"></script>
+</body>
+</html>
