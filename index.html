@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumina Interactive™</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   LUMINA INTERACTIVE™ — Design do zero por Claude
+   Estética: Esportiva / Tecnológica / Dark Premium
+   ============================================================ */
+
+:root {
+  --bg:        #04070f;
+  --bg2:       #080e1c;
+  --bg3:       #0c1528;
+  --blue:      #1a6bff;
+  --blue-glow: rgba(26,107,255,0.35);
+  --blue-dim:  rgba(26,107,255,0.12);
+  --text:      #f0f4ff;
+  --muted:     #64748b;
+  --border:    rgba(255,255,255,0.07);
+  --font-hero: 'Bebas Neue', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --radius:    18px;
+  --radius-sm: 12px;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { text-decoration: none; color: inherit; }
+
+/* ── NOISE TEXTURE ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 70px;
+  background: rgba(4,7,15,0.75);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  font-family: var(--font-hero);
+  font-size: 22px;
+  letter-spacing: 2px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-logo span {
+  color: var(--blue);
+}
+
+.nav-logo-dot {
+  width: 7px; height: 7px;
+  background: var(--blue);
+  border-radius: 50%;
+  box-shadow: 0 0 12px var(--blue);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.7); }
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Dropdown menu */
+.nav-dropdown { position: relative; }
+
+.nav-dots {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  gap: 3px;
+  transition: background 0.2s, border-color 0.2s;
+  padding: 0;
+}
+
+.nav-dots:hover {
+  background: var(--bg2);
+  border-color: rgba(255,255,255,0.14);
+}
+
+.nav-dots-icon {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+
+.nav-dots-icon span {
+  width: 4px; height: 4px;
+  background: var(--text);
+  border-radius: 50%;
+}
+
+.nav-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 12px);
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  min-width: 190px;
+  padding: 8px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.6), 0 0 0 1px var(--border);
+  opacity: 0;
+  transform: translateY(-8px) scale(0.97);
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  transform-origin: top right;
+}
+
+.nav-menu.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: all;
+}
+
+.nav-menu a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #94a3b8;
+  transition: background 0.15s, color 0.15s;
+}
+
+.nav-menu a:hover {
+  background: var(--blue-dim);
+  color: var(--text);
+}
+
+.nav-menu a .mi {
+  width: 18px; height: 18px;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.nav-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 6px 8px;
+}
+
+/* User button */
+.nav-user {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--blue);
+  border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 0 0 0 var(--blue-glow);
+  text-decoration: none;
+}
+
+.nav-user:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 24px var(--blue-glow);
+}
+
+.nav-user svg {
+  width: 20px; height: 20px; fill: white;
+}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  padding-top: 70px;
+}
+
+/* Glows de fundo */
+.hero::before {
+  content: '';
+  position: absolute;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(26,107,255,0.18) 0%, transparent 70%);
+  top: -100px; right: -150px;
+  pointer-events: none;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(26,107,255,0.10) 0%, transparent 70%);
+  bottom: 0; left: -50px;
+  pointer-events: none;
+}
+
+/* Grid diagonal de fundo */
+.hero-grid-bg {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(26,107,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26,107,255,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse at 60% 50%, black 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 60px 40px;
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 80px;
+  align-items: center;
+}
+
+/* Tag */
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--blue-dim);
+  border: 1px solid rgba(26,107,255,0.25);
+  border-radius: 999px;
+  padding: 6px 14px 6px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #6aabff;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+  animation: fade-up 0.6s ease both;
+}
+
+.hero-tag-dot {
+  width: 6px; height: 6px;
+  background: var(--blue);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--blue);
+}
+
+/* Título */
+.hero-title {
+  font-family: var(--font-hero);
+  font-size: clamp(64px, 8vw, 110px);
+  line-height: 0.92;
+  letter-spacing: 2px;
+  margin-bottom: 32px;
+  animation: fade-up 0.6s 0.1s ease both;
+}
+
+.hero-title .accent {
+  color: var(--blue);
+  display: block;
+}
+
+/* Descrição */
+.hero-desc {
+  font-size: 18px;
+  line-height: 1.75;
+  color: #94a3b8;
+  max-width: 520px;
+  margin-bottom: 48px;
+  font-weight: 300;
+  animation: fade-up 0.6s 0.2s ease both;
+}
+
+/* Botões */
+.hero-btns {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  animation: fade-up 0.6s 0.3s ease both;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 30px;
+  background: var(--blue);
+  color: white;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 24px var(--blue-glow);
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 36px var(--blue-glow);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 15px 28px;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  text-decoration: none;
+}
+
+.btn-ghost:hover {
+  background: var(--bg3);
+  border-color: rgba(255,255,255,0.14);
+  transform: translateY(-2px);
+}
+
+/* Card hero direito */
+.hero-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  animation: fade-up 0.6s 0.35s ease both;
+}
+
+.hero-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--blue), transparent);
+}
+
+.hero-card-badge {
+  display: inline-block;
+  background: var(--blue);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.hero-card h2 {
+  font-family: var(--font-hero);
+  font-size: 36px;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+  line-height: 1;
+}
+
+.hero-card p {
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.7;
+  margin-bottom: 28px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.stat {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 18px;
+}
+
+.stat-num {
+  font-family: var(--font-hero);
+  font-size: 32px;
+  letter-spacing: 1px;
+  color: var(--blue);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ============================================================
+   SEÇÃO PATCHES
+   ============================================================ */
+.section {
+  position: relative;
+  z-index: 1;
+  padding: 100px 40px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.section-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--blue);
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.section-title {
+  font-family: var(--font-hero);
+  font-size: clamp(40px, 5vw, 64px);
+  letter-spacing: 1px;
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+.section-sub {
+  color: var(--muted);
+  font-size: 16px;
+  max-width: 500px;
+  margin-bottom: 56px;
+  line-height: 1.7;
+}
+
+/* Cards de patches */
+.patches-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.patch-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  cursor: default;
+}
+
+.patch-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(26,107,255,0.3);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(26,107,255,0.15);
+}
+
+.patch-card.featured {
+  border-color: rgba(26,107,255,0.3);
+  background: linear-gradient(145deg, #0b1830 0%, var(--bg2) 100%);
+}
+
+.patch-card.featured::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--blue), transparent);
+}
+
+.patch-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.patch-pill.blue {
+  background: var(--blue-dim);
+  border-color: rgba(26,107,255,0.25);
+  color: #6aabff;
+}
+
+.patch-name {
+  font-family: var(--font-hero);
+  font-size: 30px;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+  line-height: 1;
+}
+
+.patch-desc {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+
+.patch-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.patch-features li {
+  font-size: 13px;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.patch-features li::before {
+  content: '';
+  width: 5px; height: 5px;
+  background: var(--blue);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.patch-price {
+  font-family: var(--font-hero);
+  font-size: 28px;
+  color: #22c55e;
+  margin-bottom: 18px;
+  letter-spacing: 1px;
+}
+
+.patch-price.paid {
+  color: var(--blue);
+}
+
+.btn-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 13px 22px;
+  background: var(--blue-dim);
+  color: #6aabff;
+  border: 1px solid rgba(26,107,255,0.25);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  text-decoration: none;
+}
+
+.btn-card:hover {
+  background: var(--blue);
+  color: white;
+  border-color: var(--blue);
+}
+
+/* ============================================================
+   SEÇÃO PLUS
+   ============================================================ */
+.plus-section {
+  position: relative;
+  overflow: hidden;
+  padding: 100px 40px;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.plus-section::before {
+  content: '';
+  position: absolute;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(26,107,255,0.15) 0%, transparent 70%);
+  top: -200px; right: -100px;
+  pointer-events: none;
+}
+
+.plus-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 80px;
+  align-items: center;
+}
+
+.plus-price-block {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin: 24px 0;
+}
+
+.plus-currency {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--blue);
+  margin-top: 8px;
+}
+
+.plus-amount {
+  font-family: var(--font-hero);
+  font-size: 88px;
+  color: var(--blue);
+  line-height: 1;
+  letter-spacing: -2px;
+}
+
+.plus-period {
+  font-size: 14px;
+  color: var(--muted);
+  align-self: flex-end;
+  margin-bottom: 10px;
+}
+
+.plus-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 36px;
+}
+
+.plus-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 15px;
+  color: #94a3b8;
+}
+
+.check-icon {
+  width: 22px; height: 22px;
+  background: var(--blue-dim);
+  border: 1px solid rgba(26,107,255,0.25);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.check-icon svg {
+  width: 12px; height: 12px;
+  fill: var(--blue);
+}
+
+/* Plus card de preview */
+.plus-card {
+  background: linear-gradient(145deg, #0b1830 0%, var(--bg3) 100%);
+  border: 1px solid rgba(26,107,255,0.25);
+  border-radius: 24px;
+  padding: 36px;
+  position: relative;
+  overflow: hidden;
+}
+
+.plus-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--blue) 50%, transparent);
+}
+
+.plus-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 28px;
+}
+
+.plus-card-title {
+  font-family: var(--font-hero);
+  font-size: 26px;
+  letter-spacing: 1px;
+}
+
+.plus-tag {
+  background: var(--blue);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+.plus-card-items {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.plus-card-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+.plus-card-item-dot {
+  width: 8px; height: 8px;
+  background: var(--blue);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--blue);
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   SEÇÃO COMO FUNCIONA
+   ============================================================ */
+.how-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  position: relative;
+}
+
+.steps::before {
+  content: '';
+  position: absolute;
+  top: 38px;
+  left: calc(12.5% + 20px);
+  right: calc(12.5% + 20px);
+  height: 1px;
+  background: linear-gradient(90deg, var(--blue) 0%, rgba(26,107,255,0.2) 100%);
+}
+
+.step {
+  position: relative;
+  text-align: center;
+}
+
+.step-num {
+  width: 56px; height: 56px;
+  background: var(--bg3);
+  border: 1px solid rgba(26,107,255,0.3);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-hero);
+  font-size: 22px;
+  color: var(--blue);
+  margin: 0 auto 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.step-title {
+  font-family: var(--font-hero);
+  font-size: 20px;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.step-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+footer {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--border);
+  padding: 48px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  max-width: 100%;
+}
+
+.footer-logo {
+  font-family: var(--font-hero);
+  font-size: 18px;
+  letter-spacing: 2px;
+  color: var(--text);
+}
+
+.footer-logo span { color: var(--blue); }
+
+.footer-links {
+  display: flex;
+  gap: 28px;
+}
+
+.footer-links a {
+  font-size: 14px;
+  color: var(--muted);
+  transition: color 0.15s;
+}
+
+.footer-links a:hover { color: var(--text); }
+
+.footer-copy {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ============================================================
+   ANIMAÇÕES
+   ============================================================ */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1024px) {
+  .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+  .hero-card { max-width: 480px; }
+  .patches-grid { grid-template-columns: 1fr 1fr; }
+  .plus-inner { grid-template-columns: 1fr; gap: 40px; }
+  .steps { grid-template-columns: 1fr 1fr; }
+  .steps::before { display: none; }
+}
+
+@media (max-width: 680px) {
+  .nav { padding: 0 20px; }
+  .hero-inner { padding: 40px 20px; }
+  .section { padding: 70px 20px; }
+  .plus-section { padding: 70px 20px; }
+  .patches-grid { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: 1fr 1fr; }
+  .footer { padding: 32px 20px; flex-direction: column; text-align: center; }
+  .footer-links { flex-wrap: wrap; justify-content: center; gap: 16px; }
+  .plus-amount { font-size: 64px; }
+}
+
+@media (max-width: 400px) {
+  .steps { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="nav">
+  <a class="nav-logo" href="#">
+    <div class="nav-logo-dot"></div>
+    LUMINA <span>INTERACTIVE</span>™
+  </a>
+  <div class="nav-right">
+    <div class="nav-dropdown" id="navDrop">
+      <button class="nav-dots" id="navDotsBtn" aria-label="Menu">
+        <div class="nav-dots-icon">
+          <span></span><span></span><span></span>
+        </div>
+      </button>
+      <div class="nav-menu" id="navMenu">
+        <a href="#">
+          <svg class="mi" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          Início
+        </a>
+        <a href="#">
+          <svg class="mi" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-2.18c.07-.44.18-.88.18-1.35C18 2.55 15.45 0 12.14 0 10.42 0 8.86.73 7.74 1.91L6 3.72 4.26 1.91C3.14.73 1.58 0-.14 0-3.45 0-6 2.55-6 4.65c0 .47.11.91.18 1.35H-6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h26c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/><path d="M20 6H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-2 12H6V8h12v10z"/></svg>
+          Patchs
+        </a>
+        <a href="#">
+          <svg class="mi" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          Downloads
+        </a>
+        <div class="nav-divider"></div>
+        <a href="#" style="color:#6aabff">
+          <svg class="mi" viewBox="0 0 24 24" fill="currentColor" style="opacity:1"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+          Lumina Plus
+        </a>
+      </div>
+    </div>
+    <a href="#" class="nav-user" title="Login / Minha conta">
+      <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-tag">
+        <div class="hero-tag-dot"></div>
+        A nova era do futebol digital
+      </div>
+      <h1 class="hero-title">
+        Futebol portátil
+        <span class="accent">no próximo nível.</span>
+      </h1>
+      <p class="hero-desc">
+        Patches premium para PES PSP com identidade própria, visual moderno, comunidade ativa e experiência feita para quem vive futebol.
+      </p>
+      <div class="hero-btns">
+        <a href="#patches" class="btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-2.18c.07-.44.18-.88.18-1.35C18 2.55 15.45 0 12.14 0 10.42 0 8.86.73 7.74 1.91L6 3.72 4.26 1.91C3.14.73 1.58 0-.14 0-3.45 0-6 2.55-6 4.65c0 .47.11.91.18 1.35H-6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h26c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          Ver Patchs
+        </a>
+        <a href="#plus" class="btn-ghost">
+          Conhecer Lumina Plus →
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-card">
+      <div class="hero-card-badge">Lumina Plus</div>
+      <h2>Experiência<br>Premium</h2>
+      <p>Atualizações antecipadas, conteúdos exclusivos e suporte prioritário para assinantes.</p>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-num">3</div>
+          <div class="stat-label">Patchs</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">BR</div>
+          <div class="stat-label">Comunidade</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">PRO</div>
+          <div class="stat-label">Experiência</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">PSP</div>
+          <div class="stat-label">Plataforma</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PATCHES ── -->
+<div id="patches">
+<div class="section reveal">
+  <div class="section-label">Nossos jogos</div>
+  <h2 class="section-title">Patchs Oficiais</h2>
+  <p class="section-sub">Escolha o patch ideal para a sua experiência de futebol portátil.</p>
+
+  <div class="patches-grid">
+
+    <div class="patch-card reveal">
+      <div class="patch-pill">Grátis</div>
+      <div class="patch-name">Brazukas Patch</div>
+      <p class="patch-desc">O patch brasileiro definitivo. Times, uniformes e escalações da temporada.</p>
+      <ul class="patch-features">
+        <li>Times brasileiros atualizados</li>
+        <li>Uniformes 2026</li>
+        <li>Escalações reais</li>
+        <li>Compatível com PPSSPP</li>
+      </ul>
+      <div class="patch-price">Grátis</div>
+      <a href="#" class="btn-card">Baixar agora →</a>
+    </div>
+
+    <div class="patch-card featured reveal">
+      <div class="patch-pill blue">Destaque</div>
+      <div class="patch-name">LPFL Normal</div>
+      <p class="patch-desc">A experiência clássica do LPFL com atualizações oficiais da Lumina.</p>
+      <ul class="patch-features">
+        <li>Liga própria — LPFL</li>
+        <li>Modo carreira completo</li>
+        <li>Escalações atualizadas</li>
+        <li>Atualizações contínuas</li>
+      </ul>
+      <div class="patch-price">Grátis</div>
+      <a href="#" class="btn-card">Baixar agora →</a>
+    </div>
+
+    <div class="patch-card reveal">
+      <div class="patch-pill blue">Pro</div>
+      <div class="patch-name">LPFL PRO</div>
+      <p class="patch-desc">Versão premium com visual aprimorado e conteúdos exclusivos para assinantes.</p>
+      <ul class="patch-features">
+        <li>Tudo do LPFL Normal</li>
+        <li>Visual & gráficos aprimorados</li>
+        <li>Conteúdo exclusivo</li>
+        <li>Acesso antecipado</li>
+      </ul>
+      <div class="patch-price paid">Plus</div>
+      <a href="#plus" class="btn-card">Assinar Plus →</a>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- ── COMO FUNCIONA ── -->
+<div class="section how-inner reveal" style="padding-top:0">
+  <div class="section-label">Simples assim</div>
+  <h2 class="section-title">Como funciona</h2>
+  <p class="section-sub">Comece a jogar em minutos.</p>
+  <div class="steps">
+    <div class="step reveal">
+      <div class="step-num">1</div>
+      <div class="step-title">Escolha</div>
+      <p class="step-desc">Selecione o patch ideal para você na nossa página de Patchs.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">2</div>
+      <div class="step-title">Registre</div>
+      <p class="step-desc">Crie sua conta gratuita e finalize o pedido em segundos.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">3</div>
+      <div class="step-title">Pague</div>
+      <p class="step-desc">Para itens pagos, envie o comprovante via Pix ou PicPay.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">4</div>
+      <div class="step-title">Jogue</div>
+      <p class="step-desc">Receba seu link de download em até 10 horas e bora jogar!</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── LUMINA PLUS ── -->
+<div id="plus">
+<div class="plus-section">
+  <div class="plus-inner">
+
+    <div class="reveal">
+      <div class="section-label">Assinatura</div>
+      <h2 class="section-title">Lumina Plus</h2>
+      <div class="plus-price-block">
+        <span class="plus-currency">R$</span>
+        <span class="plus-amount">9</span>
+        <span class="plus-currency" style="font-size:20px;margin-bottom:14px">,90</span>
+        <span class="plus-period">/mês</span>
+      </div>
+      <ul class="plus-features">
+        <li>
+          <div class="check-icon"><svg viewBox="0 0 12 12"><path d="M1 6l3.5 3.5L11 2" stroke="#1a6bff" stroke-width="2" fill="none" stroke-linecap="round"/></svg></div>
+          Atualizações antecipadas antes de todo mundo
+        </li>
+        <li>
+          <div class="check-icon"><svg viewBox="0 0 12 12"><path d="M1 6l3.5 3.5L11 2" stroke="#1a6bff" stroke-width="2" fill="none" stroke-linecap="round"/></svg></div>
+          Acesso ao LPFL PRO — versão premium exclusiva
+        </li>
+        <li>
+          <div class="check-icon"><svg viewBox="0 0 12 12"><path d="M1 6l3.5 3.5L11 2" stroke="#1a6bff" stroke-width="2" fill="none" stroke-linecap="round"/></svg></div>
+          Suporte prioritário via WhatsApp
+        </li>
+        <li>
+          <div class="check-icon"><svg viewBox="0 0 12 12"><path d="M1 6l3.5 3.5L11 2" stroke="#1a6bff" stroke-width="2" fill="none" stroke-linecap="round"/></svg></div>
+          Escalações atualizadas todo mês
+        </li>
+        <li>
+          <div class="check-icon"><svg viewBox="0 0 12 12"><path d="M1 6l3.5 3.5L11 2" stroke="#1a6bff" stroke-width="2" fill="none" stroke-linecap="round"/></svg></div>
+          Cancele quando quiser, sem burocracia
+        </li>
+      </ul>
+      <a href="#" class="btn-primary" style="font-size:16px;padding:18px 36px">
+        Assinar agora — R$ 9,90/mês
+      </a>
+    </div>
+
+    <div class="plus-card reveal">
+      <div class="plus-card-top">
+        <div class="plus-card-title">Seu plano</div>
+        <div class="plus-tag">Plus ✦</div>
+      </div>
+      <div class="plus-card-items">
+        <div class="plus-card-item">
+          <div class="plus-card-item-dot"></div>
+          LPFL PRO — acesso liberado
+        </div>
+        <div class="plus-card-item">
+          <div class="plus-card-item-dot"></div>
+          Brazukas Patch — acesso liberado
+        </div>
+        <div class="plus-card-item">
+          <div class="plus-card-item-dot"></div>
+          LPFL Normal — acesso liberado
+        </div>
+        <div class="plus-card-item">
+          <div class="plus-card-item-dot"></div>
+          Atualizações antecipadas ativas
+        </div>
+      </div>
+      <a href="#" class="btn-primary" style="width:100%;justify-content:center;font-size:14px;padding:14px">
+        Quero esse plano →
+      </a>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-logo">LUMINA <span>INTERACTIVE</span>™</div>
+  <div class="footer-links">
+    <a href="#">Início</a>
+    <a href="#">Patchs</a>
+    <a href="#">Downloads</a>
+    <a href="#">Lumina Plus</a>
+    <a href="#">Login</a>
+  </div>
+  <div class="footer-copy">© 2026 Lumina Interactive™. Todos os direitos reservados.</div>
+</footer>
+
+<!-- ── SCRIPTS ── -->
+<script>
+// Dropdown
+const dotsBtn = document.getElementById('navDotsBtn');
+const navMenu = document.getElementById('navMenu');
+
+dotsBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  navMenu.classList.toggle('open');
+});
+
+document.addEventListener('click', () => navMenu.classList.remove('open'));
+navMenu.addEventListener('click', (e) => e.stopPropagation());
+
+// Scroll reveal
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 60);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12 });
+
+revealEls.forEach(el => observer.observe(el));
+</script>
+<script src="navbar-auth.js"></script>
+</body>
+</html>
