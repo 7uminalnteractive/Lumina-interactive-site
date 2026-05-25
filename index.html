@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumina Interactive™</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="navbar">
+<div class="logo">LUMINA INTERACTIVE™</div>
+
+<div class="nav-right">
+<a href="minha-conta.html" class="profile-btn">
+<img
+src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
+class="profile-icon"
+alt="Perfil"
+>
+</a>
+
+<button class="menu-toggle" onclick="toggleMenu()" aria-label="Abrir menu">
+<span></span>
+<span></span>
+<span></span>
+</button>
+</div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+<a href="index.html">Início</a>
+<a href="patches.html">Patchs</a>
+<a href="downloads.html">Downloads</a>
+<a href="plus.html">Lumina Plus</a>
+<a href="checkout.html?produto=lumina-plus">Comprar</a>
+</div>
+
+<main class="container">
+<section class="hero">
+<div class="hero-grid">
+<div>
+<p class="tag">A NOVA ERA DO FUTEBOL DIGITAL</p>
+<h1>Levando o futebol portátil a outro nível.</h1>
+<p class="desc">Patches premium para PES PSP com identidade própria, visual moderno, comunidade ativa e experiência feita para quem vive futebol.</p>
+<div style="display:flex;gap:14px;flex-wrap:wrap">
+<a class="btn primary" href="patches.html">Ver Patchs</a>
+<a class="btn secondary" href="plus.html">Conhecer Lumina Plus</a>
+</div>
+</div>
+
+<div class="hero-card">
+<span class="badge">LUMINA PLUS</span>
+<h2>Experiência premium</h2>
+<p class="desc" style="font-size:16px;margin-bottom:0">Atualizações antecipadas, conteúdos exclusivos e suporte prioritário.</p>
+<div class="stat-grid">
+<div class="stat"><strong>3</strong><span>Patchs</span></div>
+<div class="stat"><strong>BR</strong><span>Comunidade</span></div>
+<div class="stat"><strong>PRO</strong><span>Experiência</span></div>
+<div class="stat"><strong>PSP</strong><span>Foco</span></div>
+</div>
+</div>
+</div>
+</section>
+
+<section>
+<div class="section-title">
+<div>
+<h2>Nossos Patchs</h2>
+<p>Brazukas, LPFL Normal e LPFL PRO reunidos em uma experiência moderna.</p>
+</div>
+<a class="btn secondary" href="patches.html">Ver todos</a>
+</div>
+<div class="cards" id="produtos-dinamicos"></div>
+</section>
+
+<section>
+<div class="plus-panel">
+<div>
+<span class="badge">LUMINA PLUS</span>
+<h2>Mais conteúdo. Mais experiência. Mais Lumina.</h2>
+<p class="desc" style="font-size:17px">Um espaço premium para quem quer acompanhar a Lumina de perto.</p>
+<a class="btn primary" href="checkout.html?produto=lumina-plus">Entrar no Plus</a>
+</div>
+<div class="features">
+<div class="feature">✓ Atualizações antecipadas</div>
+<div class="feature">✓ Conteúdo exclusivo</div>
+<div class="feature">✓ Interface premium</div>
+<div class="feature">✓ Suporte prioritário</div>
+</div>
+</div>
+</section>
+</main>
+
+<footer class="footer">
+<div>Lumina Interactive™</div>
+<div>Levando o futebol portátil a outro nível.</div>
+</footer>
+
+<script>
+function toggleMenu(){
+  const menu = document.getElementById("mobileMenu");
+  menu.classList.toggle("active");
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="app.js"></script>
+</body>
+</html>
