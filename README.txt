@@ -1,0 +1,1 @@
+Suba estes arquivos no GitHub substituindo o index atual. Depois faça redeploy na Vercel.
