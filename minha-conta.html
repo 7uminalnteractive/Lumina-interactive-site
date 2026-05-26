@@ -16,7 +16,7 @@
   </div>
 </nav>
 <div class="page-wrap" style="display:flex;align-items:center;justify-content:center;min-height:100vh;">
-  <div class="account-card reveal">
+  <div class="account-card" style="opacity:1;transform:none">
     <div class="badge">Conta</div>
     <h1>Minha conta</h1>
     <p>Gerencie sua assinatura e downloads.</p>
@@ -32,17 +32,45 @@
   </div>
   <div class="footer-copy">© 2026 Lumina Interactive™. Todos os direitos reservados.</div>
 </footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script>
-const email=localStorage.getItem("lumina_email");
-if(email){document.getElementById("emailUsuario").innerText=email;}
-else{window.location.href="login.html";}
-function logout(){localStorage.removeItem("lumina_logado");localStorage.removeItem("lumina_email");window.location.href="login.html";}
+const supabaseClient = supabase.createClient(
+  "https://tqsalhscgkepttbczyjq.supabase.co",
+  "sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK"
+);
+
+async function init() {
+  // Tenta pegar sessão ativa do Supabase (funciona com Google OAuth também)
+  const { data: { session } } = await supabaseClient.auth.getSession();
+
+  if (session && session.user) {
+    const email = session.user.email;
+    localStorage.setItem("lumina_logado", "sim");
+    localStorage.setItem("lumina_email", email);
+    document.getElementById("emailUsuario").innerText = email;
+    return;
+  }
+
+  // Fallback: localStorage (login por senha já salvo)
+  const email = localStorage.getItem("lumina_email");
+  if (email) {
+    document.getElementById("emailUsuario").innerText = email;
+    return;
+  }
+
+  // Não logado
+  window.location.href = "login.html";
+}
+
+async function logout() {
+  await supabaseClient.auth.signOut();
+  localStorage.removeItem("lumina_logado");
+  localStorage.removeItem("lumina_email");
+  window.location.href = "login.html";
+}
+
+init();
 </script>
 <script src="navbar-auth.js"></script>
-<script>
-const revealEls=document.querySelectorAll('.reveal');
-const obs=new IntersectionObserver((e)=>{e.forEach((x,i)=>{if(x.isIntersecting){setTimeout(()=>x.target.classList.add('visible'),i*80);obs.unobserve(x.target);}});},{threshold:0.1});
-revealEls.forEach(el=>obs.observe(el));
-</script>
 </body>
 </html>
