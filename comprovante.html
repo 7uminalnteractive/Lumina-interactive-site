@@ -25,6 +25,19 @@
         <p>Escaneie o QR Code, pague via Pix/PicPay e envie o comprovante.</p>
       </div>
       <div class="checkout-layout">
+
+        <!-- 1º — PIX -->
+        <div class="summary-card reveal" style="text-align:center">
+          <span class="badge">PIX / PICPAY</span>
+          <h2>Finalize seu pagamento</h2>
+          <img src="1005625839.jpg" style="width:100%;max-width:280px;border-radius:20px;background:white;padding:12px;margin:20px auto;display:block">
+          <div style="margin:16px 0;padding:16px;border-radius:14px;background:var(--bg);border:1px solid var(--border);word-break:break-all;font-size:12px;line-height:1.6;text-align:left">
+            <span id="pixCode">00020126740014br.gov.bcb.pix0111099248645900237Cofrinho de Luan Vinicius Da Silva Me5204000053039865802BR5925Luan Vinicius Da Silva Me6015Feira de Santan61084409220062270523COFRNDgzNzA5NDAxMDAwMDQ6304CC1B</span>
+          </div>
+          <button class="btn primary" style="width:100%" onclick="copiarPix()">Copiar Pix</button>
+        </div>
+
+        <!-- 2º — Comprovante -->
         <div class="form-card reveal">
           <div class="badge">Comprovante</div>
           <h2>Enviar comprovante</h2>
@@ -35,15 +48,7 @@
             <button class="btn primary" type="submit" style="width:100%">Enviar comprovante</button>
           </form>
         </div>
-        <div class="summary-card reveal" style="text-align:center">
-          <span class="badge">PIX / PICPAY</span>
-          <h2>Finalize seu pagamento</h2>
-          <img src="1005625839.jpg" style="width:100%;max-width:280px;border-radius:20px;background:white;padding:12px;margin:20px auto;display:block">
-          <div style="margin:16px 0;padding:16px;border-radius:14px;background:var(--bg);border:1px solid var(--border);word-break:break-all;font-size:12px;line-height:1.6;text-align:left">
-            <span id="pixCode">00020126740014br.gov.bcb.pix0111099248645900237Cofrinho de Luan Vinicius Da Silva Me5204000053039865802BR5925Luan Vinicius Da Silva Me6015Feira de Santan61084409220062270523COFRNDgzNzA5NDAxMDAwMDQ6304CC1B</span>
-          </div>
-          <button class="btn primary" style="width:100%" onclick="copiarPix()">Copiar Pix</button>
-        </div>
+
       </div>
     </section>
 
@@ -101,7 +106,6 @@ const revealEls=document.querySelectorAll('.reveal');
 const obs=new IntersectionObserver((e)=>{e.forEach((x,i)=>{if(x.isIntersecting){setTimeout(()=>x.target.classList.add('visible'),i*80);obs.unobserve(x.target);}});},{threshold:0.1});
 revealEls.forEach(el=>obs.observe(el));
 </script>
-
 <script src="navbar-auth.js"></script>
 </body>
 </html>
