@@ -22,6 +22,8 @@
 <div class="page-wrap">
   <div class="plus-section">
     <div class="plus-inner">
+
+      <!-- Lado esquerdo: info do plano -->
       <div class="reveal">
         <div class="section-label">Assinatura</div>
         <h2 class="section-title">Lumina Plus</h2>
@@ -38,25 +40,52 @@
           <li><div class="check-icon"><svg viewBox="0 0 12 12"><path d="M1 6l3.5 3.5L11 2" stroke="#1a6bff" stroke-width="2" fill="none" stroke-linecap="round"/></svg></div>Escalações atualizadas todo mês</li>
           <li><div class="check-icon"><svg viewBox="0 0 12 12"><path d="M1 6l3.5 3.5L11 2" stroke="#1a6bff" stroke-width="2" fill="none" stroke-linecap="round"/></svg></div>Cancele quando quiser, sem burocracia</li>
         </ul>
-        <a href="checkout.html?produto=lumina-plus" class="btn primary" style="font-size:16px;padding:18px 36px">
+        <!-- Botão assinar (oculto se já tiver plano ativo) -->
+        <a href="checkout.html?produto=lumina-plus" class="btn primary" id="btnAssinar" style="font-size:16px;padding:18px 36px">
           Assinar agora — R$ 9,90/mês
         </a>
       </div>
 
-      <div class="plus-card reveal">
-        <div class="plus-card-top">
-          <div class="plus-card-title">Seu plano</div>
-          <div class="plus-tag">Plus ✦</div>
+      <!-- Lado direito: card dinâmico -->
+      <div class="plus-card reveal" id="cardPlano">
+
+        <!-- Estado: carregando -->
+        <div id="estadoCarregando" style="text-align:center;padding:40px 0;color:#94a3b8;font-size:14px">
+          Verificando assinatura...
         </div>
-        <div class="plus-card-items">
-          <div class="plus-card-item"><div class="plus-card-item-dot"></div>LPFL PRO — acesso liberado</div>
-          <div class="plus-card-item"><div class="plus-card-item-dot"></div>Brazukas Patch — acesso liberado</div>
-          <div class="plus-card-item"><div class="plus-card-item-dot"></div>LPFL Normal — acesso liberado</div>
-          <div class="plus-card-item"><div class="plus-card-item-dot"></div>Atualizações antecipadas ativas</div>
+
+        <!-- Estado: ativo (oculto por padrão) -->
+        <div id="estadoAtivo" style="display:none">
+          <div class="plus-card-top">
+            <div class="plus-card-title">Seu plano</div>
+            <div class="plus-tag">Plus ✦ Ativa</div>
+          </div>
+          <div style="font-size:12px;color:#94a3b8;margin-bottom:20px" id="plusValidadeTexto"></div>
+          <div class="plus-card-items" id="linksDownload">
+            <!-- links inseridos via JS -->
+          </div>
+          <a href="minha-conta.html" class="btn primary" style="width:100%;font-size:14px;padding:14px;text-align:center;display:block;margin-top:16px">
+            Ir para minha conta →
+          </a>
         </div>
-        <a href="checkout.html?produto=lumina-plus" class="btn primary" style="width:100%;font-size:14px;padding:14px">
-          Quero esse plano →
-        </a>
+
+        <!-- Estado: sem plano (oculto por padrão) -->
+        <div id="estadoSemPlano" style="display:none">
+          <div class="plus-card-top">
+            <div class="plus-card-title">Seu plano</div>
+            <div class="plus-tag">Plus ✦</div>
+          </div>
+          <div class="plus-card-items">
+            <div class="plus-card-item"><div class="plus-card-item-dot"></div>LPFL PRO — acesso liberado</div>
+            <div class="plus-card-item"><div class="plus-card-item-dot"></div>Brazukas Patch — acesso liberado</div>
+            <div class="plus-card-item"><div class="plus-card-item-dot"></div>LPFL Normal — acesso liberado</div>
+            <div class="plus-card-item"><div class="plus-card-item-dot"></div>Atualizações antecipadas ativas</div>
+          </div>
+          <a href="checkout.html?produto=lumina-plus" class="btn primary" style="width:100%;font-size:14px;padding:14px;text-align:center;display:block">
+            Quero esse plano →
+          </a>
+        </div>
+
       </div>
     </div>
   </div>
@@ -72,11 +101,107 @@
   <div class="footer-copy">© 2026 Lumina Interactive™. Todos os direitos reservados.</div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+const supabaseClient = supabase.createClient(
+  "https://tqsalhscgkepttbczyjq.supabase.co",
+  "sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK"
+);
+
+// Links de download por produto — edite aqui quando quiser
+const LINKS_DOWNLOAD = {
+  "Lumina Plus": [
+    { nome: "LPFL PRO", url: "https://seulink.com/lpfl-pro" },
+    { nome: "Brazukas Patch", url: "https://seulink.com/brazukas" },
+    { nome: "LPFL Normal", url: "https://seulink.com/lpfl-normal" },
+  ],
+  "LPFL PRO": [
+    { nome: "LPFL PRO", url: "https://seulink.com/lpfl-pro" },
+  ],
+  "Brazukas Patch": [
+    { nome: "Brazukas Patch", url: "https://seulink.com/brazukas" },
+  ],
+  "LPFL Normal": [
+    { nome: "LPFL Normal", url: "https://seulink.com/lpfl-normal" },
+  ],
+};
+
+async function verificarAssinatura() {
+  // Pega email do usuário
+  let email = null;
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (session?.user) email = session.user.email;
+  else email = localStorage.getItem("lumina_email");
+
+  document.getElementById("estadoCarregando").style.display = "none";
+
+  if (!email) {
+    document.getElementById("estadoSemPlano").style.display = "block";
+    return;
+  }
+
+  // Busca pedido aprovado
+  const { data, error } = await supabaseClient
+    .from("pedidos")
+    .select("*")
+    .eq("email", email)
+    .eq("status", "aprovado")
+    .order("id", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error || !data) {
+    document.getElementById("estadoSemPlano").style.display = "block";
+    return;
+  }
+
+  // Verifica validade
+  const agora = new Date();
+  const validade = data.validade_ate ? new Date(data.validade_ate) : null;
+  const ativa = !validade || validade > agora;
+
+  if (!ativa) {
+    document.getElementById("estadoSemPlano").style.display = "block";
+    return;
+  }
+
+  // Plano ativo — mostra downloads
+  document.getElementById("estadoAtivo").style.display = "block";
+  document.getElementById("btnAssinar").style.display = "none";
+
+  document.getElementById("plusValidadeTexto").innerText = validade
+    ? "Válido até " + validade.toLocaleDateString("pt-BR")
+    : "";
+
+  const links = LINKS_DOWNLOAD[data.produto] || LINKS_DOWNLOAD["Lumina Plus"];
+  const container = document.getElementById("linksDownload");
+  container.innerHTML = "";
+  links.forEach(link => {
+    container.innerHTML += `
+      <div class="plus-card-item" style="justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="plus-card-item-dot"></div>
+          <span>${link.nome}</span>
+        </div>
+        <a href="${link.url}" target="_blank" class="btn-card" style="width:auto;padding:6px 14px;font-size:12px">
+          Baixar ↓
+        </a>
+      </div>`;
+  });
+}
+
+verificarAssinatura();
+</script>
+
 <script src="navbar-auth.js"></script>
 <script>
-const revealEls=document.querySelectorAll('.reveal');
-const obs=new IntersectionObserver((e)=>{e.forEach((x,i)=>{if(x.isIntersecting){setTimeout(()=>x.target.classList.add('visible'),i*80);obs.unobserve(x.target);}});},{threshold:0.1});
-revealEls.forEach(el=>obs.observe(el));
+const revealEls = document.querySelectorAll('.reveal');
+const obs = new IntersectionObserver((e) => {
+  e.forEach((x, i) => {
+    if (x.isIntersecting) { setTimeout(() => x.target.classList.add('visible'), i * 80); obs.unobserve(x.target); }
+  });
+}, { threshold: 0.1 });
+revealEls.forEach(el => obs.observe(el));
 </script>
 </body>
 </html>
