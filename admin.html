@@ -5,6 +5,59 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin | Lumina Interactive</title>
 <link rel="stylesheet" href="style.css">
+<style>
+.tab-btn {
+  background: none; border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--muted); font-family: var(--font-body);
+  font-size: 14px; font-weight: 600;
+  padding: 12px 20px; cursor: pointer;
+  margin-bottom: -1px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+/* Dashboard cards */
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px; margin-bottom: 40px;
+}
+.dash-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 18px; padding: 24px;
+  transition: border-color 0.2s;
+}
+.dash-card:hover { border-color: rgba(26,107,255,0.3); }
+.dash-card-label {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 12px;
+}
+.dash-card-value {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 48px; line-height: 1;
+  letter-spacing: 1px;
+}
+.dash-card-sub {
+  font-size: 12px; color: var(--muted); margin-top: 6px;
+}
+.dash-card.blue .dash-card-value { color: var(--blue); }
+.dash-card.green .dash-card-value { color: #22c55e; }
+.dash-card.yellow .dash-card-value { color: #fbbf24; }
+.dash-card.red .dash-card-value { color: #ef4444; }
+.dash-card.purple .dash-card-value { color: #a78bfa; }
+
+/* Pedidos recentes no dashboard */
+.dash-recentes { margin-top: 32px; }
+.dash-recentes h3 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px; letter-spacing: 1px;
+  margin-bottom: 16px; color: var(--text);
+}
+</style>
 </head>
 <body>
 
@@ -34,20 +87,76 @@
 </nav>
 
 <div class="page-wrap">
-
-  <!-- ── ABAS ── -->
   <div class="container" style="padding-top:40px">
+
+    <!-- ── ABAS ── -->
     <div style="display:flex;gap:8px;border-bottom:1px solid var(--border);margin-bottom:40px">
-      <button class="tab-btn active" id="tabPedidosBtn" onclick="mudarAba('pedidos')">
-        Pedidos
-      </button>
-      <button class="tab-btn" id="tabAssinanteBtn" onclick="mudarAba('assinante')">
-        Criar Assinante
-      </button>
+      <button class="tab-btn active" id="tabDashBtn"      onclick="mudarAba('dash')">Dashboard</button>
+      <button class="tab-btn"        id="tabPedidosBtn"   onclick="mudarAba('pedidos')">Pedidos</button>
+      <button class="tab-btn"        id="tabAssinanteBtn" onclick="mudarAba('assinante')">Criar Assinante</button>
     </div>
 
-    <!-- ABA: PEDIDOS -->
-    <div id="tabPedidos">
+    <!-- ══ ABA: DASHBOARD ══ -->
+    <div id="tabDash">
+      <div class="page-hero" style="padding:0 0 32px">
+        <div class="page-hero-label">Visão Geral</div>
+        <h1>Dashboard</h1>
+        <p>Resumo em tempo real dos pedidos e assinaturas da Lumina Interactive.</p>
+      </div>
+
+      <div class="dash-grid">
+        <div class="dash-card blue">
+          <div class="dash-card-label">Total de pedidos</div>
+          <div class="dash-card-value" id="dTotal">—</div>
+          <div class="dash-card-sub">todos os registros</div>
+        </div>
+        <div class="dash-card green">
+          <div class="dash-card-label">Assinantes ativos</div>
+          <div class="dash-card-value" id="dAtivos">—</div>
+          <div class="dash-card-sub">aprovados e dentro da validade</div>
+        </div>
+        <div class="dash-card yellow">
+          <div class="dash-card-label">Pendentes</div>
+          <div class="dash-card-value" id="dPendentes">—</div>
+          <div class="dash-card-sub">aguardando aprovação</div>
+        </div>
+        <div class="dash-card red">
+          <div class="dash-card-label">Cancelados</div>
+          <div class="dash-card-value" id="dCancelados">—</div>
+          <div class="dash-card-sub">assinaturas canceladas</div>
+        </div>
+        <div class="dash-card purple">
+          <div class="dash-card-label">Expirando em 7 dias</div>
+          <div class="dash-card-value" id="dExpirando">—</div>
+          <div class="dash-card-sub">precisam renovar em breve</div>
+        </div>
+        <div class="dash-card green">
+          <div class="dash-card-label">Receita total</div>
+          <div class="dash-card-value" id="dReceita" style="font-size:32px">—</div>
+          <div class="dash-card-sub">soma de todos os pedidos pagos</div>
+        </div>
+      </div>
+
+      <!-- Pedidos recentes -->
+      <div class="dash-recentes">
+        <h3>Pedidos recentes</h3>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th><th>Cliente</th><th>Produto</th><th>Status</th><th>Validade</th>
+              </tr>
+            </thead>
+            <tbody id="dash-recentes-tbody">
+              <tr><td colspan="5" style="color:var(--muted);text-align:center;padding:30px">Carregando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ ABA: PEDIDOS ══ -->
+    <div id="tabPedidos" style="display:none">
       <div class="page-hero" style="padding:0 0 32px">
         <div class="page-hero-label">Painel</div>
         <h1>Pedidos</h1>
@@ -57,14 +166,8 @@
         <table>
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Cliente</th>
-              <th>Produto</th>
-              <th>Valor</th>
-              <th>Status</th>
-              <th>Comprovante</th>
-              <th>WhatsApp</th>
-              <th>Ações</th>
+              <th>ID</th><th>Cliente</th><th>Produto</th><th>Valor</th>
+              <th>Status</th><th>Comprovante</th><th>WhatsApp</th><th>Ações</th>
             </tr>
           </thead>
           <tbody id="pedidos-admin">
@@ -74,7 +177,7 @@
       </div>
     </div>
 
-    <!-- ABA: CRIAR ASSINANTE -->
+    <!-- ══ ABA: CRIAR ASSINANTE ══ -->
     <div id="tabAssinante" style="display:none">
       <div class="page-hero" style="padding:0 0 32px">
         <div class="page-hero-label">Painel</div>
@@ -104,34 +207,15 @@
 
 </div><!-- /adminPanel -->
 
-<!-- Lightbox comprovante -->
+<!-- Lightbox -->
 <div class="comp-lightbox" id="compLightbox" style="display:none" onclick="fecharLightbox()">
   <button class="comp-lightbox-close" onclick="fecharLightbox()">✕</button>
   <img id="compLightboxImg" src="" alt="Comprovante">
 </div>
 
-<style>
-.tab-btn {
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  color: var(--muted);
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 600;
-  padding: 12px 20px;
-  cursor: pointer;
-  margin-bottom: -1px;
-  transition: color 0.15s, border-color 0.15s;
-}
-.tab-btn:hover { color: var(--text); }
-.tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
-</style>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script src="app.js"></script>
 <script src="navbar-auth.js"></script>
-
 <script>
 const SENHA_CORRETA = "1234";
 
@@ -141,65 +225,77 @@ function verificarSenha() {
     document.getElementById("adminLoginOverlay").style.display = "none";
     document.getElementById("adminPanel").style.display = "block";
     sessionStorage.setItem("lumina_admin", "ok");
-    carregarPedidosAdmin();
+    iniciarAdmin();
   } else {
     document.getElementById("loginErr").classList.add("show");
     document.getElementById("adminSenha").value = "";
   }
 }
-
 document.getElementById("adminSenha").addEventListener("keydown", (e) => {
   if (e.key === "Enter") verificarSenha();
 });
-
 if (sessionStorage.getItem("lumina_admin") === "ok") {
   document.getElementById("adminLoginOverlay").style.display = "none";
   document.getElementById("adminPanel").style.display = "block";
+  iniciarAdmin();
+}
+
+function iniciarAdmin() {
+  carregarDashboard();
+  carregarPedidosAdmin();
 }
 
 // ── ABAS ──
 function mudarAba(aba) {
-  document.getElementById("tabPedidos").style.display = aba === "pedidos" ? "block" : "none";
-  document.getElementById("tabAssinante").style.display = aba === "assinante" ? "block" : "none";
-  document.getElementById("tabPedidosBtn").classList.toggle("active", aba === "pedidos");
-  document.getElementById("tabAssinanteBtn").classList.toggle("active", aba === "assinante");
+  ["dash","pedidos","assinante"].forEach(a => {
+    document.getElementById("tab" + a.charAt(0).toUpperCase() + a.slice(1)).style.display = a === aba ? "block" : "none";
+    document.getElementById("tab" + a.charAt(0).toUpperCase() + a.slice(1) + "Btn").classList.toggle("active", a === aba);
+  });
 }
 
-// ── CRIAR ASSINANTE ──
-async function criarAssinante() {
-  const email = document.getElementById("emailAssinante").value.trim();
-  const erroEl = document.getElementById("msgAssinanteErro");
-  const sucessoEl = document.getElementById("msgAssinanteSucesso");
-  erroEl.style.display = "none";
-  sucessoEl.style.display = "none";
-
-  if (!email) { erroEl.textContent = "Digite um e-mail."; erroEl.style.display = "block"; return; }
+// ── DASHBOARD ──
+async function carregarDashboard() {
+  const { data, error } = await supabaseClient.from("pedidos").select("*");
+  if (error || !data) return;
 
   const agora = new Date();
-  const validade = new Date(agora);
-  validade.setDate(validade.getDate() + 30);
+  const em7dias = new Date(); em7dias.setDate(em7dias.getDate() + 7);
 
-  const { error } = await supabaseClient.from("pedidos").insert([{
-    email: email,
-    nome_cliente: email,
-    produto: "Lumina Plus",
-    valor: 0,
-    status: "aprovado",
-    aprovado_em: agora.toISOString(),
-    validade_ate: validade.toISOString(),
-    metodo_pagamento: "manual",
-    acesso_liberado: true
-  }]);
+  const total      = data.length;
+  const ativos     = data.filter(p => p.status === "aprovado" && (!p.validade_ate || new Date(p.validade_ate) > agora)).length;
+  const pendentes  = data.filter(p => p.status === "pendente" || p.status === "aguardando_pagamento").length;
+  const cancelados = data.filter(p => p.status === "cancelado").length;
+  const expirando  = data.filter(p => p.status === "aprovado" && p.validade_ate && new Date(p.validade_ate) > agora && new Date(p.validade_ate) <= em7dias).length;
+  const receita    = data.filter(p => p.status === "aprovado").reduce((s, p) => s + (Number(p.valor) || 0), 0);
 
-  if (error) {
-    erroEl.textContent = "Erro: " + error.message;
-    erroEl.style.display = "block";
-    return;
-  }
+  document.getElementById("dTotal").textContent     = total;
+  document.getElementById("dAtivos").textContent    = ativos;
+  document.getElementById("dPendentes").textContent = pendentes;
+  document.getElementById("dCancelados").textContent= cancelados;
+  document.getElementById("dExpirando").textContent = expirando;
+  document.getElementById("dReceita").textContent   = receita.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-  sucessoEl.textContent = `Assinante ${email} criado com sucesso! Acesso liberado até ${validade.toLocaleDateString("pt-BR")}.`;
-  sucessoEl.style.display = "block";
-  document.getElementById("emailAssinante").value = "";
+  // Recentes (últimos 5)
+  const recentes = [...data].sort((a, b) => b.id - a.id).slice(0, 5);
+  const tbody = document.getElementById("dash-recentes-tbody");
+  tbody.innerHTML = "";
+  recentes.forEach(p => {
+    let sc = "status-pendente";
+    if (p.status === "aprovado") sc = "status-aprovado";
+    else if (p.status === "cancelado") sc = "status-cancelado";
+    const val = p.validade_ate ? new Date(p.validade_ate).toLocaleDateString("pt-BR") : "—";
+    tbody.innerHTML += `
+      <tr>
+        <td style="font-family:monospace;font-size:12px;color:#6aabff">#${p.id}</td>
+        <td>
+          <div style="font-weight:600">${p.nome_cliente || "—"}</div>
+          <div style="font-size:12px;color:var(--muted)">${p.email || ""}</div>
+        </td>
+        <td>${p.produto || "—"}</td>
+        <td><span class="status-badge ${sc}">${p.status || "pendente"}</span></td>
+        <td style="font-size:13px;color:var(--muted)">${val}</td>
+      </tr>`;
+  });
 }
 
 // ── LIGHTBOX ──
@@ -211,120 +307,93 @@ function fecharLightbox() {
   document.getElementById("compLightbox").style.display = "none";
 }
 
-// ── AÇÕES PEDIDOS ──
-async function aprovarPedido(id) {
+// ── CRIAR ASSINANTE ──
+async function criarAssinante() {
+  const email = document.getElementById("emailAssinante").value.trim();
+  const erroEl = document.getElementById("msgAssinanteErro");
+  const sucessoEl = document.getElementById("msgAssinanteSucesso");
+  erroEl.style.display = "none"; sucessoEl.style.display = "none";
+  if (!email) { erroEl.textContent = "Digite um e-mail."; erroEl.style.display = "block"; return; }
   const agora = new Date();
-  const validade = new Date(agora);
-  validade.setDate(validade.getDate() + 30);
-  const { error } = await supabaseClient.from("pedidos").update({
-    status: "aprovado", aprovado_em: agora.toISOString(), validade_ate: validade.toISOString()
-  }).eq("id", id);
-  if (error) { alert("Erro: " + error.message); return; }
-  carregarPedidosAdmin();
+  const validade = new Date(agora); validade.setDate(validade.getDate() + 30);
+  const { error } = await supabaseClient.from("pedidos").insert([{
+    email, nome_cliente: email, produto: "Lumina Plus", valor: 0,
+    status: "aprovado", aprovado_em: agora.toISOString(),
+    validade_ate: validade.toISOString(), metodo_pagamento: "manual", acesso_liberado: true
+  }]);
+  if (error) { erroEl.textContent = "Erro: " + error.message; erroEl.style.display = "block"; return; }
+  sucessoEl.textContent = `Assinante ${email} criado! Acesso até ${validade.toLocaleDateString("pt-BR")}.`;
+  sucessoEl.style.display = "block";
+  document.getElementById("emailAssinante").value = "";
+  carregarDashboard();
 }
 
+// ── AÇÕES PEDIDOS ──
+async function aprovarPedido(id) {
+  const agora = new Date(); const validade = new Date(agora); validade.setDate(validade.getDate() + 30);
+  const { error } = await supabaseClient.from("pedidos").update({ status: "aprovado", aprovado_em: agora.toISOString(), validade_ate: validade.toISOString() }).eq("id", id);
+  if (error) { alert("Erro: " + error.message); return; }
+  carregarPedidosAdmin(); carregarDashboard();
+}
 async function renovarPedido(id) {
   const { data, error: fetchErr } = await supabaseClient.from("pedidos").select("validade_ate").eq("id", id).single();
   if (fetchErr) { alert("Erro ao buscar pedido."); return; }
   let base = data?.validade_ate ? new Date(data.validade_ate) : new Date();
   if (base < new Date()) base = new Date();
   base.setDate(base.getDate() + 30);
-  const { error } = await supabaseClient.from("pedidos").update({
-    status: "aprovado", validade_ate: base.toISOString()
-  }).eq("id", id);
+  const { error } = await supabaseClient.from("pedidos").update({ status: "aprovado", validade_ate: base.toISOString() }).eq("id", id);
   if (error) { alert("Erro: " + error.message); return; }
-  carregarPedidosAdmin();
+  carregarPedidosAdmin(); carregarDashboard();
 }
-
 async function cancelarPedido(id) {
   if (!confirm("Cancelar assinatura do pedido #" + id + "?")) return;
   const { error } = await supabaseClient.from("pedidos").update({ status: "cancelado" }).eq("id", id);
   if (error) { alert("Erro: " + error.message); return; }
-  carregarPedidosAdmin();
+  carregarPedidosAdmin(); carregarDashboard();
 }
-
 async function excluirPedido(id) {
   if (!confirm("Excluir permanentemente o pedido #" + id + "?")) return;
   const { error } = await supabaseClient.from("pedidos").delete().eq("id", id);
   if (error) { alert("Erro: " + error.message); return; }
-  carregarPedidosAdmin();
+  carregarPedidosAdmin(); carregarDashboard();
 }
 
 // ── CARREGAR PEDIDOS ──
 async function carregarPedidosAdmin() {
   const tabela = document.querySelector("#pedidos-admin");
   if (!tabela) return;
-
-  const { data, error } = await supabaseClient
-    .from("pedidos").select("*").order("id", { ascending: false });
-
-  if (error) {
-    tabela.innerHTML = `<tr><td colspan="8" style="color:#ef4444;text-align:center;padding:40px">${error.message}</td></tr>`;
-    return;
-  }
-  if (!data || data.length === 0) {
-    tabela.innerHTML = `<tr><td colspan="8" style="color:var(--muted);text-align:center;padding:40px">Nenhum pedido encontrado.</td></tr>`;
-    return;
-  }
-
+  const { data, error } = await supabaseClient.from("pedidos").select("*").order("id", { ascending: false });
+  if (error) { tabela.innerHTML = `<tr><td colspan="8" style="color:#ef4444;text-align:center;padding:40px">${error.message}</td></tr>`; return; }
+  if (!data || data.length === 0) { tabela.innerHTML = `<tr><td colspan="8" style="color:var(--muted);text-align:center;padding:40px">Nenhum pedido encontrado.</td></tr>`; return; }
   tabela.innerHTML = "";
   data.forEach((p) => {
-    let statusClass = "status-pendente";
-    if (p.status === "aprovado") statusClass = "status-aprovado";
-    else if (p.status === "cancelado") statusClass = "status-cancelado";
-    else if (p.status === "ativo") statusClass = "status-ativo";
-
-    let validadeStr = "";
-    if (p.validade_ate) {
-      const d = new Date(p.validade_ate);
-      validadeStr = `<div style="font-size:11px;color:var(--muted);margin-top:4px">Até ${d.toLocaleDateString("pt-BR")}</div>`;
-    }
-
+    let sc = "status-pendente";
+    if (p.status === "aprovado") sc = "status-aprovado";
+    else if (p.status === "cancelado") sc = "status-cancelado";
+    else if (p.status === "ativo") sc = "status-ativo";
+    let validadeStr = p.validade_ate ? `<div style="font-size:11px;color:var(--muted);margin-top:4px">Até ${new Date(p.validade_ate).toLocaleDateString("pt-BR")}</div>` : "";
     let compHTML = `<span class="comp-none">—</span>`;
-    if (p.comprovante_url) {
-      compHTML = `<span class="comp-thumb" onclick="abrirLightbox('${p.comprovante_url}')"><img src="${p.comprovante_url}" alt="Comprovante #${p.id}" title="Clique para ampliar"></span>`;
-    }
-
+    if (p.comprovante_url) compHTML = `<span class="comp-thumb" onclick="abrirLightbox('${p.comprovante_url}')"><img src="${p.comprovante_url}" alt="Comprovante #${p.id}" title="Clique para ampliar"></span>`;
     tabela.innerHTML += `
     <tr>
       <td style="font-family:monospace;font-size:12px;color:#6aabff">#${p.id}</td>
-      <td>
-        <div style="font-weight:600">${p.nome_cliente || "—"}</div>
-        <div style="font-size:12px;color:var(--muted)">${p.email || ""}</div>
-      </td>
-      <td>${p.produto || "—"}</td>
+      <td><div style="font-weight:600">${p.nome_cliente||"—"}</div><div style="font-size:12px;color:var(--muted)">${p.email||""}</div></td>
+      <td>${p.produto||"—"}</td>
       <td style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--blue)">${Number(p.valor||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</td>
-      <td><span class="status-badge ${statusClass}">${p.status || "pendente"}</span>${validadeStr}</td>
+      <td><span class="status-badge ${sc}">${p.status||"pendente"}</span>${validadeStr}</td>
       <td>${compHTML}</td>
-      <td style="font-size:13px">${p.whatsapp || "—"}</td>
+      <td style="font-size:13px">${p.whatsapp||"—"}</td>
       <td>
         <div class="admin-actions-bar">
-          <button class="btn-action btn-approve" onclick="aprovarPedido(${p.id})">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-            Aprovar 30d
-          </button>
-          <button class="btn-action btn-renew" onclick="renovarPedido(${p.id})">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
-            Renovar 30d
-          </button>
-          <button class="btn-action btn-cancel" onclick="cancelarPedido(${p.id})">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-            Cancelar
-          </button>
-          <button class="btn-action btn-delete" onclick="excluirPedido(${p.id})">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-            Excluir
-          </button>
+          <button class="btn-action btn-approve" onclick="aprovarPedido(${p.id})"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Aprovar 30d</button>
+          <button class="btn-action btn-renew"   onclick="renovarPedido(${p.id})"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>Renovar 30d</button>
+          <button class="btn-action btn-cancel"  onclick="cancelarPedido(${p.id})"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>Cancelar</button>
+          <button class="btn-action btn-delete"  onclick="excluirPedido(${p.id})"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>Excluir</button>
         </div>
       </td>
     </tr>`;
   });
 }
-
-if (sessionStorage.getItem("lumina_admin") === "ok") {
-  carregarPedidosAdmin();
-}
 </script>
-
 </body>
 </html>
