@@ -12,19 +12,23 @@
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  cursor: pointer;
   transition: border-color 0.2s;
   margin-bottom: 12px;
+  cursor: pointer;
+  user-select: none;
 }
 .check-field:hover { border-color: rgba(26,107,255,0.4); }
 .check-field input[type="checkbox"] {
-  width: 18px; height: 18px; flex-shrink: 0;
-  accent-color: var(--blue); cursor: pointer; margin-top: 1px;
+  width: 18px; height: 18px; min-width:18px;
+  accent-color: var(--blue); cursor: pointer; margin-top: 2px;
 }
-.check-field label {
-  font-size: 13px; color: #94a3b8; line-height: 1.6; cursor: pointer;
+.check-field span {
+  font-size: 13px; color: #94a3b8; line-height: 1.6;
 }
-.check-field label a { color: #6aabff; text-decoration: underline; }
+.check-field span a {
+  color: #6aabff; text-decoration: underline;
+  pointer-events: all;
+}
 </style>
 </head>
 <body>
@@ -59,8 +63,9 @@
       <input type="tel" id="telefone" placeholder="(00) 00000-0000" required>
     </div>
     <div class="field">
-      <label>ID Online <span style="color:var(--muted);font-weight:400;font-size:12px">(usuário no jogo)</span></label>
-      <input type="text" id="idOnline" placeholder="Seu ID no jogo" required>
+      <label>ID Online <span style="color:var(--muted);font-weight:400;font-size:12px">— seu apelido no site</span></label>
+      <input type="text" id="idOnline" placeholder="Ex: LuanVini, Jogador123..." required>
+      <div style="font-size:12px;color:var(--muted);margin-top:6px"></div>
     </div>
     <div class="field">
       <label>Senha</label>
@@ -72,13 +77,21 @@
     </div>
 
     <div style="margin:24px 0 20px">
-      <div class="check-field">
-        <input type="checkbox" id="termos">
-        <label for="termos">Li e concordo com os <a href="termos.html" target="_blank" onclick="event.stopPropagation()">Termos de Uso</a> da Lumina Interactive.</label>
+      <!-- Termos -->
+      <div class="check-field" id="boxTermos" onclick="marcar('termos')">
+        <input type="checkbox" id="termos" onclick="event.stopPropagation()">
+        <span>Li e concordo com os
+          <a href="termos.html" target="_blank" onclick="event.stopPropagation()">Termos de Uso</a>
+          da Lumina Interactive.
+        </span>
       </div>
-      <div class="check-field">
-        <input type="checkbox" id="privacidade">
-        <label for="privacidade">Compreendo e aceito a <a href="privacidade.html" target="_blank" onclick="event.stopPropagation()">Política de Privacidade</a> da Lumina Interactive.</label>
+      <!-- Privacidade -->
+      <div class="check-field" id="boxPrivacidade" onclick="marcar('privacidade')">
+        <input type="checkbox" id="privacidade" onclick="event.stopPropagation()">
+        <span>Compreendo e aceito a
+          <a href="privacidade.html" target="_blank" onclick="event.stopPropagation()">Política de Privacidade</a>
+          da Lumina Interactive.
+        </span>
       </div>
     </div>
 
@@ -107,6 +120,14 @@ const supabaseClient = supabase.createClient(
   "sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK"
 );
 
+// Marca/desmarca pelo clique no div inteiro
+function marcar(id) {
+  const cb = document.getElementById(id);
+  cb.checked = !cb.checked;
+  const box = document.getElementById("box" + id.charAt(0).toUpperCase() + id.slice(1));
+  box.style.borderColor = cb.checked ? "rgba(26,107,255,0.5)" : "";
+}
+
 function mostrarErro(msg) {
   const el = document.getElementById("msgErro");
   el.textContent = msg; el.style.display = "block";
@@ -130,20 +151,19 @@ async function criarConta() {
   const privacidade = document.getElementById("privacidade").checked;
   const btn = document.getElementById("btnCriar");
 
-  if (!nome)      { mostrarErro("Digite seu nome completo."); return; }
-  if (!email)     { mostrarErro("Digite seu e-mail."); return; }
-  if (!telefone)  { mostrarErro("Digite seu número de telefone."); return; }
-  if (!idOnline)  { mostrarErro("Digite seu ID online."); return; }
+  if (!nome)        { mostrarErro("Digite seu nome completo."); return; }
+  if (!email)       { mostrarErro("Digite seu e-mail."); return; }
+  if (!telefone)    { mostrarErro("Digite seu número de telefone."); return; }
+  if (!idOnline)    { mostrarErro("Digite seu ID online."); return; }
   if (senha.length < 6) { mostrarErro("A senha precisa ter ao menos 6 caracteres."); return; }
   if (senha !== senhaC) { mostrarErro("As senhas não coincidem."); return; }
-  if (!termos)    { mostrarErro("Você precisa concordar com os Termos de Uso."); return; }
+  if (!termos)      { mostrarErro("Você precisa concordar com os Termos de Uso."); return; }
   if (!privacidade) { mostrarErro("Você precisa aceitar a Política de Privacidade."); return; }
 
   btn.textContent = "Criando conta..."; btn.disabled = true;
 
-  const { data, error } = await supabaseClient.auth.signUp({
-    email,
-    password: senha,
+  const { error } = await supabaseClient.auth.signUp({
+    email, password: senha,
     options: {
       emailRedirectTo: window.location.origin + "/minha-conta.html",
       data: { nome, telefone, id_online: idOnline }
@@ -156,9 +176,8 @@ async function criarConta() {
     return;
   }
 
-  mostrarSucesso("Conta criada com sucesso! Verifique seu e-mail para confirmar e depois faça login.");
+  mostrarSucesso("Conta criada! Verifique seu e-mail para confirmar e depois faça login.");
   btn.textContent = "Criar conta"; btn.disabled = false;
-
   setTimeout(() => { window.location.href = "login.html"; }, 3000);
 }
 </script>
