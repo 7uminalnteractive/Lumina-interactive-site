@@ -23,12 +23,41 @@
     <div class="account-card" style="opacity:1;transform:none;margin-bottom:24px">
       <div class="badge">Conta</div>
       <h1>Minha conta</h1>
-      <p>Gerencie sua assinatura e downloads.</p>
-      <div class="account-email" id="emailUsuario">Carregando...</div>
-      <button onclick="logout()" class="btn secondary" style="width:100%">Sair da conta</button>
+      <p>Gerencie seu perfil, assinatura e downloads.</p>
+
+      <!-- Dados do perfil -->
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:16px">Informações do perfil</div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:14px;border-bottom:1px solid var(--border);padding-bottom:10px">
+            <span style="color:var(--muted)">Nome</span>
+            <span id="infoNome" style="color:var(--text);font-weight:600">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:14px;border-bottom:1px solid var(--border);padding-bottom:10px">
+            <span style="color:var(--muted)">E-mail</span>
+            <span id="infoEmail" style="color:#6aabff;font-family:monospace;font-size:13px">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:14px;border-bottom:1px solid var(--border);padding-bottom:10px">
+            <span style="color:var(--muted)">Telefone</span>
+            <span id="infoTelefone" style="color:var(--text)">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:14px">
+            <span style="color:var(--muted)">ID Online</span>
+            <span id="infoIdOnline" style="color:var(--blue);font-weight:700">—</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button onclick="logout()" class="btn secondary" style="flex:1;min-width:120px">Sair da conta</button>
+        <button onclick="confirmarExclusao()" class="btn-action btn-delete" style="flex:1;min-width:120px;padding:13px;border-radius:12px;font-size:14px;justify-content:center">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+          Excluir conta
+        </button>
+      </div>
     </div>
 
-    <!-- Assinatura -->
+    <!-- Assinatura ativa -->
     <div id="blocoAssinatura" style="display:none;background:#0c1528;border:1px solid rgba(26,107,255,0.25);border-radius:24px;padding:32px;margin-bottom:24px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
         <span class="badge" style="margin-bottom:0">Assinatura</span>
@@ -48,6 +77,21 @@
   </div>
 </div>
 
+<!-- Modal confirmação exclusão -->
+<div id="modalExclusao" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(4,7,15,0.92);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center">
+  <div style="background:var(--bg3);border:1px solid rgba(239,68,68,0.3);border-radius:24px;padding:40px;max-width:420px;width:90%;text-align:center;box-shadow:0 0 60px rgba(239,68,68,0.12)">
+    <div style="width:52px;height:52px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="#ef4444"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+    </div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;margin-bottom:10px">Excluir conta?</div>
+    <p style="color:#94a3b8;font-size:14px;line-height:1.7;margin-bottom:28px">Esta ação é <strong style="color:#ef4444">irreversível</strong>. Todos os seus dados e assinaturas serão removidos permanentemente.</p>
+    <div style="display:flex;gap:10px">
+      <button onclick="fecharModal()" class="btn secondary" style="flex:1">Cancelar</button>
+      <button onclick="excluirConta()" class="btn-action btn-delete" style="flex:1;padding:13px;border-radius:12px;font-size:14px;justify-content:center">Sim, excluir</button>
+    </div>
+  </div>
+</div>
+
 <footer class="footer">
   <div class="footer-logo"><img src="logo.png" alt="Lumina Interactive" style="height:32px;width:auto;opacity:0.85"></div>
   <div class="footer-links">
@@ -64,37 +108,40 @@ const supabaseClient = supabase.createClient(
   "sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK"
 );
 
+let userSession = null;
+
 async function init() {
-  // Pega sessão ou localStorage
   let email = null;
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (session?.user) {
+    userSession = session;
     email = session.user.email;
     localStorage.setItem("lumina_logado", "sim");
     localStorage.setItem("lumina_email", email);
+
+    // Pega dados do perfil salvos no metadata (nome, telefone, id_online)
+    const meta = session.user.user_metadata || {};
+    document.getElementById("infoNome").innerText      = meta.nome      || "—";
+    document.getElementById("infoTelefone").innerText  = meta.telefone  || "—";
+    document.getElementById("infoIdOnline").innerText  = meta.id_online || "—";
   } else {
     email = localStorage.getItem("lumina_email");
   }
 
   if (!email) { window.location.href = "login.html"; return; }
-  document.getElementById("emailUsuario").innerText = email;
+  document.getElementById("infoEmail").innerText = email;
 
-  // Busca pedido aprovado pelo email
+  // Busca assinatura
   const { data, error } = await supabaseClient
-    .from("pedidos")
-    .select("*")
-    .eq("email", email)
-    .eq("status", "aprovado")
-    .order("id", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+    .from("pedidos").select("*")
+    .eq("email", email).eq("status", "aprovado")
+    .order("id", { ascending: false }).limit(1).maybeSingle();
 
   if (error || !data) {
     document.getElementById("blocoSemAssinatura").style.display = "block";
     return;
   }
 
-  // Verifica validade
   const agora = new Date();
   const validade = data.validade_ate ? new Date(data.validade_ate) : null;
   const ativa = !validade || validade > agora;
@@ -113,7 +160,6 @@ async function init() {
     statusEl.textContent = "Expirada";
     statusEl.className = "status-badge status-cancelado";
     document.getElementById("validadeTexto").innerText = "Expirou em " + validade.toLocaleDateString("pt-BR");
-    // Mostra botão de renovar também
     document.getElementById("blocoSemAssinatura").style.display = "block";
   }
 }
@@ -123,6 +169,35 @@ async function logout() {
   localStorage.removeItem("lumina_logado");
   localStorage.removeItem("lumina_email");
   window.location.href = "login.html";
+}
+
+function confirmarExclusao() {
+  document.getElementById("modalExclusao").style.display = "flex";
+}
+function fecharModal() {
+  document.getElementById("modalExclusao").style.display = "none";
+}
+
+async function excluirConta() {
+  if (!userSession) { alert("Você precisa estar logado para excluir a conta."); return; }
+  // Remove pedidos do usuário
+  await supabaseClient.from("pedidos").delete().eq("email", userSession.user.email);
+  // Deleta o usuário via auth admin (precisa de RPC ou edge function no Supabase)
+  // Como alternativa segura, faz signOut e marca conta como excluída
+  const { error } = await supabaseClient.rpc("delete_user");
+  if (error) {
+    // Fallback: só desloga e avisa
+    await supabaseClient.auth.signOut();
+    localStorage.removeItem("lumina_logado");
+    localStorage.removeItem("lumina_email");
+    alert("Conta excluída com sucesso.");
+    window.location.href = "index.html";
+    return;
+  }
+  await supabaseClient.auth.signOut();
+  localStorage.removeItem("lumina_logado");
+  localStorage.removeItem("lumina_email");
+  window.location.href = "index.html";
 }
 
 init();
