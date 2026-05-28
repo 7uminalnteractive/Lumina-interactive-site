@@ -27,7 +27,7 @@
 </head>
 <body>
 
-<div id="semAcesso" style="display:none;position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px">
+<div id="semAcesso" style="position:fixed;inset:0;background:var(--bg);display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px">
   <div style="font-size:14px;color:var(--muted)">Acesso restrito ao administrador.</div>
   <a href="admin.html" class="btn primary">Ir para o Admin</a>
 </div>
@@ -94,7 +94,7 @@
 <script src="app.js"></script>
 <script>
 // Verifica se é admin
-if (sessionStorage.getItem("lumina_admin") !== "ok") {
+if (sessionStorage.getItem("lumina_admin") !== "ok" && localStorage.getItem("lumina_admin") !== "ok") {
   document.getElementById("semAcesso").style.display = "flex";
 } else {
   document.getElementById("painelPerfil").style.display = "block";
