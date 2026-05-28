@@ -316,7 +316,7 @@ async function carregarDashboard() {
     let sc = p.status==="aprovado"?"status-aprovado":p.status==="cancelado"?"status-cancelado":"status-pendente";
     tbody.innerHTML += `<tr>
       <td style="font-family:monospace;font-size:12px;color:#6aabff">#${p.id}</td>
-      <td><div style="font-weight:600">${p.nome_cliente||"—"}</div><div style="font-size:12px;color:var(--muted)">${p.email||""}</div></td>
+      <td onclick="verPerfil('${p.email||''}')" style="cursor:pointer"><div style="font-weight:600;color:var(--text)">${p.nome_cliente||"—"}</div><div style="font-size:12px;color:#6aabff">${p.email||""}</div></td>
       <td>${p.produto||"—"}</td>
       <td><span class="status-badge ${sc}">${p.status||"pendente"}</span></td>
       <td style="font-size:13px;color:var(--muted)">${p.validade_ate?new Date(p.validade_ate).toLocaleDateString("pt-BR"):"—"}</td>
@@ -348,7 +348,7 @@ function renderPedidos() {
       :`<span class="comp-none">—</span>`;
     tabela.innerHTML+=`<tr>
       <td style="font-family:monospace;font-size:12px;color:#6aabff">#${p.id}</td>
-      <td><div style="font-weight:600">${p.nome_cliente||"—"}</div><div style="font-size:12px;color:var(--muted)">${p.email||""}</div></td>
+      <td onclick="verPerfil('${p.email||''}')" style="cursor:pointer"><div style="font-weight:600;color:var(--text)">${p.nome_cliente||"—"}</div><div style="font-size:12px;color:#6aabff">${p.email||""}</div></td>
       <td>${p.produto||"—"}</td>
       <td style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--blue)">${Number(p.valor||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</td>
       <td><span class="status-badge ${sc}">${p.status||"pendente"}</span>${vStr}</td>
@@ -391,7 +391,7 @@ function renderAtivos() {
     const cor = typeof dias==="number"&&dias<=7?"#fbbf24":"#22c55e";
     tbody.innerHTML+=`<tr>
       <td style="font-family:monospace;font-size:12px;color:#6aabff">#${p.id}</td>
-      <td><div style="font-weight:600">${p.nome_cliente||"—"}</div><div style="font-size:12px;color:var(--muted)">${p.email||""}</div></td>
+      <td onclick="verPerfil('${p.email||''}')" style="cursor:pointer"><div style="font-weight:600;color:var(--text)">${p.nome_cliente||"—"}</div><div style="font-size:12px;color:#6aabff">${p.email||""}</div></td>
       <td>${p.produto||"—"}</td>
       <td style="font-size:13px">${val?val.toLocaleDateString("pt-BR"):"Sem expiração"}</td>
       <td style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:${cor}">${dias}d</td>
@@ -433,7 +433,7 @@ function renderUsuarios() {
     const assinante = u.assinante ? `<span class="status-badge status-aprovado">Assinante</span>` : `<span class="status-badge status-pendente">Não assinante</span>`;
     const criado = u.criado_em ? new Date(u.criado_em).toLocaleDateString("pt-BR") : "—";
     tbody.innerHTML+=`<tr>
-      <td><div style="font-weight:600">${u.nome||"—"}</div></td>
+      <td onclick="verPerfil('${u.email||''}')" style="cursor:pointer"><div style="font-weight:600;color:var(--text);text-decoration:underline dotted">${u.nome||"—"}</div></td>
       <td style="color:var(--blue);font-weight:700;font-size:14px">@${u.id_online||"—"}</td>
       <td style="font-family:monospace;font-size:12px;color:#6aabff">${u.email||"—"}</td>
       <td style="font-size:13px">${u.telefone||"—"}</td>
@@ -443,6 +443,12 @@ function renderUsuarios() {
   });
 }
 function filtrarUsuarios() { renderUsuarios(); }
+
+function verPerfil(email) {
+  if (!email) return;
+  window.location.href = "perfil-usuario.html?email=" + encodeURIComponent(email);
+}
+
 
 // LIGHTBOX
 function abrirLightbox(url) { document.getElementById("compLightboxImg").src=url; document.getElementById("compLightbox").style.display="flex"; }
