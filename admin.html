@@ -19,44 +19,29 @@
 .tab-btn:hover { color: var(--text); }
 .tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
 
-/* Dashboard cards */
 .dash-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 14px; margin-bottom: 40px;
 }
 .dash-card {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 18px; padding: 22px 20px;
-  cursor: pointer;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 18px; padding: 22px 20px; cursor: pointer;
   transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
 }
-.dash-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-}
-.dash-card.blue  { border-color: rgba(26,107,255,0.2); }
-.dash-card.green { border-color: rgba(34,197,94,0.2); }
-.dash-card.yellow{ border-color: rgba(251,191,36,0.2); }
-.dash-card.red   { border-color: rgba(239,68,68,0.2); }
-.dash-card.purple{ border-color: rgba(167,139,250,0.2); }
-
-.dash-card:hover.blue  { border-color: rgba(26,107,255,0.5);  box-shadow: 0 8px 30px rgba(26,107,255,0.12); }
-.dash-card:hover.green { border-color: rgba(34,197,94,0.5);   box-shadow: 0 8px 30px rgba(34,197,94,0.12); }
-.dash-card:hover.yellow{ border-color: rgba(251,191,36,0.5);  box-shadow: 0 8px 30px rgba(251,191,36,0.12); }
-.dash-card:hover.red   { border-color: rgba(239,68,68,0.5);   box-shadow: 0 8px 30px rgba(239,68,68,0.12); }
-.dash-card:hover.purple{ border-color: rgba(167,139,250,0.5); box-shadow: 0 8px 30px rgba(167,139,250,0.12); }
-
-.dash-card-label {
-  font-size: 10px; font-weight: 700;
-  letter-spacing: 1.5px; text-transform: uppercase;
-  color: var(--muted); margin-bottom: 10px;
-}
-.dash-card-value {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 44px; line-height: 1; letter-spacing: 1px;
-}
+.dash-card:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+.dash-card.blue   { border-color: rgba(26,107,255,0.2); }
+.dash-card.green  { border-color: rgba(34,197,94,0.2); }
+.dash-card.yellow { border-color: rgba(251,191,36,0.2); }
+.dash-card.red    { border-color: rgba(239,68,68,0.2); }
+.dash-card.purple { border-color: rgba(167,139,250,0.2); }
+.dash-card:hover.blue   { border-color: rgba(26,107,255,0.5);  box-shadow: 0 8px 30px rgba(26,107,255,0.12); }
+.dash-card:hover.green  { border-color: rgba(34,197,94,0.5);   box-shadow: 0 8px 30px rgba(34,197,94,0.12); }
+.dash-card:hover.yellow { border-color: rgba(251,191,36,0.5);  box-shadow: 0 8px 30px rgba(251,191,36,0.12); }
+.dash-card:hover.red    { border-color: rgba(239,68,68,0.5);   box-shadow: 0 8px 30px rgba(239,68,68,0.12); }
+.dash-card:hover.purple { border-color: rgba(167,139,250,0.5); box-shadow: 0 8px 30px rgba(167,139,250,0.12); }
+.dash-card-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.dash-card-value { font-family: 'Bebas Neue', sans-serif; font-size: 44px; line-height: 1; letter-spacing: 1px; }
 .dash-card-sub { font-size: 11px; color: var(--muted); margin-top: 6px; }
 .dash-card.blue   .dash-card-value { color: var(--blue); }
 .dash-card.green  .dash-card-value { color: #22c55e; }
@@ -64,7 +49,6 @@
 .dash-card.red    .dash-card-value { color: #ef4444; }
 .dash-card.purple .dash-card-value { color: #a78bfa; }
 
-/* Search bar */
 .search-bar {
   display: flex; align-items: center; gap: 12px;
   background: var(--bg3); border: 1px solid var(--border);
@@ -73,43 +57,29 @@
 }
 .search-bar:focus-within { border-color: rgba(26,107,255,0.5); }
 .search-bar svg { color: var(--muted); flex-shrink: 0; }
-.search-bar input {
-  background: none; border: none; outline: none;
-  color: var(--text); font-family: var(--font-body);
-  font-size: 14px; width: 100%;
-}
+.search-bar input { background: none; border: none; outline: none; color: var(--text); font-family: var(--font-body); font-size: 14px; width: 100%; }
 .search-bar input::placeholder { color: var(--muted); }
 
-/* Filtro status */
-.filter-row {
-  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;
-}
-.filter-btn {
-  background: var(--bg3); border: 1px solid var(--border);
-  color: var(--muted); font-family: var(--font-body);
-  font-size: 12px; font-weight: 600; padding: 6px 14px;
-  border-radius: 999px; cursor: pointer;
-  transition: all 0.15s;
-}
+.filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.filter-btn { background: var(--bg3); border: 1px solid var(--border); color: var(--muted); font-family: var(--font-body); font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 999px; cursor: pointer; transition: all 0.15s; }
 .filter-btn:hover, .filter-btn.active { background: var(--blue-dim); border-color: rgba(26,107,255,0.4); color: #6aabff; }
 .filter-btn.f-green.active  { background: rgba(34,197,94,0.12);  border-color: rgba(34,197,94,0.4);  color: #22c55e; }
 .filter-btn.f-yellow.active { background: rgba(251,191,36,0.12); border-color: rgba(251,191,36,0.4); color: #fbbf24; }
 .filter-btn.f-red.active    { background: rgba(239,68,68,0.12);  border-color: rgba(239,68,68,0.4);  color: #ef4444; }
 
-/* ADM info */
-.adm-badge {
-  display: flex; align-items: center; gap: 10px;
-  background: var(--bg3); border: 1px solid var(--border);
-  border-radius: 12px; padding: 8px 16px;
-  font-size: 13px; color: var(--muted);
-  margin-left: auto;
-}
+.adm-badge { display: flex; align-items: center; gap: 10px; background: var(--bg3); border: 1px solid var(--border); border-radius: 12px; padding: 8px 16px; font-size: 13px; color: var(--muted); margin-left: auto; }
 .adm-badge strong { color: var(--text); }
+
+/* Senha oculta */
+.senha-campo { display: flex; align-items: center; gap: 6px; }
+.senha-campo span { font-family: monospace; font-size: 13px; color: var(--muted); letter-spacing: 2px; }
+.senha-campo button { background: none; border: none; cursor: pointer; color: var(--muted); padding: 2px; font-size: 11px; transition: color 0.15s; }
+.senha-campo button:hover { color: var(--text); }
 </style>
 </head>
 <body>
 
-<!-- ── LOGIN OVERLAY ── -->
+<!-- LOGIN -->
 <div class="admin-login-overlay" id="adminLoginOverlay">
   <div class="admin-login-box">
     <div style="width:48px;height:48px;background:var(--blue-dim);border:1px solid rgba(26,107,255,0.25);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
@@ -130,7 +100,7 @@
   </div>
 </div>
 
-<!-- ── PAINEL ADMIN ── -->
+<!-- PAINEL -->
 <div id="adminPanel" style="display:none">
 
 <nav class="navbar">
@@ -152,10 +122,11 @@
       <button class="tab-btn active" id="tabDashBtn"      onclick="mudarAba('Dash')">Dashboard</button>
       <button class="tab-btn"        id="tabPedidosBtn"   onclick="mudarAba('Pedidos')">Pedidos</button>
       <button class="tab-btn"        id="tabAtivosBtn"    onclick="mudarAba('Ativos')">Assinantes Ativos</button>
+      <button class="tab-btn"        id="tabUsuariosBtn"  onclick="mudarAba('Usuarios')">Todos os Usuários</button>
       <button class="tab-btn"        id="tabAssinanteBtn" onclick="mudarAba('Assinante')">Criar Assinante</button>
     </div>
 
-    <!-- ══ DASHBOARD ══ -->
+    <!-- DASHBOARD -->
     <div id="tabDash">
       <div class="page-hero" style="padding:0 0 28px">
         <div class="page-hero-label">Visão Geral</div>
@@ -163,36 +134,12 @@
         <p>Resumo em tempo real dos pedidos e assinaturas.</p>
       </div>
       <div class="dash-grid">
-        <div class="dash-card blue"   onclick="mudarAba('Pedidos')">
-          <div class="dash-card-label">Total de pedidos</div>
-          <div class="dash-card-value" id="dTotal">—</div>
-          <div class="dash-card-sub">ver todos →</div>
-        </div>
-        <div class="dash-card green"  onclick="mudarAba('Ativos')">
-          <div class="dash-card-label">Assinantes ativos</div>
-          <div class="dash-card-value" id="dAtivos">—</div>
-          <div class="dash-card-sub">ver ativos →</div>
-        </div>
-        <div class="dash-card yellow" onclick="mudarAba('Pedidos');setTimeout(()=>aplicarFiltro('pendente'),100)">
-          <div class="dash-card-label">Pendentes</div>
-          <div class="dash-card-value" id="dPendentes">—</div>
-          <div class="dash-card-sub">aguardando aprovação →</div>
-        </div>
-        <div class="dash-card red"    onclick="mudarAba('Pedidos');setTimeout(()=>aplicarFiltro('cancelado'),100)">
-          <div class="dash-card-label">Cancelados</div>
-          <div class="dash-card-value" id="dCancelados">—</div>
-          <div class="dash-card-sub">ver cancelados →</div>
-        </div>
-        <div class="dash-card purple" onclick="mudarAba('Ativos')">
-          <div class="dash-card-label">Expirando em 7d</div>
-          <div class="dash-card-value" id="dExpirando">—</div>
-          <div class="dash-card-sub">precisam renovar →</div>
-        </div>
-        <div class="dash-card green">
-          <div class="dash-card-label">Receita total</div>
-          <div class="dash-card-value" id="dReceita" style="font-size:28px;margin-top:4px">—</div>
-          <div class="dash-card-sub">pedidos aprovados</div>
-        </div>
+        <div class="dash-card blue"   onclick="mudarAba('Pedidos')"><div class="dash-card-label">Total de pedidos</div><div class="dash-card-value" id="dTotal">—</div><div class="dash-card-sub">ver todos →</div></div>
+        <div class="dash-card green"  onclick="mudarAba('Ativos')"><div class="dash-card-label">Assinantes ativos</div><div class="dash-card-value" id="dAtivos">—</div><div class="dash-card-sub">ver ativos →</div></div>
+        <div class="dash-card yellow" onclick="mudarAba('Pedidos');setTimeout(()=>aplicarFiltro('pendente'),100)"><div class="dash-card-label">Pendentes</div><div class="dash-card-value" id="dPendentes">—</div><div class="dash-card-sub">aguardando aprovação →</div></div>
+        <div class="dash-card red"    onclick="mudarAba('Pedidos');setTimeout(()=>aplicarFiltro('cancelado'),100)"><div class="dash-card-label">Cancelados</div><div class="dash-card-value" id="dCancelados">—</div><div class="dash-card-sub">ver cancelados →</div></div>
+        <div class="dash-card purple" onclick="mudarAba('Ativos')"><div class="dash-card-label">Expirando em 7d</div><div class="dash-card-value" id="dExpirando">—</div><div class="dash-card-sub">precisam renovar →</div></div>
+        <div class="dash-card green"><div class="dash-card-label">Receita total</div><div class="dash-card-value" id="dReceita" style="font-size:28px;margin-top:4px">—</div><div class="dash-card-sub">pedidos aprovados</div></div>
       </div>
       <div>
         <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1px;margin-bottom:16px">Pedidos recentes</div>
@@ -205,11 +152,10 @@
       </div>
     </div>
 
-    <!-- ══ PEDIDOS ══ -->
+    <!-- PEDIDOS -->
     <div id="tabPedidos" style="display:none">
       <div class="page-hero" style="padding:0 0 28px">
-        <div class="page-hero-label">Painel</div>
-        <h1>Pedidos</h1>
+        <div class="page-hero-label">Painel</div><h1>Pedidos</h1>
         <p>Gerencie todos os pedidos, assinaturas e comprovantes.</p>
       </div>
       <div class="search-bar">
@@ -217,9 +163,9 @@
         <input type="text" id="searchPedidos" placeholder="Pesquisar por nome, e-mail, produto..." oninput="filtrarPedidos()">
       </div>
       <div class="filter-row">
-        <button class="filter-btn active" id="f-todos"    onclick="aplicarFiltro('todos')">Todos</button>
-        <button class="filter-btn f-yellow" id="f-pendente"  onclick="aplicarFiltro('pendente')">Pendentes</button>
-        <button class="filter-btn f-green"  id="f-aprovado"  onclick="aplicarFiltro('aprovado')">Aprovados</button>
+        <button class="filter-btn active" id="f-todos"     onclick="aplicarFiltro('todos')">Todos</button>
+        <button class="filter-btn f-yellow" id="f-pendente" onclick="aplicarFiltro('pendente')">Pendentes</button>
+        <button class="filter-btn f-green"  id="f-aprovado" onclick="aplicarFiltro('aprovado')">Aprovados</button>
         <button class="filter-btn f-red"    id="f-cancelado" onclick="aplicarFiltro('cancelado')">Cancelados</button>
       </div>
       <div style="overflow-x:auto">
@@ -230,11 +176,10 @@
       </div>
     </div>
 
-    <!-- ══ ASSINANTES ATIVOS ══ -->
+    <!-- ASSINANTES ATIVOS -->
     <div id="tabAtivos" style="display:none">
       <div class="page-hero" style="padding:0 0 28px">
-        <div class="page-hero-label">Assinantes</div>
-        <h1>Ativos</h1>
+        <div class="page-hero-label">Assinantes</div><h1>Ativos</h1>
         <p>Todos os assinantes com acesso ativo no momento.</p>
       </div>
       <div class="search-bar">
@@ -249,11 +194,37 @@
       </div>
     </div>
 
-    <!-- ══ CRIAR ASSINANTE ══ -->
+    <!-- TODOS OS USUÁRIOS -->
+    <div id="tabUsuarios" style="display:none">
+      <div class="page-hero" style="padding:0 0 28px">
+        <div class="page-hero-label">Usuários</div><h1>Todos os Usuários</h1>
+        <p>Lista completa de todos os usuários cadastrados no site.</p>
+      </div>
+      <div class="search-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" id="searchUsuarios" placeholder="Pesquisar por nome, @id, e-mail..." oninput="filtrarUsuarios()">
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>@ID Online</th>
+              <th>E-mail</th>
+              <th>Telefone</th>
+              <th>Assinatura</th>
+              <th>Cadastro</th>
+            </tr>
+          </thead>
+          <tbody id="usuarios-tbody"><tr><td colspan="6" style="color:var(--muted);text-align:center;padding:40px">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CRIAR ASSINANTE -->
     <div id="tabAssinante" style="display:none">
       <div class="page-hero" style="padding:0 0 28px">
-        <div class="page-hero-label">Painel</div>
-        <h1>Criar Assinante</h1>
+        <div class="page-hero-label">Painel</div><h1>Criar Assinante</h1>
         <p>Adicione um assinante manualmente com 30 dias de acesso imediato.</p>
       </div>
       <div style="max-width:480px">
@@ -274,7 +245,7 @@
   <div class="footer-logo"><img src="logo.png" alt="Lumina Interactive" style="height:32px;width:auto;opacity:0.85"></div>
   <div class="footer-copy">© 2026 Lumina Interactive™.</div>
 </footer>
-</div><!-- /adminPanel -->
+</div>
 
 <!-- Lightbox -->
 <div class="comp-lightbox" id="compLightbox" style="display:none" onclick="fecharLightbox()">
@@ -286,15 +257,9 @@
 <script src="app.js"></script>
 <script src="navbar-auth.js"></script>
 <script>
-// ── ADMINS AUTORIZADOS ──
-const ADMINS = [
-  { email: "lv196814@gmail.com", senha: "LVxV7!_0917", nome: "LV" }
-];
+const ADMINS = [{ email: "lv196814@gmail.com", senha: "LVxV7!_0917", nome: "LV" }];
+let todosPedidos = [], filtroAtual = "todos", todosAtivos = [], todosUsuarios = [];
 
-let todosPedidos = [];
-let filtroAtual = "todos";
-
-// ── LOGIN ──
 function verificarSenha() {
   const email = document.getElementById("adminEmail").value.trim().toLowerCase();
   const senha = document.getElementById("adminSenha").value;
@@ -306,108 +271,88 @@ function verificarSenha() {
     sessionStorage.setItem("lumina_adm_nome", adm.nome);
     document.getElementById("admNome").textContent = adm.nome;
     iniciarAdmin();
-  } else {
-    document.getElementById("loginErr").classList.add("show");
-  }
+  } else { document.getElementById("loginErr").classList.add("show"); }
 }
-
 document.getElementById("adminSenha").addEventListener("keydown", e => { if (e.key === "Enter") verificarSenha(); });
 document.getElementById("adminEmail").addEventListener("keydown", e => { if (e.key === "Enter") verificarSenha(); });
-
 if (sessionStorage.getItem("lumina_admin") === "ok") {
   document.getElementById("adminLoginOverlay").style.display = "none";
   document.getElementById("adminPanel").style.display = "block";
   document.getElementById("admNome").textContent = sessionStorage.getItem("lumina_adm_nome") || "Admin";
   iniciarAdmin();
 }
+function logoutAdmin() { sessionStorage.removeItem("lumina_admin"); sessionStorage.removeItem("lumina_adm_nome"); location.reload(); }
 
-function logoutAdmin() {
-  sessionStorage.removeItem("lumina_admin");
-  sessionStorage.removeItem("lumina_adm_nome");
-  location.reload();
-}
-
-// ── ABAS ──
-const ABAS = ["Dash","Pedidos","Ativos","Assinante"];
+const ABAS = ["Dash","Pedidos","Ativos","Usuarios","Assinante"];
 function mudarAba(aba) {
   ABAS.forEach(a => {
-    document.getElementById("tab" + a).style.display = a === aba ? "block" : "none";
-    document.getElementById("tab" + a + "Btn").classList.toggle("active", a === aba);
+    document.getElementById("tab"+a).style.display = a===aba ? "block" : "none";
+    document.getElementById("tab"+a+"Btn").classList.toggle("active", a===aba);
   });
+  if (aba === "Usuarios") carregarUsuarios();
 }
 
-function iniciarAdmin() {
-  carregarDashboard();
-  carregarPedidosAdmin();
-  carregarAtivos();
-}
+function iniciarAdmin() { carregarDashboard(); carregarPedidosAdmin(); carregarAtivos(); }
 
-// ── DASHBOARD ──
+// DASHBOARD
 async function carregarDashboard() {
   const { data, error } = await supabaseClient.from("pedidos").select("*");
   if (error || !data) return;
-  const agora = new Date();
-  const em7 = new Date(); em7.setDate(em7.getDate() + 7);
-  const ativos    = data.filter(p => p.status === "aprovado" && (!p.validade_ate || new Date(p.validade_ate) > agora));
+  const agora = new Date(), em7 = new Date(); em7.setDate(em7.getDate()+7);
+  const ativos    = data.filter(p => p.status==="aprovado" && (!p.validade_ate||new Date(p.validade_ate)>agora));
   const pendentes = data.filter(p => ["pendente","aguardando_pagamento"].includes(p.status));
-  const cancelados= data.filter(p => p.status === "cancelado");
-  const expirando = ativos.filter(p => p.validade_ate && new Date(p.validade_ate) <= em7);
-  const receita   = data.filter(p => p.status === "aprovado").reduce((s,p) => s + (Number(p.valor)||0), 0);
+  const cancelados= data.filter(p => p.status==="cancelado");
+  const expirando = ativos.filter(p => p.validade_ate && new Date(p.validade_ate)<=em7);
+  const receita   = data.filter(p => p.status==="aprovado").reduce((s,p)=>s+(Number(p.valor)||0),0);
   document.getElementById("dTotal").textContent     = data.length;
   document.getElementById("dAtivos").textContent    = ativos.length;
   document.getElementById("dPendentes").textContent = pendentes.length;
   document.getElementById("dCancelados").textContent= cancelados.length;
   document.getElementById("dExpirando").textContent = expirando.length;
   document.getElementById("dReceita").textContent   = receita.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-  const recentes = [...data].sort((a,b) => b.id - a.id).slice(0, 5);
-  const tbody = document.getElementById("dash-recentes-tbody");
-  tbody.innerHTML = "";
+  const recentes = [...data].sort((a,b)=>b.id-a.id).slice(0,5);
+  const tbody = document.getElementById("dash-recentes-tbody"); tbody.innerHTML="";
   recentes.forEach(p => {
-    let sc = p.status === "aprovado" ? "status-aprovado" : p.status === "cancelado" ? "status-cancelado" : "status-pendente";
+    let sc = p.status==="aprovado"?"status-aprovado":p.status==="cancelado"?"status-cancelado":"status-pendente";
     tbody.innerHTML += `<tr>
       <td style="font-family:monospace;font-size:12px;color:#6aabff">#${p.id}</td>
       <td><div style="font-weight:600">${p.nome_cliente||"—"}</div><div style="font-size:12px;color:var(--muted)">${p.email||""}</div></td>
       <td>${p.produto||"—"}</td>
       <td><span class="status-badge ${sc}">${p.status||"pendente"}</span></td>
-      <td style="font-size:13px;color:var(--muted)">${p.validade_ate ? new Date(p.validade_ate).toLocaleDateString("pt-BR") : "—"}</td>
+      <td style="font-size:13px;color:var(--muted)">${p.validade_ate?new Date(p.validade_ate).toLocaleDateString("pt-BR"):"—"}</td>
     </tr>`;
   });
 }
 
-// ── CARREGAR PEDIDOS ──
+// PEDIDOS
 async function carregarPedidosAdmin() {
   const { data, error } = await supabaseClient.from("pedidos").select("*").order("id",{ascending:false});
   if (error) return;
-  todosPedidos = data || [];
-  renderPedidos();
+  todosPedidos = data || []; renderPedidos();
 }
-
 function renderPedidos() {
   const tabela = document.querySelector("#pedidos-admin");
   const busca = document.getElementById("searchPedidos").value.toLowerCase();
   let lista = todosPedidos;
-  if (filtroAtual !== "todos") lista = lista.filter(p => p.status === filtroAtual);
+  if (filtroAtual !== "todos") lista = lista.filter(p => p.status===filtroAtual);
   if (busca) lista = lista.filter(p =>
-    (p.nome_cliente||"").toLowerCase().includes(busca) ||
-    (p.email||"").toLowerCase().includes(busca) ||
-    (p.produto||"").toLowerCase().includes(busca) ||
-    (p.whatsapp||"").includes(busca)
-  );
-  if (!lista.length) { tabela.innerHTML = `<tr><td colspan="8" style="color:var(--muted);text-align:center;padding:40px">Nenhum pedido encontrado.</td></tr>`; return; }
-  tabela.innerHTML = "";
+    (p.nome_cliente||"").toLowerCase().includes(busca)||(p.email||"").toLowerCase().includes(busca)||
+    (p.produto||"").toLowerCase().includes(busca)||(p.whatsapp||"").includes(busca));
+  if (!lista.length) { tabela.innerHTML=`<tr><td colspan="8" style="color:var(--muted);text-align:center;padding:40px">Nenhum pedido encontrado.</td></tr>`; return; }
+  tabela.innerHTML="";
   lista.forEach(p => {
-    let sc = p.status === "aprovado" ? "status-aprovado" : p.status === "cancelado" ? "status-cancelado" : p.status === "ativo" ? "status-ativo" : "status-pendente";
-    let validadeStr = p.validade_ate ? `<div style="font-size:11px;color:var(--muted);margin-top:4px">Até ${new Date(p.validade_ate).toLocaleDateString("pt-BR")}</div>` : "";
-    let compHTML = p.comprovante_url
-      ? `<span class="comp-thumb" onclick="abrirLightbox('${p.comprovante_url}')"><img src="${p.comprovante_url}" alt="Comprovante" title="Clique para ampliar"></span>`
-      : `<span class="comp-none">—</span>`;
-    tabela.innerHTML += `<tr>
+    let sc = p.status==="aprovado"?"status-aprovado":p.status==="cancelado"?"status-cancelado":p.status==="ativo"?"status-ativo":"status-pendente";
+    let vStr = p.validade_ate?`<div style="font-size:11px;color:var(--muted);margin-top:4px">Até ${new Date(p.validade_ate).toLocaleDateString("pt-BR")}</div>`:"";
+    let cHTML = p.comprovante_url
+      ?`<span class="comp-thumb" onclick="abrirLightbox('${p.comprovante_url}')"><img src="${p.comprovante_url}" alt="Comprovante" title="Clique para ampliar"></span>`
+      :`<span class="comp-none">—</span>`;
+    tabela.innerHTML+=`<tr>
       <td style="font-family:monospace;font-size:12px;color:#6aabff">#${p.id}</td>
       <td><div style="font-weight:600">${p.nome_cliente||"—"}</div><div style="font-size:12px;color:var(--muted)">${p.email||""}</div></td>
       <td>${p.produto||"—"}</td>
       <td style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--blue)">${Number(p.valor||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</td>
-      <td><span class="status-badge ${sc}">${p.status||"pendente"}</span>${validadeStr}</td>
-      <td>${compHTML}</td>
+      <td><span class="status-badge ${sc}">${p.status||"pendente"}</span>${vStr}</td>
+      <td>${cHTML}</td>
       <td style="font-size:13px">${p.whatsapp||"—"}</td>
       <td><div class="admin-actions-bar">
         <button class="btn-action btn-approve" onclick="aprovarPedido(${p.id})"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Aprovar 30d</button>
@@ -418,48 +363,38 @@ function renderPedidos() {
     </tr>`;
   });
 }
-
 function filtrarPedidos() { renderPedidos(); }
-
 function aplicarFiltro(f) {
-  filtroAtual = f;
-  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-  const btn = document.getElementById("f-" + f);
-  if (btn) btn.classList.add("active");
+  filtroAtual=f;
+  document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
+  const btn=document.getElementById("f-"+f); if(btn) btn.classList.add("active");
   renderPedidos();
 }
 
-// ── ASSINANTES ATIVOS ──
-let todosAtivos = [];
+// ATIVOS
 async function carregarAtivos() {
   const agora = new Date();
   const { data, error } = await supabaseClient.from("pedidos").select("*").eq("status","aprovado").order("validade_ate",{ascending:true});
-  if (error || !data) return;
-  todosAtivos = data.filter(p => !p.validade_ate || new Date(p.validade_ate) > agora);
-  renderAtivos();
+  if (error||!data) return;
+  todosAtivos = data.filter(p => !p.validade_ate||new Date(p.validade_ate)>agora); renderAtivos();
 }
-
 function renderAtivos() {
   const busca = document.getElementById("searchAtivos").value.toLowerCase();
-  const tbody = document.getElementById("ativos-tbody");
-  const agora = new Date();
+  const tbody = document.getElementById("ativos-tbody"), agora = new Date();
   let lista = todosAtivos;
-  if (busca) lista = lista.filter(p =>
-    (p.nome_cliente||"").toLowerCase().includes(busca) ||
-    (p.email||"").toLowerCase().includes(busca)
-  );
-  if (!lista.length) { tbody.innerHTML = `<tr><td colspan="6" style="color:var(--muted);text-align:center;padding:40px">Nenhum assinante ativo.</td></tr>`; return; }
-  tbody.innerHTML = "";
+  if (busca) lista = lista.filter(p=>(p.nome_cliente||"").toLowerCase().includes(busca)||(p.email||"").toLowerCase().includes(busca));
+  if (!lista.length) { tbody.innerHTML=`<tr><td colspan="6" style="color:var(--muted);text-align:center;padding:40px">Nenhum assinante ativo.</td></tr>`; return; }
+  tbody.innerHTML="";
   lista.forEach(p => {
-    const val = p.validade_ate ? new Date(p.validade_ate) : null;
-    const dias = val ? Math.ceil((val - agora) / (1000*60*60*24)) : "∞";
-    const diasCor = typeof dias === "number" && dias <= 7 ? "#fbbf24" : "#22c55e";
-    tbody.innerHTML += `<tr>
+    const val = p.validade_ate?new Date(p.validade_ate):null;
+    const dias = val?Math.ceil((val-agora)/(1000*60*60*24)):"∞";
+    const cor = typeof dias==="number"&&dias<=7?"#fbbf24":"#22c55e";
+    tbody.innerHTML+=`<tr>
       <td style="font-family:monospace;font-size:12px;color:#6aabff">#${p.id}</td>
       <td><div style="font-weight:600">${p.nome_cliente||"—"}</div><div style="font-size:12px;color:var(--muted)">${p.email||""}</div></td>
       <td>${p.produto||"—"}</td>
-      <td style="font-size:13px">${val ? val.toLocaleDateString("pt-BR") : "Sem expiração"}</td>
-      <td style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:${diasCor}">${dias}d</td>
+      <td style="font-size:13px">${val?val.toLocaleDateString("pt-BR"):"Sem expiração"}</td>
+      <td style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:${cor}">${dias}d</td>
       <td><div class="admin-actions-bar">
         <button class="btn-action btn-renew" onclick="renovarPedido(${p.id})"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>Renovar 30d</button>
         <button class="btn-action btn-cancel" onclick="cancelarPedido(${p.id})"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>Cancelar</button>
@@ -467,66 +402,90 @@ function renderAtivos() {
     </tr>`;
   });
 }
-
 function filtrarAtivos() { renderAtivos(); }
 
-// ── LIGHTBOX ──
-function abrirLightbox(url) { document.getElementById("compLightboxImg").src = url; document.getElementById("compLightbox").style.display = "flex"; }
-function fecharLightbox() { document.getElementById("compLightbox").style.display = "none"; }
+// TODOS OS USUÁRIOS
+async function carregarUsuarios() {
+  const tbody = document.getElementById("usuarios-tbody");
+  tbody.innerHTML = `<tr><td colspan="6" style="color:var(--muted);text-align:center;padding:40px">Carregando...</td></tr>`;
+  // Busca usuários via tabela de perfis (precisamos criar) ou via auth.users pelo service_role
+  // Como só temos a publishable key, buscamos da tabela "perfis" que vamos criar
+  const { data, error } = await supabaseClient.from("perfis").select("*").order("criado_em", {ascending:false});
+  if (error) {
+    tbody.innerHTML = `<tr><td colspan="6" style="color:#ef4444;text-align:center;padding:40px">Erro: ${error.message}<br><small style="color:var(--muted)">Crie a tabela "perfis" no Supabase (veja instruções abaixo)</small></td></tr>`;
+    return;
+  }
+  todosUsuarios = data || [];
+  renderUsuarios();
+}
+function renderUsuarios() {
+  const tbody = document.getElementById("usuarios-tbody");
+  const busca = document.getElementById("searchUsuarios").value.toLowerCase();
+  let lista = todosUsuarios;
+  if (busca) lista = lista.filter(u =>
+    (u.nome||"").toLowerCase().includes(busca)||
+    (u.id_online||"").toLowerCase().includes(busca)||
+    (u.email||"").toLowerCase().includes(busca)||
+    (u.telefone||"").includes(busca));
+  if (!lista.length) { tbody.innerHTML=`<tr><td colspan="6" style="color:var(--muted);text-align:center;padding:40px">Nenhum usuário encontrado.</td></tr>`; return; }
+  tbody.innerHTML="";
+  lista.forEach(u => {
+    const assinante = u.assinante ? `<span class="status-badge status-aprovado">Assinante</span>` : `<span class="status-badge status-pendente">Não assinante</span>`;
+    const criado = u.criado_em ? new Date(u.criado_em).toLocaleDateString("pt-BR") : "—";
+    tbody.innerHTML+=`<tr>
+      <td><div style="font-weight:600">${u.nome||"—"}</div></td>
+      <td style="color:var(--blue);font-weight:700;font-size:14px">@${u.id_online||"—"}</td>
+      <td style="font-family:monospace;font-size:12px;color:#6aabff">${u.email||"—"}</td>
+      <td style="font-size:13px">${u.telefone||"—"}</td>
+      <td>${assinante}</td>
+      <td style="font-size:12px;color:var(--muted)">${criado}</td>
+    </tr>`;
+  });
+}
+function filtrarUsuarios() { renderUsuarios(); }
 
-// ── AÇÕES ──
+// LIGHTBOX
+function abrirLightbox(url) { document.getElementById("compLightboxImg").src=url; document.getElementById("compLightbox").style.display="flex"; }
+function fecharLightbox() { document.getElementById("compLightbox").style.display="none"; }
+
+// AÇÕES
 async function aprovarPedido(id) {
-  const agora = new Date(); const v = new Date(agora); v.setDate(v.getDate()+30);
-  const { error } = await supabaseClient.from("pedidos").update({status:"aprovado",aprovado_em:agora.toISOString(),validade_ate:v.toISOString()}).eq("id",id);
-  if (error) { alert("Erro: "+error.message); return; }
-  recarregarTudo();
+  const agora=new Date(),v=new Date(agora); v.setDate(v.getDate()+30);
+  const {error}=await supabaseClient.from("pedidos").update({status:"aprovado",aprovado_em:agora.toISOString(),validade_ate:v.toISOString()}).eq("id",id);
+  if(error){alert("Erro: "+error.message);return;} recarregarTudo();
 }
 async function renovarPedido(id) {
-  const { data, error: fe } = await supabaseClient.from("pedidos").select("validade_ate").eq("id",id).single();
-  if (fe) { alert("Erro ao buscar pedido."); return; }
-  let base = data?.validade_ate ? new Date(data.validade_ate) : new Date();
-  if (base < new Date()) base = new Date();
-  base.setDate(base.getDate()+30);
-  const { error } = await supabaseClient.from("pedidos").update({status:"aprovado",validade_ate:base.toISOString()}).eq("id",id);
-  if (error) { alert("Erro: "+error.message); return; }
-  recarregarTudo();
+  const {data,error:fe}=await supabaseClient.from("pedidos").select("validade_ate").eq("id",id).single();
+  if(fe){alert("Erro ao buscar pedido.");return;}
+  let base=data?.validade_ate?new Date(data.validade_ate):new Date();
+  if(base<new Date()) base=new Date(); base.setDate(base.getDate()+30);
+  const {error}=await supabaseClient.from("pedidos").update({status:"aprovado",validade_ate:base.toISOString()}).eq("id",id);
+  if(error){alert("Erro: "+error.message);return;} recarregarTudo();
 }
 async function cancelarPedido(id) {
-  if (!confirm("Cancelar assinatura do pedido #"+id+"?")) return;
-  const { error } = await supabaseClient.from("pedidos").update({status:"cancelado"}).eq("id",id);
-  if (error) { alert("Erro: "+error.message); return; }
-  recarregarTudo();
+  if(!confirm("Cancelar assinatura do pedido #"+id+"?")) return;
+  const {error}=await supabaseClient.from("pedidos").update({status:"cancelado"}).eq("id",id);
+  if(error){alert("Erro: "+error.message);return;} recarregarTudo();
 }
 async function excluirPedido(id) {
-  if (!confirm("Excluir permanentemente o pedido #"+id+"?")) return;
-  const { error } = await supabaseClient.from("pedidos").delete().eq("id",id);
-  if (error) { alert("Erro: "+error.message); return; }
-  recarregarTudo();
+  if(!confirm("Excluir permanentemente o pedido #"+id+"?")) return;
+  const {error}=await supabaseClient.from("pedidos").delete().eq("id",id);
+  if(error){alert("Erro: "+error.message);return;} recarregarTudo();
 }
+async function recarregarTudo() { await carregarPedidosAdmin(); await carregarAtivos(); await carregarDashboard(); }
 
-async function recarregarTudo() {
-  await carregarPedidosAdmin();
-  await carregarAtivos();
-  await carregarDashboard();
-}
-
-// ── CRIAR ASSINANTE ──
+// CRIAR ASSINANTE
 async function criarAssinante() {
-  const email = document.getElementById("emailAssinante").value.trim();
-  const erroEl = document.getElementById("msgAssinanteErro");
-  const sucEl  = document.getElementById("msgAssinanteSucesso");
-  erroEl.style.display = "none"; sucEl.style.display = "none";
-  if (!email) { erroEl.textContent = "Digite um e-mail."; erroEl.style.display = "block"; return; }
-  const agora = new Date(); const v = new Date(agora); v.setDate(v.getDate()+30);
-  const { error } = await supabaseClient.from("pedidos").insert([{
-    email, nome_cliente: email, produto: "Lumina Plus", valor: 0,
-    status: "aprovado", aprovado_em: agora.toISOString(), validade_ate: v.toISOString(),
-    metodo_pagamento: "manual", acesso_liberado: true
-  }]);
-  if (error) { erroEl.textContent = "Erro: "+error.message; erroEl.style.display = "block"; return; }
-  sucEl.textContent = `Assinante ${email} criado! Acesso até ${v.toLocaleDateString("pt-BR")}.`;
-  sucEl.style.display = "block";
-  document.getElementById("emailAssinante").value = "";
+  const email=document.getElementById("emailAssinante").value.trim();
+  const erroEl=document.getElementById("msgAssinanteErro"),sucEl=document.getElementById("msgAssinanteSucesso");
+  erroEl.style.display="none"; sucEl.style.display="none";
+  if(!email){erroEl.textContent="Digite um e-mail.";erroEl.style.display="block";return;}
+  const agora=new Date(),v=new Date(agora); v.setDate(v.getDate()+30);
+  const {error}=await supabaseClient.from("pedidos").insert([{email,nome_cliente:email,produto:"Lumina Plus",valor:0,status:"aprovado",aprovado_em:agora.toISOString(),validade_ate:v.toISOString(),metodo_pagamento:"manual",acesso_liberado:true}]);
+  if(error){erroEl.textContent="Erro: "+error.message;erroEl.style.display="block";return;}
+  sucEl.textContent=`Assinante ${email} criado! Acesso até ${v.toLocaleDateString("pt-BR")}.`;
+  sucEl.style.display="block";
+  document.getElementById("emailAssinante").value="";
   recarregarTudo();
 }
 </script>
