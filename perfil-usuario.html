@@ -59,9 +59,25 @@
       <div class="info-block-title">Dados pessoais</div>
       <div class="info-row"><span class="info-label">Nome</span><span class="info-value" id="uNome">—</span></div>
       <div class="info-row"><span class="info-label">@ID Online</span><span class="info-value" id="uId" style="color:var(--blue);font-weight:700">—</span></div>
-      <div class="info-row"><span class="info-label">E-mail</span><span class="info-value" id="uEmail" style="color:#6aabff;font-family:monospace;font-size:13px">—</span></div>
-      <div class="info-row"><span class="info-label">Telefone</span><span class="info-value" id="uTelefone">—</span></div>
+      <div class="info-row">
+        <span class="info-label">E-mail</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="info-value" id="uEmail" style="color:#6aabff;font-family:monospace;font-size:13px">—</span>
+          <button onclick="copiar('uEmail','email')" style="background:var(--blue-dim);border:1px solid rgba(26,107,255,0.25);color:#6aabff;border-radius:8px;padding:4px 10px;font-size:11px;cursor:pointer;font-family:var(--font-body);white-space:nowrap" id="btnCopyEmail">Copiar</button>
+        </div>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Telefone</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="info-value" id="uTelefone">—</span>
+          <button onclick="copiar('uTelefone','telefone')" style="background:var(--blue-dim);border:1px solid rgba(26,107,255,0.25);color:#6aabff;border-radius:8px;padding:4px 10px;font-size:11px;cursor:pointer;font-family:var(--font-body);white-space:nowrap" id="btnCopyTel">Copiar</button>
+        </div>
+      </div>
       <div class="info-row"><span class="info-label">Cadastro</span><span class="info-value" id="uCriado">—</span></div>
+      <div class="info-row">
+        <span class="info-label">Senha</span>
+        <span class="info-value" style="color:var(--muted);font-size:12px;font-style:italic">Criptografada — não visível por segurança</span>
+      </div>
     </div>
 
     <!-- Assinaturas -->
@@ -180,6 +196,26 @@ async function carregarPerfil() {
         <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>Cancelar assinatura
       </button>`;
   }
+}
+
+
+function copiar(elementId, tipo) {
+  const texto = document.getElementById(elementId).textContent.trim();
+  if (!texto || texto === "—") return;
+  navigator.clipboard.writeText(texto).then(() => {
+    const btn = document.getElementById("btnCopy" + (tipo === "email" ? "Email" : "Tel"));
+    const original = btn.textContent;
+    btn.textContent = "Copiado!";
+    btn.style.background = "rgba(34,197,94,0.15)";
+    btn.style.borderColor = "rgba(34,197,94,0.3)";
+    btn.style.color = "#22c55e";
+    setTimeout(() => {
+      btn.textContent = original;
+      btn.style.background = "";
+      btn.style.borderColor = "";
+      btn.style.color = "";
+    }, 2000);
+  });
 }
 
 async function aprovarPedido(id) {
