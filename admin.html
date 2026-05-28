@@ -269,6 +269,8 @@ function verificarSenha() {
     document.getElementById("adminPanel").style.display = "block";
     sessionStorage.setItem("lumina_admin", "ok");
     sessionStorage.setItem("lumina_adm_nome", adm.nome);
+    localStorage.setItem("lumina_admin", "ok");
+    localStorage.setItem("lumina_adm_nome", adm.nome);
     document.getElementById("admNome").textContent = adm.nome;
     iniciarAdmin();
   } else { document.getElementById("loginErr").classList.add("show"); }
