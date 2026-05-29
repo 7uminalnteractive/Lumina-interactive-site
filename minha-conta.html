@@ -226,8 +226,18 @@ async function init() {
     email = session.user.email;
     localStorage.setItem("lumina_logado", "sim");
     localStorage.setItem("lumina_email", email);
-    const meta = session.user.user_metadata || {};
-    preencherDados(meta.nome, email, meta.telefone, meta.id_online, meta.foto_url);
+
+    // Busca dados da tabela perfis (fonte única de verdade)
+    const { data: perfil } = await supabaseClient
+      .from("perfis").select("*").eq("id", session.user.id).maybeSingle();
+
+    if (perfil) {
+      preencherDados(perfil.nome, email, perfil.telefone, perfil.id_online, perfil.foto_url);
+    } else {
+      // Fallback pro metadata caso perfil ainda não exista
+      const meta = session.user.user_metadata || {};
+      preencherDados(meta.nome, email, meta.telefone, meta.id_online, meta.foto_url);
+    }
   } else {
     email = localStorage.getItem("lumina_email");
     if (email) preencherDados(null, email, null, null, null);
@@ -338,6 +348,8 @@ async function salvarEdicao() {
     if (upErr) { mostrarMsgModal("Erro ao enviar foto: "+upErr.message, "erro"); btn.textContent="Salvar"; btn.disabled=false; return; }
     const { data: urlData } = supabaseClient.storage.from("avatars").getPublicUrl(nomeArq);
     const { error } = await supabaseClient.auth.updateUser({ data: { foto_url: urlData.publicUrl } });
+    // Salva também na tabela perfis para sincronizar entre dispositivos
+    await supabaseClient.from("perfis").update({ foto_url: urlData.publicUrl }).eq("id", userSession.user.id);
     if (error) { mostrarMsgModal("Erro: "+error.message, "erro"); btn.textContent="Salvar"; btn.disabled=false; return; }
     document.getElementById("avatarImg").src = urlData.publicUrl;
     document.getElementById("avatarImg").style.display = "block";
