@@ -123,6 +123,7 @@
       <button class="tab-btn"        id="tabPedidosBtn"   onclick="mudarAba('Pedidos')">Pedidos</button>
       <button class="tab-btn"        id="tabAtivosBtn"    onclick="mudarAba('Ativos')">Assinantes Ativos</button>
       <button class="tab-btn"        id="tabUsuariosBtn"  onclick="mudarAba('Usuarios')">Todos os Usuários</button>
+      <button class="tab-btn"        id="tabSuporteBtn"   onclick="mudarAba('Suporte')">Suporte</button>
       <button class="tab-btn"        id="tabAssinanteBtn" onclick="mudarAba('Assinante')">Criar Assinante</button>
     </div>
 
@@ -221,6 +222,22 @@
       </div>
     </div>
 
+
+    <!-- SUPORTE -->
+    <div id="tabSuporte" style="display:none">
+      <div class="page-hero" style="padding:0 0 28px">
+        <div class="page-hero-label">Atendimento</div><h1>Suporte</h1>
+        <p>Gerencie e responda os chamados dos usuários.</p>
+      </div>
+      <div class="filter-row" style="margin-bottom:20px">
+        <button class="filter-btn active" id="sf-todos"      onclick="filtrarTickets('todos')">Todos</button>
+        <button class="filter-btn f-yellow" id="sf-aberto"   onclick="filtrarTickets('aberto')">Abertos</button>
+        <button class="filter-btn f-blue"   id="sf-respondido" onclick="filtrarTickets('respondido')">Respondidos</button>
+        <button class="filter-btn f-green"  id="sf-resolvido" onclick="filtrarTickets('resolvido')">Resolvidos</button>
+      </div>
+      <div id="ticketsList"><div style="color:var(--muted);text-align:center;padding:40px">Carregando...</div></div>
+    </div>
+
     <!-- CRIAR ASSINANTE -->
     <div id="tabAssinante" style="display:none">
       <div class="page-hero" style="padding:0 0 28px">
@@ -285,7 +302,7 @@ if (sessionStorage.getItem("lumina_admin") === "ok") {
 }
 function logoutAdmin() { sessionStorage.removeItem("lumina_admin"); sessionStorage.removeItem("lumina_adm_nome"); location.reload(); }
 
-const ABAS = ["Dash","Pedidos","Ativos","Usuarios","Assinante"];
+const ABAS = ["Dash","Pedidos","Ativos","Usuarios","Suporte","Assinante"];
 function mudarAba(aba) {
   ABAS.forEach(a => {
     document.getElementById("tab"+a).style.display = a===aba ? "block" : "none";
