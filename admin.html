@@ -151,6 +151,11 @@
 .comp-thumb img { width: 52px; height: 40px; object-fit: cover; display: block; }
 
 
+function verPerfil(email) {
+  if (!email) return;
+  window.location.href = "perfil-usuario.html?email=" + encodeURIComponent(email);
+}
+
 /* ── TICKETS / SUPORTE ── */
 let todosTickets = [], filtroTicket = "todos";
 
@@ -178,8 +183,7 @@ function renderTickets() {
     const cor = t.status==="resolvido" ? "#22c55e" : t.status==="respondido" ? "#6aabff" : "#fbbf24";
     const bg  = t.status==="resolvido" ? "rgba(34,197,94,.1)" : t.status==="respondido" ? "rgba(26,107,255,.1)" : "rgba(251,191,36,.1)";
     const ds  = t.criado_em ? new Date(t.criado_em).toLocaleDateString("pt-BR") + " às " + new Date(t.criado_em).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}) : "—";
-    return `
-    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:12px">
+    return `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:12px">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:12px">
         <div>
           <div style="font-weight:700;font-size:15px">${t.assunto||"—"}</div>
@@ -191,9 +195,7 @@ function renderTickets() {
       <div style="background:var(--bg2);border-radius:10px;padding:14px;font-size:13px;color:#94a3b8;margin-bottom:14px;line-height:1.7">${t.mensagem||""}</div>
       ${t.resposta ? `<div style="background:rgba(26,107,255,.08);border-left:3px solid var(--blue);border-radius:8px;padding:12px;margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#6aabff;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Sua resposta</div><div style="font-size:13px;color:var(--text)">${t.resposta}</div></div>` : ""}
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
-        <div style="flex:1;min-width:200px">
-          <textarea id="resp-${t.id}" placeholder="Digite sua resposta..." rows="2" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;resize:vertical;box-sizing:border-box">${t.resposta||""}</textarea>
-        </div>
+        <div style="flex:1;min-width:200px"><textarea id="resp-${t.id}" placeholder="Digite sua resposta..." rows="2" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;resize:vertical;box-sizing:border-box">${t.resposta||""}</textarea></div>
         <div style="display:flex;gap:6px;flex-shrink:0">
           <button class="btn-action btn-approve" onclick="responderTicket(${t.id},'respondido')">💬 Responder</button>
           <button class="btn-action btn-renew"   onclick="responderTicket(${t.id},'resolvido')">✅ Resolver</button>
@@ -602,7 +604,7 @@ function carregarDashboard() {
     const sc = (p.status==="ativa"||p.status==="aprovado") ? "status-aprovado" : (p.status==="cancelada"||p.status==="cancelado") ? "status-cancelado" : "status-pendente";
     return `<tr>
       <td style="font-family:monospace;font-size:12px;color:#6aabff">#${p.id}</td>
-      <td><div style="font-weight:600">${p.nome_cliente||"—"}</div><div style="font-size:12px;color:var(--muted)">${p.email||""}</div></td>
+      <td style="cursor:pointer" onclick="verPerfil('${p.email||''}')"><div style="font-weight:600">${p.nome_cliente||"—"}</div><div style="font-size:12px;color:#6aabff">${p.email||""}</div></td>
       <td>${p.produto||"—"}</td>
       <td><span class="status-badge ${sc}">${p.status||"pendente"}</span></td>
       <td style="font-size:13px;color:var(--muted)">${p.data_fim ? new Date(p.data_fim).toLocaleDateString("pt-BR") : "—"}</td>
@@ -647,7 +649,7 @@ function renderPedidos() {
     const wp = p.whatsapp ? `<a href="https://wa.me/55${(p.whatsapp||"").replace(/\D/g,"")}" target="_blank" style="color:#25d366;text-decoration:none">📱 ${p.whatsapp}</a>` : "—";
     return `<tr>
       <td style="font-family:monospace;font-size:12px;color:#6aabff">#${p.id}</td>
-      <td><div style="font-weight:600">${p.nome_cliente||"—"}</div><div style="font-size:12px;color:var(--muted)">${p.email||""}</div></td>
+      <td style="cursor:pointer" onclick="verPerfil('${p.email||''}')"><div style="font-weight:600">${p.nome_cliente||"—"}</div><div style="font-size:12px;color:#6aabff">${p.email||""}</div></td>
       <td>${p.produto||"—"}</td>
       <td style="font-family:var(--font-hero);font-size:16px;color:var(--blue)">${Number(p.valor||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</td>
       <td><span class="status-badge ${sc}">${p.status||"pendente"}</span>${valStr}</td>
@@ -672,7 +674,7 @@ function renderAtivos() {
   const tbody = document.getElementById("ativos-tbody");
   const busca = (document.getElementById("searchAtivos")?.value||"").toLowerCase();
   const agora = new Date();
-  let lista = todosPedidos.filter(p => (p.status==="ativa"||p.status==="aprovado") && p.acesso_liberado);
+  let lista = todosPedidos.filter(p => { const fim = p.data_fim ? new Date(p.data_fim) : (p.validade_ate ? new Date(p.validade_ate) : null); return (p.status==="ativa"||p.status==="aprovado") && (!fim || fim > agora); });
   if (busca) lista = lista.filter(p =>
     (p.nome_cliente||"").toLowerCase().includes(busca) ||
     (p.email||"").toLowerCase().includes(busca) ||
@@ -680,12 +682,12 @@ function renderAtivos() {
   );
   if (!lista.length) { tbody.innerHTML = `<tr><td colspan="6" style="color:var(--muted);text-align:center;padding:40px">Nenhum assinante ativo.</td></tr>`; return; }
   tbody.innerHTML = lista.map(p => {
-    const fim  = p.data_fim ? new Date(p.data_fim) : null;
+    const fim = p.data_fim ? new Date(p.data_fim) : (p.validade_ate ? new Date(p.validade_ate) : null);
     const dias = fim ? Math.max(0, Math.ceil((fim - agora) / 86400000)) : "—";
     const cor  = typeof dias === "number" ? (dias <= 3 ? "#ef4444" : dias <= 7 ? "#fbbf24" : "#22c55e") : "var(--muted)";
     return `<tr>
       <td style="font-family:monospace;font-size:12px;color:#6aabff">#${p.id}</td>
-      <td><div style="font-weight:600">${p.nome_cliente||"—"}</div><div style="font-size:12px;color:var(--muted)">${p.email||""}</div></td>
+      <td style="cursor:pointer" onclick="verPerfil('${p.email||''}')"><div style="font-weight:600">${p.nome_cliente||"—"}</div><div style="font-size:12px;color:#6aabff">${p.email||""}</div></td>
       <td>${p.produto||"—"}</td>
       <td style="font-size:13px;color:var(--muted)">${fim ? fim.toLocaleDateString("pt-BR") : "—"}</td>
       <td><span style="font-family:var(--font-hero);font-size:22px;color:${cor}">${dias}</span>${typeof dias==="number"&&dias<=7?`<div style="font-size:11px;color:${cor}">${dias===0?"Vence hoje":"⚠️ Em breve"}</div>`:""}</td>
@@ -891,6 +893,11 @@ async function criarAssinante() {
 }
 
 
+function verPerfil(email) {
+  if (!email) return;
+  window.location.href = "perfil-usuario.html?email=" + encodeURIComponent(email);
+}
+
 /* ── TICKETS / SUPORTE ── */
 let todosTickets = [], filtroTicket = "todos";
 
@@ -918,8 +925,7 @@ function renderTickets() {
     const cor = t.status==="resolvido" ? "#22c55e" : t.status==="respondido" ? "#6aabff" : "#fbbf24";
     const bg  = t.status==="resolvido" ? "rgba(34,197,94,.1)" : t.status==="respondido" ? "rgba(26,107,255,.1)" : "rgba(251,191,36,.1)";
     const ds  = t.criado_em ? new Date(t.criado_em).toLocaleDateString("pt-BR") + " às " + new Date(t.criado_em).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}) : "—";
-    return `
-    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:12px">
+    return `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:12px">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:12px">
         <div>
           <div style="font-weight:700;font-size:15px">${t.assunto||"—"}</div>
@@ -931,9 +937,7 @@ function renderTickets() {
       <div style="background:var(--bg2);border-radius:10px;padding:14px;font-size:13px;color:#94a3b8;margin-bottom:14px;line-height:1.7">${t.mensagem||""}</div>
       ${t.resposta ? `<div style="background:rgba(26,107,255,.08);border-left:3px solid var(--blue);border-radius:8px;padding:12px;margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#6aabff;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Sua resposta</div><div style="font-size:13px;color:var(--text)">${t.resposta}</div></div>` : ""}
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
-        <div style="flex:1;min-width:200px">
-          <textarea id="resp-${t.id}" placeholder="Digite sua resposta..." rows="2" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;resize:vertical;box-sizing:border-box">${t.resposta||""}</textarea>
-        </div>
+        <div style="flex:1;min-width:200px"><textarea id="resp-${t.id}" placeholder="Digite sua resposta..." rows="2" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;resize:vertical;box-sizing:border-box">${t.resposta||""}</textarea></div>
         <div style="display:flex;gap:6px;flex-shrink:0">
           <button class="btn-action btn-approve" onclick="responderTicket(${t.id},'respondido')">💬 Responder</button>
           <button class="btn-action btn-renew"   onclick="responderTicket(${t.id},'resolvido')">✅ Resolver</button>
