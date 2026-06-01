@@ -167,14 +167,12 @@ async function carregarTickets() {
   todosTickets = data || [];
   renderTickets();
 }
-
 function filtrarTickets(f) {
   filtroTicket = f;
   document.querySelectorAll("[id^='sf-']").forEach(b => b.classList.remove("active"));
   document.getElementById("sf-" + f)?.classList.add("active");
   renderTickets();
 }
-
 function renderTickets() {
   const lista = document.getElementById("ticketsList");
   let data = filtroTicket === "todos" ? todosTickets : todosTickets.filter(t => t.status === filtroTicket);
@@ -184,16 +182,12 @@ function renderTickets() {
     const bg  = t.status==="resolvido" ? "rgba(34,197,94,.1)" : t.status==="respondido" ? "rgba(26,107,255,.1)" : "rgba(251,191,36,.1)";
     const ds  = t.criado_em ? new Date(t.criado_em).toLocaleDateString("pt-BR") + " às " + new Date(t.criado_em).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}) : "—";
     return `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:12px">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:12px">
-        <div>
-          <div style="font-weight:700;font-size:15px">${t.assunto||"—"}</div>
-          <div style="font-size:12px;color:#6aabff;margin-top:3px">${t.nome||"—"} — ${t.email||"—"}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px">${ds}</div>
-        </div>
-        <span style="background:${bg};color:${cor};border:1px solid ${cor}44;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;white-space:nowrap">${t.status}</span>
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px">
+        <div><div style="font-weight:700;font-size:15px">${t.assunto||"—"}</div><div style="font-size:12px;color:#6aabff;margin-top:3px">${t.nome||"—"} — ${t.email||"—"}</div><div style="font-size:11px;color:var(--muted);margin-top:2px">${ds}</div></div>
+        <span style="background:${bg};color:${cor};border:1px solid ${cor}44;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase">${t.status}</span>
       </div>
       <div style="background:var(--bg2);border-radius:10px;padding:14px;font-size:13px;color:#94a3b8;margin-bottom:14px;line-height:1.7">${t.mensagem||""}</div>
-      ${t.resposta ? `<div style="background:rgba(26,107,255,.08);border-left:3px solid var(--blue);border-radius:8px;padding:12px;margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#6aabff;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Sua resposta</div><div style="font-size:13px;color:var(--text)">${t.resposta}</div></div>` : ""}
+      ${t.resposta ? `<div style="background:rgba(26,107,255,.08);border-left:3px solid var(--blue);border-radius:8px;padding:12px;margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#6aabff;margin-bottom:6px;text-transform:uppercase">Sua resposta</div><div style="font-size:13px;color:var(--text)">${t.resposta}</div></div>` : ""}
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
         <div style="flex:1;min-width:200px"><textarea id="resp-${t.id}" placeholder="Digite sua resposta..." rows="2" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;resize:vertical;box-sizing:border-box">${t.resposta||""}</textarea></div>
         <div style="display:flex;gap:6px;flex-shrink:0">
@@ -205,7 +199,6 @@ function renderTickets() {
     </div>`;
   }).join("");
 }
-
 async function responderTicket(id, novoStatus) {
   const resposta = document.getElementById("resp-"+id)?.value.trim();
   if (!resposta) { toast("Digite uma resposta.", "err"); return; }
@@ -214,7 +207,6 @@ async function responderTicket(id, novoStatus) {
   toast(novoStatus === "resolvido" ? "✅ Chamado resolvido!" : "💬 Resposta enviada!", "ok");
   carregarTickets();
 }
-
 async function excluirTicket(id) {
   if (!confirm("Excluir este chamado?")) return;
   const { error } = await supabaseClient.from("tickets").delete().eq("id", id);
@@ -297,7 +289,7 @@ async function excluirTicket(id) {
 <div id="adminPanel" style="display:none">
 
 <nav class="navbar">
-  <div class="logo"><img src="logo.png" alt="Lumina Interactive" style="height:36px;width:auto;display:block"></div>
+  <div class="logo">LUMINA <span>INTERACTIVE</span>™</div>
   <div style="display:flex;align-items:center;gap:10px;margin-left:auto">
     <div class="adm-badge-nav">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="#6aabff"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
@@ -316,7 +308,6 @@ async function excluirTicket(id) {
     <button class="tab-btn"        id="tabPedidosBtn"   onclick="mudarAba('Pedidos')">📋 Pedidos</button>
     <button class="tab-btn"        id="tabAtivosBtn"    onclick="mudarAba('Ativos')">✅ Ativos</button>
     <button class="tab-btn"        id="tabUsuariosBtn"  onclick="mudarAba('Usuarios')">👥 Usuários</button>
-    <button class="tab-btn"        id="tabSuporteBtn"   onclick="mudarAba('Suporte')">🎧 Suporte</button>
     <button class="tab-btn"        id="tabAssinanteBtn" onclick="mudarAba('Assinante')">➕ Criar Assinante</button>
   </div>
 
@@ -501,7 +492,7 @@ async function excluirTicket(id) {
 </div>
 
 <footer class="footer">
-  <div class="footer-logo"><img src="logo.png" alt="Lumina Interactive" style="height:28px;width:auto;opacity:0.85"></div>
+  <div class="footer-logo">LUMINA <span>INTERACTIVE</span>™</div>
   <div class="footer-copy">© 2026 Lumina Interactive™.</div>
 </footer>
 </div><!-- /adminPanel -->
@@ -682,7 +673,7 @@ function renderAtivos() {
   );
   if (!lista.length) { tbody.innerHTML = `<tr><td colspan="6" style="color:var(--muted);text-align:center;padding:40px">Nenhum assinante ativo.</td></tr>`; return; }
   tbody.innerHTML = lista.map(p => {
-    const fim = p.data_fim ? new Date(p.data_fim) : (p.validade_ate ? new Date(p.validade_ate) : null);
+    const fim  = p.data_fim ? new Date(p.data_fim) : null;
     const dias = fim ? Math.max(0, Math.ceil((fim - agora) / 86400000)) : "—";
     const cor  = typeof dias === "number" ? (dias <= 3 ? "#ef4444" : dias <= 7 ? "#fbbf24" : "#22c55e") : "var(--muted)";
     return `<tr>
@@ -707,7 +698,7 @@ async function carregarUsuarios() {
   tbody.innerHTML = `<tr><td colspan="8" style="color:var(--muted);text-align:center;padding:40px">Carregando...</td></tr>`;
 
   const { data, error } = await supabaseClient
-    .from("usuarios")
+    .from("perfis")
     .select("*")
     .order("criado_em", { ascending: false });
 
@@ -751,7 +742,7 @@ function renderUsuarios() {
   if (busca) lista = lista.filter(u =>
     (u.nome||"").toLowerCase().includes(busca) ||
     (u.email||"").toLowerCase().includes(busca) ||
-    (u.handle||"").toLowerCase().includes(busca) ||
+    (u.id_online||u.handle||"").toLowerCase().includes(busca) ||
     (u.telefone||"").includes(busca)
   );
 
@@ -801,7 +792,7 @@ function copiarSenha(senha, el) {
 
 async function excluirUsuario(id, nome) {
   if (!confirm(`Excluir o usuário "${nome}"? Ação irreversível.`)) return;
-  const { error } = await supabaseClient.from("usuarios").delete().eq("id", id);
+  const { error } = await supabaseClient.from("perfis").delete().eq("id", id);
   if (error) { toast("Erro: " + error.message, "err"); return; }
   toast(`🗑️ Usuário excluído`, "ok");
   await carregarUsuarios();
@@ -909,14 +900,12 @@ async function carregarTickets() {
   todosTickets = data || [];
   renderTickets();
 }
-
 function filtrarTickets(f) {
   filtroTicket = f;
   document.querySelectorAll("[id^='sf-']").forEach(b => b.classList.remove("active"));
   document.getElementById("sf-" + f)?.classList.add("active");
   renderTickets();
 }
-
 function renderTickets() {
   const lista = document.getElementById("ticketsList");
   let data = filtroTicket === "todos" ? todosTickets : todosTickets.filter(t => t.status === filtroTicket);
@@ -926,16 +915,12 @@ function renderTickets() {
     const bg  = t.status==="resolvido" ? "rgba(34,197,94,.1)" : t.status==="respondido" ? "rgba(26,107,255,.1)" : "rgba(251,191,36,.1)";
     const ds  = t.criado_em ? new Date(t.criado_em).toLocaleDateString("pt-BR") + " às " + new Date(t.criado_em).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}) : "—";
     return `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:12px">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:12px">
-        <div>
-          <div style="font-weight:700;font-size:15px">${t.assunto||"—"}</div>
-          <div style="font-size:12px;color:#6aabff;margin-top:3px">${t.nome||"—"} — ${t.email||"—"}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px">${ds}</div>
-        </div>
-        <span style="background:${bg};color:${cor};border:1px solid ${cor}44;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;white-space:nowrap">${t.status}</span>
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px">
+        <div><div style="font-weight:700;font-size:15px">${t.assunto||"—"}</div><div style="font-size:12px;color:#6aabff;margin-top:3px">${t.nome||"—"} — ${t.email||"—"}</div><div style="font-size:11px;color:var(--muted);margin-top:2px">${ds}</div></div>
+        <span style="background:${bg};color:${cor};border:1px solid ${cor}44;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase">${t.status}</span>
       </div>
       <div style="background:var(--bg2);border-radius:10px;padding:14px;font-size:13px;color:#94a3b8;margin-bottom:14px;line-height:1.7">${t.mensagem||""}</div>
-      ${t.resposta ? `<div style="background:rgba(26,107,255,.08);border-left:3px solid var(--blue);border-radius:8px;padding:12px;margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#6aabff;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Sua resposta</div><div style="font-size:13px;color:var(--text)">${t.resposta}</div></div>` : ""}
+      ${t.resposta ? `<div style="background:rgba(26,107,255,.08);border-left:3px solid var(--blue);border-radius:8px;padding:12px;margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#6aabff;margin-bottom:6px;text-transform:uppercase">Sua resposta</div><div style="font-size:13px;color:var(--text)">${t.resposta}</div></div>` : ""}
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
         <div style="flex:1;min-width:200px"><textarea id="resp-${t.id}" placeholder="Digite sua resposta..." rows="2" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;resize:vertical;box-sizing:border-box">${t.resposta||""}</textarea></div>
         <div style="display:flex;gap:6px;flex-shrink:0">
@@ -947,7 +932,6 @@ function renderTickets() {
     </div>`;
   }).join("");
 }
-
 async function responderTicket(id, novoStatus) {
   const resposta = document.getElementById("resp-"+id)?.value.trim();
   if (!resposta) { toast("Digite uma resposta.", "err"); return; }
@@ -956,7 +940,6 @@ async function responderTicket(id, novoStatus) {
   toast(novoStatus === "resolvido" ? "✅ Chamado resolvido!" : "💬 Resposta enviada!", "ok");
   carregarTickets();
 }
-
 async function excluirTicket(id) {
   if (!confirm("Excluir este chamado?")) return;
   const { error } = await supabaseClient.from("tickets").delete().eq("id", id);
