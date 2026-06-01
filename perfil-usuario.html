@@ -142,13 +142,13 @@ async function carregarPerfil() {
 
   // Assinaturas ativas
   const agora = new Date();
-  const ativas = (pedidos||[]).filter(p => p.status==="aprovado" && (!p.validade_ate||new Date(p.validade_ate)>agora));
+  const ativas = (pedidos||[]).filter(p => (p.status==="aprovado"||p.status==="ativa") && ((!p.validade_ate||new Date(p.validade_ate)>agora)||(!p.data_fim||new Date(p.data_fim)>agora)));
   const assinDiv = document.getElementById("uAssinaturas");
   if (!ativas.length) {
     assinDiv.innerHTML = `<div style="color:var(--muted);font-size:14px;text-align:center;padding:20px 0">Nenhuma assinatura ativa.</div>`;
   } else {
     assinDiv.innerHTML = ativas.map(p => {
-      const val = p.validade_ate ? new Date(p.validade_ate) : null;
+      const val = p.validade_ate ? new Date(p.validade_ate) : (p.data_fim ? new Date(p.data_fim) : null);
       const dias = val ? Math.ceil((val-agora)/(1000*60*60*24)) : "∞";
       const cor = typeof dias==="number"&&dias<=7?"#fbbf24":"#22c55e";
       return `<div class="info-row">
@@ -172,7 +172,7 @@ async function carregarPerfil() {
     pedDiv.innerHTML = `<table style="width:100%">
       <thead><tr><th>ID</th><th>Produto</th><th>Valor</th><th>Status</th><th>Data</th></tr></thead>
       <tbody>${pedidos.map(p => {
-        let sc = p.status==="aprovado"?"status-aprovado":p.status==="cancelado"?"status-cancelado":"status-pendente";
+        let sc = (p.status==="aprovado"||p.status==="ativa")?"status-aprovado":(p.status==="cancelado"||p.status==="cancelada")?"status-cancelado":"status-pendente";
         return `<tr>
           <td style="font-family:monospace;font-size:12px;color:#6aabff">#${p.id}</td>
           <td style="font-size:13px">${p.produto||"—"}</td>
@@ -185,7 +185,7 @@ async function carregarPerfil() {
   }
 
   // Ações rápidas (pega o último pedido aprovado)
-  const ultimoPedido = (pedidos||[]).find(p => p.status==="aprovado");
+  const ultimoPedido = (pedidos||[]).find(p => p.status==="aprovado"||p.status==="ativa");
   const acoesDiv = document.getElementById("acoesRapidas");
   if (ultimoPedido) {
     acoesDiv.innerHTML = `
