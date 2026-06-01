@@ -149,7 +149,7 @@ async function verificarAssinatura() {
     .from("pedidos")
     .select("*")
     .eq("email", email)
-    .eq("status", "aprovado")
+    .in("status", ["aprovado","ativa"])
     .order("id", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -161,7 +161,7 @@ async function verificarAssinatura() {
 
   // Verifica validade
   const agora = new Date();
-  const validade = data.validade_ate ? new Date(data.validade_ate) : null;
+  const validade = data.validade_ate ? new Date(data.validade_ate) : (data.data_fim ? new Date(data.data_fim) : null);
   const ativa = !validade || validade > agora;
 
   if (!ativa) {
