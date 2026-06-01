@@ -150,72 +150,9 @@
 .comp-thumb:hover { border-color: rgba(26,107,255,.4); }
 .comp-thumb img { width: 52px; height: 40px; object-fit: cover; display: block; }
 
-
-/* ── TICKETS / SUPORTE ── */
-let todosTickets = [], filtroTicket = "todos";
-
-async function carregarTickets() {
-  const lista = document.getElementById("ticketsList");
-  lista.innerHTML = `<div style="color:var(--muted);text-align:center;padding:40px">Carregando...</div>`;
-  const { data, error } = await supabaseClient.from("tickets").select("*").order("criado_em", { ascending: false });
-  if (error) { lista.innerHTML = `<div style="color:#ef4444;text-align:center;padding:40px">Erro: ${error.message}</div>`; return; }
-  todosTickets = data || [];
-  renderTickets();
-}
-
-function filtrarTickets(f) {
-  filtroTicket = f;
-  document.querySelectorAll("[id^='sf-']").forEach(b => b.classList.remove("active"));
-  document.getElementById("sf-" + f)?.classList.add("active");
-  renderTickets();
-}
-
-function renderTickets() {
-  const lista = document.getElementById("ticketsList");
-  let data = filtroTicket === "todos" ? todosTickets : todosTickets.filter(t => t.status === filtroTicket);
-  if (!data.length) { lista.innerHTML = `<div style="color:var(--muted);text-align:center;padding:40px">Nenhum chamado encontrado.</div>`; return; }
-  lista.innerHTML = data.map(t => {
-    const cor = t.status==="resolvido" ? "#22c55e" : t.status==="respondido" ? "#6aabff" : "#fbbf24";
-    const bg  = t.status==="resolvido" ? "rgba(34,197,94,.1)" : t.status==="respondido" ? "rgba(26,107,255,.1)" : "rgba(251,191,36,.1)";
-    const ds  = t.criado_em ? new Date(t.criado_em).toLocaleDateString("pt-BR") + " às " + new Date(t.criado_em).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}) : "—";
-    return `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:12px">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:12px">
-        <div>
-          <div style="font-weight:700;font-size:15px">${t.assunto||"—"}</div>
-          <div style="font-size:12px;color:#6aabff;margin-top:3px">${t.nome||"—"} — ${t.email||"—"}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px">${ds}</div>
-        </div>
-        <span style="background:${bg};color:${cor};border:1px solid ${cor}44;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;white-space:nowrap">${t.status}</span>
-      </div>
-      <div style="background:var(--bg2);border-radius:10px;padding:14px;font-size:13px;color:#94a3b8;margin-bottom:14px;line-height:1.7">${t.mensagem||""}</div>
-      ${t.resposta ? `<div style="background:rgba(26,107,255,.08);border-left:3px solid var(--blue);border-radius:8px;padding:12px;margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#6aabff;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Sua resposta</div><div style="font-size:13px;color:var(--text)">${t.resposta}</div></div>` : ""}
-      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
-        <div style="flex:1;min-width:200px"><textarea id="resp-${t.id}" placeholder="Digite sua resposta..." rows="2" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;resize:vertical;box-sizing:border-box">${t.resposta||""}</textarea></div>
-        <div style="display:flex;gap:6px;flex-shrink:0">
-          <button class="btn-action btn-approve" onclick="responderTicket(${t.id},'respondido')">💬 Responder</button>
-          <button class="btn-action btn-renew"   onclick="responderTicket(${t.id},'resolvido')">✅ Resolver</button>
-          <button class="btn-action btn-delete"  onclick="excluirTicket(${t.id})">🗑️</button>
-        </div>
-      </div>
-    </div>`;
-  }).join("");
-}
-
-async function responderTicket(id, novoStatus) {
-  const resposta = document.getElementById("resp-"+id)?.value.trim();
-  if (!resposta) { toast("Digite uma resposta.", "err"); return; }
-  const { error } = await supabaseClient.from("tickets").update({ resposta, status: novoStatus }).eq("id", id);
-  if (error) { toast("Erro: "+error.message, "err"); return; }
-  toast(novoStatus === "resolvido" ? "✅ Chamado resolvido!" : "💬 Resposta enviada!", "ok");
-  carregarTickets();
-}
-
-async function excluirTicket(id) {
-  if (!confirm("Excluir este chamado?")) return;
-  const { error } = await supabaseClient.from("tickets").delete().eq("id", id);
-  if (error) { toast("Erro: "+error.message, "err"); return; }
-  toast("🗑️ Chamado excluído", "ok");
-  carregarTickets();
+function verPerfil(email) {
+  if (!email) return;
+  window.location.href = "perfil-usuario.html?email=" + encodeURIComponent(email);
 }
 
 /* ── LIGHTBOX ── */
@@ -292,7 +229,7 @@ async function excluirTicket(id) {
 <div id="adminPanel" style="display:none">
 
 <nav class="navbar">
-  <div class="logo"><img src="logo.png" alt="Lumina Interactive" style="height:36px;width:auto;display:block"></div>
+  <div class="logo">LUMINA <span>INTERACTIVE</span>™</div>
   <div style="display:flex;align-items:center;gap:10px;margin-left:auto">
     <div class="adm-badge-nav">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="#6aabff"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
@@ -311,7 +248,6 @@ async function excluirTicket(id) {
     <button class="tab-btn"        id="tabPedidosBtn"   onclick="mudarAba('Pedidos')">📋 Pedidos</button>
     <button class="tab-btn"        id="tabAtivosBtn"    onclick="mudarAba('Ativos')">✅ Ativos</button>
     <button class="tab-btn"        id="tabUsuariosBtn"  onclick="mudarAba('Usuarios')">👥 Usuários</button>
-    <button class="tab-btn"        id="tabSuporteBtn"   onclick="mudarAba('Suporte')">🎧 Suporte</button>
     <button class="tab-btn"        id="tabAssinanteBtn" onclick="mudarAba('Assinante')">➕ Criar Assinante</button>
   </div>
 
@@ -448,23 +384,6 @@ async function excluirTicket(id) {
     </div>
   </div>
 
-
-  <!-- ══ SUPORTE ══ -->
-  <div id="tabSuporte" style="display:none">
-    <div class="page-hero" style="padding:0 0 28px">
-      <div class="page-hero-label">Atendimento</div>
-      <h1>Suporte</h1>
-      <p>Gerencie e responda os chamados dos usuários.</p>
-    </div>
-    <div class="filter-row">
-      <button class="filter-btn active" id="sf-todos"        onclick="filtrarTickets('todos')">Todos</button>
-      <button class="filter-btn f-yellow" id="sf-aberto"     onclick="filtrarTickets('aberto')">Abertos</button>
-      <button class="filter-btn"          id="sf-respondido" onclick="filtrarTickets('respondido')">Respondidos</button>
-      <button class="filter-btn f-green"  id="sf-resolvido"  onclick="filtrarTickets('resolvido')">Resolvidos</button>
-    </div>
-    <div id="ticketsList"><div style="color:var(--muted);text-align:center;padding:40px">Carregando...</div></div>
-  </div>
-
   <!-- ══ CRIAR ASSINANTE ══ -->
   <div id="tabAssinante" style="display:none">
     <div class="page-hero" style="padding:0 0 28px">
@@ -496,7 +415,7 @@ async function excluirTicket(id) {
 </div>
 
 <footer class="footer">
-  <div class="footer-logo"><img src="logo.png" alt="Lumina Interactive" style="height:28px;width:auto;opacity:0.85"></div>
+  <div class="footer-logo">LUMINA <span>INTERACTIVE</span>™</div>
   <div class="footer-copy">© 2026 Lumina Interactive™.</div>
 </footer>
 </div><!-- /adminPanel -->
@@ -560,14 +479,13 @@ function logoutAdmin() {
 }
 
 /* ── ABAS ── */
-const ABAS = ["Dash","Pedidos","Ativos","Usuarios","Suporte","Assinante"];
+const ABAS = ["Dash","Pedidos","Ativos","Usuarios","Assinante"];
 function mudarAba(aba) {
   ABAS.forEach(a => {
     document.getElementById("tab"+a).style.display = a === aba ? "block" : "none";
     document.getElementById("tab"+a+"Btn").classList.toggle("active", a === aba);
   });
   if (aba === "Usuarios") carregarUsuarios();
-  if (aba === "Suporte") carregarTickets();
 }
 
 /* ── INIT ── */
@@ -599,7 +517,7 @@ function carregarDashboard() {
     const sc = (p.status==="ativa"||p.status==="aprovado") ? "status-aprovado" : (p.status==="cancelada"||p.status==="cancelado") ? "status-cancelado" : "status-pendente";
     return `<tr>
       <td style="font-family:monospace;font-size:12px;color:#6aabff">#${p.id}</td>
-      <td><div style="font-weight:600">${p.nome_cliente||"—"}</div><div style="font-size:12px;color:var(--muted)">${p.email||""}</div></td>
+      <td style="cursor:pointer" onclick="verPerfil('${p.email||''}')"><div style="font-weight:600">${p.nome_cliente||"—"}</div><div style="font-size:12px;color:#6aabff">${p.email||""}</div></td>
       <td>${p.produto||"—"}</td>
       <td><span class="status-badge ${sc}">${p.status||"pendente"}</span></td>
       <td style="font-size:13px;color:var(--muted)">${p.data_fim ? new Date(p.data_fim).toLocaleDateString("pt-BR") : "—"}</td>
@@ -644,7 +562,7 @@ function renderPedidos() {
     const wp = p.whatsapp ? `<a href="https://wa.me/55${(p.whatsapp||"").replace(/\D/g,"")}" target="_blank" style="color:#25d366;text-decoration:none">📱 ${p.whatsapp}</a>` : "—";
     return `<tr>
       <td style="font-family:monospace;font-size:12px;color:#6aabff">#${p.id}</td>
-      <td><div style="font-weight:600">${p.nome_cliente||"—"}</div><div style="font-size:12px;color:var(--muted)">${p.email||""}</div></td>
+      <td style="cursor:pointer" onclick="verPerfil('${p.email||''}')"><div style="font-weight:600">${p.nome_cliente||"—"}</div><div style="font-size:12px;color:#6aabff">${p.email||""}</div></td>
       <td>${p.produto||"—"}</td>
       <td style="font-family:var(--font-hero);font-size:16px;color:var(--blue)">${Number(p.valor||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</td>
       <td><span class="status-badge ${sc}">${p.status||"pendente"}</span>${valStr}</td>
@@ -669,7 +587,7 @@ function renderAtivos() {
   const tbody = document.getElementById("ativos-tbody");
   const busca = (document.getElementById("searchAtivos")?.value||"").toLowerCase();
   const agora = new Date();
-  let lista = todosPedidos.filter(p => (p.status==="ativa"||p.status==="aprovado") && (!p.data_fim||new Date(p.data_fim)>agora) || (p.status==="aprovado" && (!p.validade_ate||new Date(p.validade_ate)>agora)));
+  let lista = todosPedidos.filter(p => (p.status==="ativa"||p.status==="aprovado") && p.acesso_liberado);
   if (busca) lista = lista.filter(p =>
     (p.nome_cliente||"").toLowerCase().includes(busca) ||
     (p.email||"").toLowerCase().includes(busca) ||
@@ -677,12 +595,12 @@ function renderAtivos() {
   );
   if (!lista.length) { tbody.innerHTML = `<tr><td colspan="6" style="color:var(--muted);text-align:center;padding:40px">Nenhum assinante ativo.</td></tr>`; return; }
   tbody.innerHTML = lista.map(p => {
-    const fim  = p.data_fim ? new Date(p.data_fim) : (p.validade_ate ? new Date(p.validade_ate) : null);
+    const fim  = p.data_fim ? new Date(p.data_fim) : null;
     const dias = fim ? Math.max(0, Math.ceil((fim - agora) / 86400000)) : "—";
     const cor  = typeof dias === "number" ? (dias <= 3 ? "#ef4444" : dias <= 7 ? "#fbbf24" : "#22c55e") : "var(--muted)";
     return `<tr>
       <td style="font-family:monospace;font-size:12px;color:#6aabff">#${p.id}</td>
-      <td><div style="font-weight:600">${p.nome_cliente||"—"}</div><div style="font-size:12px;color:var(--muted)">${p.email||""}</div></td>
+      <td style="cursor:pointer" onclick="verPerfil('${p.email||''}')"><div style="font-weight:600">${p.nome_cliente||"—"}</div><div style="font-size:12px;color:#6aabff">${p.email||""}</div></td>
       <td>${p.produto||"—"}</td>
       <td style="font-size:13px;color:var(--muted)">${fim ? fim.toLocaleDateString("pt-BR") : "—"}</td>
       <td><span style="font-family:var(--font-hero);font-size:22px;color:${cor}">${dias}</span>${typeof dias==="number"&&dias<=7?`<div style="font-size:11px;color:${cor}">${dias===0?"Vence hoje":"⚠️ Em breve"}</div>`:""}</td>
@@ -702,7 +620,7 @@ async function carregarUsuarios() {
   tbody.innerHTML = `<tr><td colspan="8" style="color:var(--muted);text-align:center;padding:40px">Carregando...</td></tr>`;
 
   const { data, error } = await supabaseClient
-    .from("perfis")
+    .from("usuarios")
     .select("*")
     .order("criado_em", { ascending: false });
 
@@ -734,7 +652,7 @@ function renderUsuarios() {
   const agora = new Date();
   const emailsAtivos = new Set(
     todosPedidos
-      .filter(p => (p.status==="ativa"||p.status==="aprovado") && ((!p.data_fim||new Date(p.data_fim)>agora) || (!p.validade_ate||new Date(p.validade_ate)>agora)))
+      .filter(p => (p.status==="ativa"||p.status==="aprovado") && p.acesso_liberado && (!p.data_fim||new Date(p.data_fim)>agora))
       .map(p => (p.email||"").toLowerCase())
   );
 
@@ -746,7 +664,7 @@ function renderUsuarios() {
   if (busca) lista = lista.filter(u =>
     (u.nome||"").toLowerCase().includes(busca) ||
     (u.email||"").toLowerCase().includes(busca) ||
-    (u.id_online||u.handle||"").toLowerCase().includes(busca) ||
+    (u.handle||"").toLowerCase().includes(busca) ||
     (u.telefone||"").includes(busca)
   );
 
@@ -764,7 +682,7 @@ function renderUsuarios() {
     const senhaDisplay = u.senha_hash || u.senha || "—";
 
     return `<tr>
-      <td class="handle-cell">@${u.id_online || u.handle || "—"}</td>
+      <td class="handle-cell">@${u.handle || "—"}</td>
       <td style="font-weight:600">${u.nome || "—"}</td>
       <td style="font-size:13px;color:#6aabff">${u.email || "—"}</td>
       <td style="font-size:13px">${u.telefone || "—"}</td>
@@ -796,7 +714,7 @@ function copiarSenha(senha, el) {
 
 async function excluirUsuario(id, nome) {
   if (!confirm(`Excluir o usuário "${nome}"? Ação irreversível.`)) return;
-  const { error } = await supabaseClient.from("perfis").delete().eq("id", id);
+  const { error } = await supabaseClient.from("usuarios").delete().eq("id", id);
   if (error) { toast("Erro: " + error.message, "err"); return; }
   toast(`🗑️ Usuário excluído`, "ok");
   await carregarUsuarios();
@@ -887,72 +805,9 @@ async function criarAssinante() {
   await carregarPedidosAdmin();
 }
 
-
-/* ── TICKETS / SUPORTE ── */
-let todosTickets = [], filtroTicket = "todos";
-
-async function carregarTickets() {
-  const lista = document.getElementById("ticketsList");
-  lista.innerHTML = `<div style="color:var(--muted);text-align:center;padding:40px">Carregando...</div>`;
-  const { data, error } = await supabaseClient.from("tickets").select("*").order("criado_em", { ascending: false });
-  if (error) { lista.innerHTML = `<div style="color:#ef4444;text-align:center;padding:40px">Erro: ${error.message}</div>`; return; }
-  todosTickets = data || [];
-  renderTickets();
-}
-
-function filtrarTickets(f) {
-  filtroTicket = f;
-  document.querySelectorAll("[id^='sf-']").forEach(b => b.classList.remove("active"));
-  document.getElementById("sf-" + f)?.classList.add("active");
-  renderTickets();
-}
-
-function renderTickets() {
-  const lista = document.getElementById("ticketsList");
-  let data = filtroTicket === "todos" ? todosTickets : todosTickets.filter(t => t.status === filtroTicket);
-  if (!data.length) { lista.innerHTML = `<div style="color:var(--muted);text-align:center;padding:40px">Nenhum chamado encontrado.</div>`; return; }
-  lista.innerHTML = data.map(t => {
-    const cor = t.status==="resolvido" ? "#22c55e" : t.status==="respondido" ? "#6aabff" : "#fbbf24";
-    const bg  = t.status==="resolvido" ? "rgba(34,197,94,.1)" : t.status==="respondido" ? "rgba(26,107,255,.1)" : "rgba(251,191,36,.1)";
-    const ds  = t.criado_em ? new Date(t.criado_em).toLocaleDateString("pt-BR") + " às " + new Date(t.criado_em).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}) : "—";
-    return `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:12px">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:12px">
-        <div>
-          <div style="font-weight:700;font-size:15px">${t.assunto||"—"}</div>
-          <div style="font-size:12px;color:#6aabff;margin-top:3px">${t.nome||"—"} — ${t.email||"—"}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px">${ds}</div>
-        </div>
-        <span style="background:${bg};color:${cor};border:1px solid ${cor}44;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;white-space:nowrap">${t.status}</span>
-      </div>
-      <div style="background:var(--bg2);border-radius:10px;padding:14px;font-size:13px;color:#94a3b8;margin-bottom:14px;line-height:1.7">${t.mensagem||""}</div>
-      ${t.resposta ? `<div style="background:rgba(26,107,255,.08);border-left:3px solid var(--blue);border-radius:8px;padding:12px;margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#6aabff;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Sua resposta</div><div style="font-size:13px;color:var(--text)">${t.resposta}</div></div>` : ""}
-      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
-        <div style="flex:1;min-width:200px"><textarea id="resp-${t.id}" placeholder="Digite sua resposta..." rows="2" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;resize:vertical;box-sizing:border-box">${t.resposta||""}</textarea></div>
-        <div style="display:flex;gap:6px;flex-shrink:0">
-          <button class="btn-action btn-approve" onclick="responderTicket(${t.id},'respondido')">💬 Responder</button>
-          <button class="btn-action btn-renew"   onclick="responderTicket(${t.id},'resolvido')">✅ Resolver</button>
-          <button class="btn-action btn-delete"  onclick="excluirTicket(${t.id})">🗑️</button>
-        </div>
-      </div>
-    </div>`;
-  }).join("");
-}
-
-async function responderTicket(id, novoStatus) {
-  const resposta = document.getElementById("resp-"+id)?.value.trim();
-  if (!resposta) { toast("Digite uma resposta.", "err"); return; }
-  const { error } = await supabaseClient.from("tickets").update({ resposta, status: novoStatus }).eq("id", id);
-  if (error) { toast("Erro: "+error.message, "err"); return; }
-  toast(novoStatus === "resolvido" ? "✅ Chamado resolvido!" : "💬 Resposta enviada!", "ok");
-  carregarTickets();
-}
-
-async function excluirTicket(id) {
-  if (!confirm("Excluir este chamado?")) return;
-  const { error } = await supabaseClient.from("tickets").delete().eq("id", id);
-  if (error) { toast("Erro: "+error.message, "err"); return; }
-  toast("🗑️ Chamado excluído", "ok");
-  carregarTickets();
+function verPerfil(email) {
+  if (!email) return;
+  window.location.href = "perfil-usuario.html?email=" + encodeURIComponent(email);
 }
 
 /* ── LIGHTBOX ── */
