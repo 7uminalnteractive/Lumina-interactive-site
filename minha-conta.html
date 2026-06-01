@@ -246,11 +246,11 @@ async function init() {
 
   // Busca assinatura
   const { data } = await supabaseClient.from("pedidos").select("*")
-    .eq("email", email).eq("status","aprovado")
+    .eq("email", email).in("status",["aprovado","ativa"])
     .order("id",{ascending:false}).limit(1).maybeSingle();
 
   if (!data) { document.getElementById("blocoSemAssinatura").style.display="block"; return; }
-  const agora=new Date(), val=data.validade_ate?new Date(data.validade_ate):null, ativa=!val||val>agora;
+  const agora=new Date(), val=data.validade_ate?new Date(data.validade_ate):(data.data_fim?new Date(data.data_fim):null), ativa=!val||val>agora;
   document.getElementById("blocoAssinatura").style.display="block";
   document.getElementById("nomeProduto").innerText=data.produto||"Lumina Plus";
   const sEl=document.getElementById("statusBadge");
