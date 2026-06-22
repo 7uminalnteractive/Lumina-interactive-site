@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumina Plus | Lumina Interactive</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="logo"><img src="logo.png" alt="Lumina Interactive" style="height:36px;width:auto;display:block"></div>
+  <div class="menu">
+    <a href="index.html">Início</a>
+    <a href="patches.html">Patchs</a>
+    <a href="downloads.html">Downloads</a>
+    <a href="plus.html" class="active">Lumina Plus</a>
+    <a href="login.html" data-auth-link>Login</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="plus-section">
+    <div class="plus-inner">
+
+      <!-- Lado esquerdo: info do plano -->
+      <div class="reveal">
+        <div class="section-label">Assinatura</div>
+        <h2 class="section-title">Lumina Plus</h2>
+        <div class="plus-price-block">
+          <span class="plus-currency">R$</span>
+          <span class="plus-amount">9</span>
+          <span class="plus-currency" style="font-size:20px;margin-bottom:14px">,90</span>
+          <span class="plus-period">/mês</span>
+        </div>
+        <ul class="plus-features">
+          <li><div class="check-icon"><svg viewBox="0 0 12 12"><path d="M1 6l3.5 3.5L11 2" stroke="#1a6bff" stroke-width="2" fill="none" stroke-linecap="round"/></svg></div>Atualizações antecipadas antes de todo mundo</li>
+          <li><div class="check-icon"><svg viewBox="0 0 12 12"><path d="M1 6l3.5 3.5L11 2" stroke="#1a6bff" stroke-width="2" fill="none" stroke-linecap="round"/></svg></div>Acesso ao LPFL PRO — versão premium exclusiva</li>
+          <li><div class="check-icon"><svg viewBox="0 0 12 12"><path d="M1 6l3.5 3.5L11 2" stroke="#1a6bff" stroke-width="2" fill="none" stroke-linecap="round"/></svg></div>Suporte prioritário via WhatsApp</li>
+          <li><div class="check-icon"><svg viewBox="0 0 12 12"><path d="M1 6l3.5 3.5L11 2" stroke="#1a6bff" stroke-width="2" fill="none" stroke-linecap="round"/></svg></div>Escalações atualizadas todo mês</li>
+          <li><div class="check-icon"><svg viewBox="0 0 12 12"><path d="M1 6l3.5 3.5L11 2" stroke="#1a6bff" stroke-width="2" fill="none" stroke-linecap="round"/></svg></div>Cancele quando quiser, sem burocracia</li>
+        </ul>
+        <!-- Botão assinar (oculto se já tiver plano ativo) -->
+        <a href="checkout.html?produto=lumina-plus" class="btn primary" id="btnAssinar" style="font-size:16px;padding:18px 36px">
+          Assinar agora — R$ 9,90/mês
+        </a>
+      </div>
+
+      <!-- Lado direito: card dinâmico -->
+      <div class="plus-card reveal" id="cardPlano">
+
+        <!-- Estado: carregando -->
+        <div id="estadoCarregando" style="text-align:center;padding:40px 0;color:#94a3b8;font-size:14px">
+          Verificando assinatura...
+        </div>
+
+        <!-- Estado: ativo (oculto por padrão) -->
+        <div id="estadoAtivo" style="display:none">
+          <div class="plus-card-top">
+            <div class="plus-card-title">Seu plano</div>
+            <div class="plus-tag">Plus ✦ Ativa</div>
+          </div>
+          <div style="font-size:12px;color:#94a3b8;margin-bottom:20px" id="plusValidadeTexto"></div>
+          <div class="plus-card-items" id="linksDownload">
+            <!-- links inseridos via JS -->
+          </div>
+          <a href="minha-conta.html" class="btn primary" style="width:100%;font-size:14px;padding:14px;text-align:center;display:block;margin-top:16px">
+            Ir para minha conta →
+          </a>
+          <a href="https://discord.gg/FpNu2vndW2" target="_blank" style="width:100%;font-size:14px;padding:14px;text-align:center;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;background:rgba(88,101,242,0.12);border:1px solid rgba(88,101,242,0.3);border-radius:12px;color:#7289da;font-weight:600;text-decoration:none;transition:all 0.2s" onmouseover="this.style.background='rgba(88,101,242,0.22)'" onmouseout="this.style.background='rgba(88,101,242,0.12)'">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#7289da"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+            Entrar no Discord
+          </a>
+        </div>
+
+        <!-- Estado: sem plano (oculto por padrão) -->
+        <div id="estadoSemPlano" style="display:none">
+          <div class="plus-card-top">
+            <div class="plus-card-title">Seu plano</div>
+            <div class="plus-tag">Plus ✦</div>
+          </div>
+          <div class="plus-card-items">
+            <div class="plus-card-item"><div class="plus-card-item-dot"></div>LPFL PRO — acesso liberado</div>
+            <div class="plus-card-item"><div class="plus-card-item-dot"></div>Brazukas Patch — acesso liberado</div>
+            <div class="plus-card-item"><div class="plus-card-item-dot"></div>LPFL Normal — acesso liberado</div>
+            <div class="plus-card-item"><div class="plus-card-item-dot"></div>Atualizações antecipadas ativas</div>
+          </div>
+          <a href="checkout.html?produto=lumina-plus" class="btn primary" style="width:100%;font-size:14px;padding:14px;text-align:center;display:block">
+            Quero esse plano →
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-logo"><img src="logo.png" alt="Lumina Interactive" style="height:28px;width:auto;opacity:0.85"></div>
+  <div class="footer-links">
+    <a href="index.html">Início</a><a href="patches.html">Patchs</a>
+    <a href="downloads.html">Downloads</a><a href="plus.html">Lumina Plus</a>
+    <a href="login.html" data-auth-link>Login</a>
+  </div>
+  <div class="footer-copy">© 2026 Lumina Interactive™. Todos os direitos reservados.</div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+const supabaseClient = supabase.createClient(
+  "https://tqsalhscgkepttbczyjq.supabase.co",
+  "sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK"
+);
+
+// Links de download por produto — edite aqui quando quiser
+const LINKS_DOWNLOAD = {
+  "Lumina Plus": [
+    { nome: "LPFL PRO", url: "https://drive.google.com/drive/folders/1rOCulLU2EldDg3p-TIdWZmha8Q_vBW-F" },
+    { nome: "Brazukas 26", url: "https://drive.google.com/drive/folders/1--zq8LO2uPMCO50MhkZDHMWqRxInq-jj" },
+    { nome: "LPFL FREE", url: "https://drive.google.com/drive/folders/1Oo_YuLKDIX5o6m7XdjRlTQR8xDTRxw3I" },
+  ],
+  "LPFL PRO": [
+    { nome: "LPFL PRO", url: "https://drive.google.com/drive/folders/1rOCulLU2EldDg3p-TIdWZmha8Q_vBW-F" },
+  ],
+  "Brazukas Patch": [
+    { nome: "Brazukas 26", url: "https://drive.google.com/drive/folders/1--zq8LO2uPMCO50MhkZDHMWqRxInq-jj" },
+  ],
+  "LPFL Normal": [
+    { nome: "LPFL FREE", url: "https://drive.google.com/drive/folders/1Oo_YuLKDIX5o6m7XdjRlTQR8xDTRxw3I" },
+  ],
+};
+
+async function verificarAssinatura() {
+  // Pega email do usuário
+  let email = null;
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (session?.user) email = session.user.email;
+  else email = localStorage.getItem("lumina_email");
+
+  document.getElementById("estadoCarregando").style.display = "none";
+
+  if (!email) {
+    document.getElementById("estadoSemPlano").style.display = "block";
+    return;
+  }
+
+  // Busca pedido aprovado
+  const { data, error } = await supabaseClient
+    .from("pedidos")
+    .select("*")
+    .eq("email", email)
+    .in("status", ["aprovado","ativa"])
+    .order("id", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error || !data) {
+    document.getElementById("estadoSemPlano").style.display = "block";
+    return;
+  }
+
+  // Verifica validade
+  const agora = new Date();
+  const validade = data.validade_ate ? new Date(data.validade_ate) : (data.data_fim ? new Date(data.data_fim) : null);
+  const ativa = !validade || validade > agora;
+
+  if (!ativa) {
+    document.getElementById("estadoSemPlano").style.display = "block";
+    return;
+  }
+
+  // Plano ativo — mostra downloads
+  document.getElementById("estadoAtivo").style.display = "block";
+  document.getElementById("btnAssinar").style.display = "none";
+
+  document.getElementById("plusValidadeTexto").innerText = validade
+    ? "Válido até " + validade.toLocaleDateString("pt-BR")
+    : "";
+
+  const links = LINKS_DOWNLOAD[data.produto] || LINKS_DOWNLOAD["Lumina Plus"];
+  const container = document.getElementById("linksDownload");
+  container.innerHTML = "";
+  links.forEach(link => {
+    container.innerHTML += `
+      <div class="plus-card-item" style="justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="plus-card-item-dot"></div>
+          <span>${link.nome}</span>
+        </div>
+        <a href="${link.url}" target="_blank" class="btn-card" style="width:auto;padding:6px 14px;font-size:12px">
+          Baixar ↓
+        </a>
+      </div>`;
+  });
+}
+
+verificarAssinatura();
+</script>
+
+<script src="navbar-auth.js"></script>
+<script>
+const revealEls = document.querySelectorAll('.reveal');
+const obs = new IntersectionObserver((e) => {
+  e.forEach((x, i) => {
+    if (x.isIntersecting) { setTimeout(() => x.target.classList.add('visible'), i * 80); obs.unobserve(x.target); }
+  });
+}, { threshold: 0.1 });
+revealEls.forEach(el => obs.observe(el));
+</script>
+</body>
+</html>

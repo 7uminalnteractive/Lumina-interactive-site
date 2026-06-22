@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LPFL Normal | Lumina Interactive</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="navbar">
+  <div class="logo"><img src="logo.png" alt="Lumina Interactive" style="height:36px;width:auto;display:block"></div>
+  <div class="menu">
+    <a href="index.html">Início</a><a href="patches.html" class="active">Patchs</a>
+    <a href="downloads.html">Downloads</a><a href="plus.html">Lumina Plus</a>
+    <a href="login.html" data-auth-link>Login</a>
+  </div>
+</nav>
+<div class="page-wrap">
+  <div class="page-hero container">
+    <div class="page-hero-label">Patch Gratuito</div>
+    <h1>LPFL Normal</h1>
+    <p>A experiência clássica do LPFL com atualizações oficiais da Lumina Interactive.</p>
+  </div>
+  <div class="section" style="padding-top:0">
+    <div class="cards">
+      <div class="card reveal">
+        <h3>Informações</h3>
+        <ul>
+          <li>Versão 2026</li>
+          <li>Atualizações contínuas</li>
+          <li>Compatível Android</li>
+          <li>Escalações atualizadas</li>
+        </ul>
+      </div>
+      <div class="card reveal">
+        <h3>Requisitos</h3>
+        <ul>
+          <li>Android 8+</li>
+          <li>2GB RAM</li>
+          <li>PPSSPP instalado</li>
+          <li>800MB de armazenamento</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:40px">
+      <a href="https://drive.google.com/drive/folders/1BdGrc9Pnajpga5wYZChIxw3c3Gsd2Qvk" target="_blank" class="btn primary" style="font-size:16px;padding:16px 36px">
+        Baixar LPFL Normal
+      </a>
+    </div>
+  </div>
+</div>
+<footer class="footer">
+  <div class="footer-logo"><img src="logo.png" alt="Lumina Interactive" style="height:32px;width:auto;opacity:0.85"></div>
+  <div class="footer-links">
+    <a href="index.html">Início</a><a href="patches.html">Patchs</a>
+    <a href="downloads.html">Downloads</a><a href="plus.html">Lumina Plus</a>
+    <a href="login.html" data-auth-link>Login</a>
+  </div>
+  <div class="footer-copy">© 2026 Lumina Interactive™. Todos os direitos reservados.</div>
+</footer>
+<script src="navbar-auth.js"></script>
+<script>
+const revealEls=document.querySelectorAll('.reveal');
+const obs=new IntersectionObserver((e)=>{e.forEach((x,i)=>{if(x.isIntersecting){setTimeout(()=>x.target.classList.add('visible'),i*80);obs.unobserve(x.target);}});},{threshold:0.1});
+revealEls.forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
