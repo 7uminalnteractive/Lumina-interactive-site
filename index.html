@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumina Interactive™</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="logo"><img src="logo.png" alt="Lumina Interactive" style="height:36px;width:auto;display:block"></div>
+  <div class="menu">
+    <a href="index.html" class="active">Início</a>
+    <a href="patches.html">Patchs</a>
+    
+    <a href="plus.html">Lumina Plus</a>
+    <a href="login.html" data-auth-link>Login</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-grid">
+    <div>
+      <div class="tag">A NOVA ERA DO FUTEBOL DIGITAL</div>
+      <h1>Levando o futebol portátil <span class="accent">a outro nível.</span></h1>
+      <p class="desc">Patches premium para PES PSP com identidade própria, visual moderno, comunidade ativa e experiência feita para quem vive futebol.</p>
+      <div class="hero-buttons">
+        <a href="patches.html" class="btn primary">Ver Patchs</a>
+        <a href="plus.html" class="btn secondary">Conhecer Lumina Plus</a>
+      </div>
+    </div>
+    <div class="hero-card reveal">
+      <div class="hero-card-badge">LUMINA PLUS</div>
+      <h2>Experiência<br>Premium</h2>
+      <p>Atualizações antecipadas, conteúdos exclusivos e suporte prioritário para assinantes.</p>
+      <div class="stat-grid">
+        <div class="stat"><strong>3</strong><span>Patchs</span></div>
+        <div class="stat"><strong>BR</strong><span>Comunidade</span></div>
+        <div class="stat"><strong>PRO</strong><span>Experiência</span></div>
+        <div class="stat"><strong>PSP</strong><span>Plataforma</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ NOTÍCIAS ══ -->
+<section id="secaoNoticias" style="display:none;padding:60px 0 20px">
+  <div class="container">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
+      <div style="width:4px;height:32px;background:linear-gradient(180deg,#1a6bff,#0c3fa0);border-radius:4px"></div>
+      <div>
+        <div style="font-size:11px;color:#6aabff;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px">Novidades</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;color:#fff">Últimas notícias</div>
+      </div>
+    </div>
+    <div id="noticiasDestaque" style="display:flex;flex-direction:column;gap:14px"></div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-logo"><img src="logo.png" alt="Lumina Interactive" style="height:32px;width:auto;opacity:0.85"></div>
+  <div class="footer-links">
+    <a href="index.html">Início</a>
+    <a href="patches.html">Patchs</a>
+    
+    <a href="plus.html">Lumina Plus</a>
+    <a href="login.html" data-auth-link>Login</a>
+  </div>
+  <div class="footer-copy">© 2026 Lumina Interactive™. Todos os direitos reservados.</div>
+</footer>
+
+<script src="navbar-auth.js"></script>
+<script>
+const revealEls = document.querySelectorAll('.reveal');
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((e,i) => {
+    if(e.isIntersecting){ setTimeout(()=>e.target.classList.add('visible'),i*60); obs.unobserve(e.target); }
+  });
+},{threshold:0.12});
+revealEls.forEach(el=>obs.observe(el));
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+(async function() {
+  const sb = supabase.createClient(
+    "https://tqsalhscgkepttbczyjq.supabase.co",
+    "sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK"
+  );
+  const { data } = await sb.from("noticias").select("*").order("criado_em", { ascending: false }).limit(5);
+  if (!data || !data.length) return;
+
+  document.getElementById("secaoNoticias").style.display = "block";
+  document.getElementById("noticiasDestaque").innerHTML = data.map(n => `
+    <div class="reveal" style="background:linear-gradient(135deg,#0c1528,#080e1c);border:1px solid rgba(26,107,255,0.18);border-radius:18px;padding:20px 24px;display:flex;align-items:flex-start;gap:16px">
+      <div style="width:40px;height:40px;border-radius:10px;background:rgba(26,107,255,0.15);border:1px solid rgba(26,107,255,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">📢</div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+          <span style="background:rgba(26,107,255,0.15);color:#6aabff;border:1px solid rgba(26,107,255,0.3);border-radius:6px;padding:2px 10px;font-size:11px;font-weight:700;letter-spacing:1px">${n.tag||'NOVO'}</span>
+          <span style="font-size:11px;color:#64748b">${new Date(n.criado_em).toLocaleDateString('pt-BR')}</span>
+        </div>
+        <div style="font-weight:700;font-size:16px;color:#fff;margin-bottom:4px">${n.titulo}</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.6">${n.descricao}</div>
+      </div>
+    </div>
+  `).join("");
+
+  // Reveal animation
+  const els = document.querySelectorAll("#noticiasDestaque .reveal");
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) { setTimeout(() => e.target.classList.add("visible"), i * 80); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+  els.forEach(el => obs.observe(el));
+})();
+</script>
+</body>
+</html>
