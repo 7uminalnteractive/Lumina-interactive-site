@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin | Lumina Interactive</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* ── LOGIN ── */
+.admin-login-overlay {
+  position:fixed;inset:0;z-index:9999;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;padding:24px;
+}
+.admin-login-box {
+  background:var(--bg2);border:1px solid var(--border);border-radius:24px;
+  padding:48px 40px;width:100%;max-width:420px;
+  box-shadow:0 0 80px rgba(26,107,255,.12);
+}
+.admin-login-box h2{font-family:var(--font-hero);font-size:32px;letter-spacing:1px;margin-bottom:6px;text-align:center}
+.admin-login-box p{color:var(--muted);font-size:14px;margin-bottom:28px;text-align:center}
+.adm-field{margin-bottom:14px}
+.adm-field label{display:block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.adm-field input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:13px 16px;color:var(--text);font-family:var(--font-body);font-size:14px;outline:none;transition:border-color .2s;box-sizing:border-box}
+.adm-field input:focus{border-color:rgba(26,107,255,.5)}
+.btn-err{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#fca5a5;border-radius:10px;padding:11px 14px;font-size:13px;margin-bottom:14px;display:none}
+.btn-err.show{display:block}
+.btn-adm-login{width:100%;padding:15px;background:var(--blue);color:#fff;border:none;border-radius:12px;font-family:var(--font-body);font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;transition:background .2s,transform .15s;box-shadow:0 0 24px rgba(26,107,255,.35)}
+.btn-adm-login:hover{background:#1558d6;transform:translateY(-1px)}
+
+/* ── TABS ── */
+.tab-bar{display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:40px;overflow-x:auto}
+.tab-btn{background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);font-family:var(--font-body);font-size:13px;font-weight:600;padding:12px 18px;cursor:pointer;margin-bottom:-1px;transition:color .15s,border-color .15s;white-space:nowrap}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--blue);border-bottom-color:var(--blue)}
+
+/* ── DASH CARDS ── */
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:40px}
+.dash-card{background:var(--bg3);border:1px solid var(--border);border-radius:18px;padding:22px 20px;cursor:pointer;transition:border-color .2s,transform .15s,box-shadow .2s}
+.dash-card:hover{transform:translateY(-2px)}
+.dash-card.blue{border-color:rgba(26,107,255,.2)}.dash-card.green{border-color:rgba(34,197,94,.2)}.dash-card.yellow{border-color:rgba(251,191,36,.2)}.dash-card.red{border-color:rgba(239,68,68,.2)}.dash-card.purple{border-color:rgba(167,139,250,.2)}.dash-card.teal{border-color:rgba(20,184,166,.2)}
+.dash-card:hover.blue{border-color:rgba(26,107,255,.5);box-shadow:0 8px 30px rgba(26,107,255,.12)}.dash-card:hover.green{border-color:rgba(34,197,94,.5);box-shadow:0 8px 30px rgba(34,197,94,.12)}.dash-card:hover.yellow{border-color:rgba(251,191,36,.5);box-shadow:0 8px 30px rgba(251,191,36,.12)}.dash-card:hover.red{border-color:rgba(239,68,68,.5);box-shadow:0 8px 30px rgba(239,68,68,.12)}.dash-card:hover.purple{border-color:rgba(167,139,250,.5);box-shadow:0 8px 30px rgba(167,139,250,.12)}
+.dash-card-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.dash-card-value{font-family:var(--font-hero);font-size:44px;line-height:1;letter-spacing:1px}
+.dash-card-sub{font-size:11px;color:var(--muted);margin-top:6px}
+.dash-card.blue .dash-card-value{color:var(--blue)}.dash-card.green .dash-card-value{color:#22c55e}.dash-card.yellow .dash-card-value{color:#fbbf24}.dash-card.red .dash-card-value{color:#ef4444}.dash-card.purple .dash-card-value{color:#a78bfa}.dash-card.teal .dash-card-value{color:#14b8a6}
+
+/* ── SEARCH BAR ── */
+.search-bar{display:flex;align-items:center;gap:12px;background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:12px 18px;margin-bottom:20px;transition:border-color .2s}
+.search-bar:focus-within{border-color:rgba(26,107,255,.5)}
+.search-bar svg{flex-shrink:0;fill:var(--muted)}
+.search-bar input{background:none;border:none;outline:none;color:var(--text);font-family:var(--font-body);font-size:14px;width:100%}
+.search-bar input::placeholder{color:var(--muted)}
+
+/* ── FILTROS ── */
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.filter-btn{background:var(--bg3);border:1px solid var(--border);color:var(--muted);font-family:var(--font-body);font-size:12px;font-weight:600;padding:6px 14px;border-radius:999px;cursor:pointer;transition:all .15s}
+.filter-btn:hover,.filter-btn.active{background:var(--blue-dim);border-color:rgba(26,107,255,.4);color:#6aabff}
+.filter-btn.f-green.active{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.4);color:#22c55e}
+.filter-btn.f-yellow.active{background:rgba(251,191,36,.12);border-color:rgba(251,191,36,.4);color:#fbbf24}
+.filter-btn.f-red.active{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.4);color:#ef4444}
+
+/* ── ACTION BUTTONS ── */
+.admin-actions-bar{display:flex;gap:5px;flex-wrap:wrap}
+.btn-action{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;border:none;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font-body);transition:opacity .15s,transform .1s;white-space:nowrap}
+.btn-action:hover{opacity:.85;transform:translateY(-1px)}
+.btn-approve{background:#22c55e;color:#000}.btn-renew{background:#3b82f6;color:#fff}.btn-cancel{background:#f59e0b;color:#000}.btn-delete{background:#ef4444;color:#fff}.btn-ban{background:#7c3aed;color:#fff}.btn-view{background:var(--bg3);border:1px solid var(--border)!important;color:var(--text)}
+
+/* ── STATUS BADGES ── */
+.status-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap}
+.status-aprovado{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#86efac}
+.status-pendente{background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3);color:#fde047}
+.status-cancelado{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#fca5a5}
+.status-ativo{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#86efac}
+.status-ativa{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#86efac}
+.status-inativo{background:rgba(100,116,139,.12);border:1px solid rgba(100,116,139,.3);color:#94a3b8}
+
+/* ── COMPROVANTE ── */
+.comp-thumb{display:inline-block;cursor:pointer;border-radius:8px;overflow:hidden;border:1px solid var(--border);transition:border-color .15s}
+.comp-thumb:hover{border-color:rgba(26,107,255,.4)}
+.comp-thumb img{width:52px;height:40px;object-fit:cover;display:block}
+
+/* ── LIGHTBOX ── */
+.comp-lightbox{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.comp-lightbox img{max-width:90vw;max-height:86vh;border-radius:14px;box-shadow:0 24px 80px rgba(0,0,0,.8)}
+.comp-lightbox-close{position:absolute;top:20px;right:24px;background:rgba(255,255,255,.1);border:none;color:#fff;font-size:22px;width:44px;height:44px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:24px;right:24px;z-index:7000;background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:13px 20px;font-size:14px;min-width:220px;box-shadow:0 8px 32px rgba(0,0,0,.5);transform:translateY(80px);opacity:0;transition:transform .3s,opacity .3s;pointer-events:none}
+#toast.show{transform:translateY(0);opacity:1}
+#toast.ok{border-color:rgba(34,197,94,.4);color:#86efac}
+#toast.err{border-color:rgba(239,68,68,.4);color:#fca5a5}
+
+/* ── USER TABLE ── */
+.user-senha-cell{font-family:monospace;font-size:12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:4px 10px;color:#a78bfa;cursor:pointer;user-select:all;white-space:nowrap}
+.handle-cell{font-family:monospace;font-size:13px;font-weight:700;color:#6aabff}
+.adm-badge-nav{display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:8px 14px;font-size:13px;color:var(--muted)}
+.adm-badge-nav strong{color:var(--text)}
+.nome-clicavel{cursor:pointer;font-weight:600;color:var(--text);transition:color .15s}
+.nome-clicavel:hover{color:#6aabff;text-decoration:underline}
+
+/* ── MODAL PERFIL ── */
+.user-modal-overlay{position:fixed;inset:0;z-index:6000;background:rgba(4,7,15,.88);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s}
+.user-modal-overlay.show{opacity:1;pointer-events:all}
+.user-modal{background:var(--bg2);border:1px solid var(--border);border-radius:24px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:0 0 80px rgba(26,107,255,.15);transform:translateY(20px);transition:transform .25s}
+.user-modal-overlay.show .user-modal{transform:translateY(0)}
+.user-modal-head{background:linear-gradient(135deg,var(--bg3),var(--bg2));border-bottom:1px solid var(--border);padding:28px 28px 22px;position:relative;display:flex;align-items:flex-start;gap:16px}
+.user-modal-avatar{width:64px;height:64px;border-radius:50%;background:var(--blue-dim);border:2px solid rgba(26,107,255,.35);display:flex;align-items:center;justify-content:center;font-family:var(--font-hero);font-size:28px;color:var(--blue);flex-shrink:0}
+.user-modal-title{font-family:var(--font-hero);font-size:26px;letter-spacing:1px;line-height:1.1;margin-bottom:4px}
+.user-modal-handle{font-family:monospace;font-size:13px;color:#6aabff;margin-bottom:10px}
+.user-modal-close{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--muted);width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:color .15s,border-color .15s}
+.user-modal-close:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
+.user-modal-body{padding:22px 28px 28px}
+.um-section-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;margin-top:20px}
+.um-section-label:first-child{margin-top:0}
+.um-rows{display:grid;gap:8px}
+.um-row{display:flex;align-items:center;gap:12px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:11px 14px}
+.um-row-icon{flex-shrink:0;opacity:.7}
+.um-row-label{font-size:10px;color:var(--muted);margin-bottom:2px}
+.um-row-val{font-size:13px;color:var(--text);font-weight:500;word-break:break-all}
+.um-row-val.blue{color:#6aabff}
+.um-row-val.mono{font-family:monospace;color:#a78bfa;cursor:pointer}
+.um-row-val.mono:hover{opacity:.8}
+.um-pedido-item{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.um-pedido-item:last-child{margin-bottom:0}
+.um-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px;padding-top:18px;border-top:1px solid var(--border)}
+
+/* ── TICKET CARDS ── */
+.ticket-card{background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:14px}
+.ticket-card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.ticket-assunto{font-weight:700;font-size:14px}
+.ticket-meta{font-size:12px;color:var(--muted);margin-bottom:8px}
+.ticket-mensagem{font-size:13px;color:#94a3b8;margin-bottom:10px}
+.ticket-resposta{background:var(--bg2);border-left:3px solid var(--blue);border-radius:8px;padding:12px;margin-top:10px}
+.ticket-resposta-label{font-size:11px;font-weight:700;color:#6aabff;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px}
+.ticket-reply-area{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.ticket-reply-area textarea{flex:1;min-width:200px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;resize:vertical;min-height:60px;transition:border-color .2s}
+.ticket-reply-area textarea:focus{border-color:rgba(26,107,255,.5)}
+.ticket-reply-actions{display:flex;flex-direction:column;gap:6px}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div class="admin-login-overlay" id="adminLoginOverlay">
+  <div class="admin-login-box">
+    <div style="width:48px;height:48px;background:var(--blue-dim);border:1px solid rgba(26,107,255,.25);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="#6aabff"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+    </div>
+    <h2>Acesso Restrito</h2>
+    <p>Painel Administrativo — Lumina Interactive™</p>
+    <div class="btn-err" id="loginErr">E-mail ou senha incorretos.</div>
+    <div class="adm-field"><label>E-mail</label><input type="email" id="adminEmail" placeholder="admin@email.com" autocomplete="email"></div>
+    <div class="adm-field"><label>Senha</label><input type="password" id="adminSenha" placeholder="••••••" autocomplete="current-password"></div>
+    <button class="btn-adm-login" onclick="verificarSenha()">Entrar no painel</button>
+  </div>
+</div>
+
+<!-- ══ PAINEL ══ -->
+<div id="adminPanel" style="display:none">
+
+<nav class="navbar">
+  <div class="logo"><img src="logo.png" alt="Lumina Interactive" style="height:36px;width:auto;display:block"></div>
+  <div style="display:flex;align-items:center;gap:10px;margin-left:auto">
+    <div class="adm-badge-nav">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="#6aabff"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+      <strong id="admNome">Admin</strong>
+    </div>
+    <button onclick="logoutAdmin()" class="btn secondary" style="padding:8px 14px;font-size:12px">Sair</button>
+  </div>
+</nav>
+
+<div class="page-wrap">
+<div class="container" style="padding-top:40px;padding-bottom:80px">
+
+  <!-- ABAS -->
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tabDashBtn"      onclick="mudarAba('Dash')">📊 Dashboard</button>
+    <button class="tab-btn"        id="tabPedidosBtn"   onclick="mudarAba('Pedidos')">📋 Pedidos</button>
+    <button class="tab-btn"        id="tabAtivosBtn"    onclick="mudarAba('Ativos')">✅ Ativos</button>
+    <button class="tab-btn"        id="tabUsuariosBtn"  onclick="mudarAba('Usuarios')">👥 Usuários</button>
+    <button class="tab-btn"        id="tabSuporteBtn"   onclick="mudarAba('Suporte')">🎧 Suporte</button>
+    <button class="tab-btn"        id="tabAssinanteBtn" onclick="mudarAba('Assinante')">➕ Criar Assinante</button>
+  </div>
+
+  <!-- ══ DASHBOARD ══ -->
+  <div id="tabDash">
+    <div class="page-hero" style="padding:0 0 28px">
+      <div class="page-hero-label">Visão Geral</div>
+      <h1>Dashboard</h1>
+      <p>Resumo em tempo real dos pedidos e assinaturas.</p>
+    </div>
+    <div class="dash-grid">
+      <div class="dash-card blue"   onclick="mudarAba('Pedidos')"><div class="dash-card-label">Total de pedidos</div><div class="dash-card-value" id="dTotal">—</div><div class="dash-card-sub">ver todos →</div></div>
+      <div class="dash-card green"  onclick="mudarAba('Ativos')"><div class="dash-card-label">Assinantes ativos</div><div class="dash-card-value" id="dAtivos">—</div><div class="dash-card-sub">ver ativos →</div></div>
+      <div class="dash-card yellow" onclick="mudarAba('Pedidos');setTimeout(()=>aplicarFiltro('pendente'),80)"><div class="dash-card-label">Pendentes</div><div class="dash-card-value" id="dPendentes">—</div><div class="dash-card-sub">aguardando aprovação →</div></div>
+      <div class="dash-card red"    onclick="mudarAba('Pedidos');setTimeout(()=>aplicarFiltro('cancelada'),80)"><div class="dash-card-label">Cancelados</div><div class="dash-card-value" id="dCancelados">—</div><div class="dash-card-sub">ver cancelados →</div></div>
+      <div class="dash-card purple" onclick="mudarAba('Ativos')"><div class="dash-card-label">Expirando em 7d</div><div class="dash-card-value" id="dExpirando">—</div><div class="dash-card-sub">precisam renovar →</div></div>
+      <div class="dash-card teal"   onclick="mudarAba('Usuarios')"><div class="dash-card-label">Usuários cadastrados</div><div class="dash-card-value" id="dUsuarios">—</div><div class="dash-card-sub">ver usuários →</div></div>
+    </div>
+    <div style="font-family:var(--font-hero);font-size:24px;letter-spacing:1px;margin-bottom:16px">Pedidos recentes</div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>ID</th><th>Cliente</th><th>Produto</th><th>Status</th><th>Validade</th></tr></thead>
+        <tbody id="dash-recentes-tbody"><tr><td colspan="5" style="color:var(--muted);text-align:center;padding:30px">Carregando...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ PEDIDOS ══ -->
+  <div id="tabPedidos" style="display:none">
+    <div class="page-hero" style="padding:0 0 28px">
+      <div class="page-hero-label">Painel</div><h1>Pedidos</h1>
+      <p>Gerencie todos os pedidos, assinaturas e comprovantes.</p>
+    </div>
+    <div class="search-bar">
+      <svg width="16" height="16" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <input type="text" id="searchPedidos" placeholder="Pesquisar por nome, e-mail, produto, WhatsApp..." oninput="filtrarPedidos()">
+    </div>
+    <div class="filter-row">
+      <button class="filter-btn active"   id="f-todos"       onclick="aplicarFiltro('todos')">Todos</button>
+      <button class="filter-btn f-yellow" id="f-pendente"    onclick="aplicarFiltro('pendente')">Pendentes</button>
+      <button class="filter-btn f-yellow" id="f-aguardando"  onclick="aplicarFiltro('aguardando_pagamento')">Aguardando</button>
+      <button class="filter-btn f-green"  id="f-ativa"       onclick="aplicarFiltro('ativa')">Aprovados</button>
+      <button class="filter-btn f-red"    id="f-cancelada"   onclick="aplicarFiltro('cancelada')">Cancelados</button>
+    </div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>ID</th><th>Cliente</th><th>Produto</th><th>Valor</th><th>Status</th><th>Comprovante</th><th>WhatsApp</th><th>Validade</th><th>Ações</th></tr></thead>
+        <tbody id="pedidos-admin"><tr><td colspan="9" style="color:var(--muted);text-align:center;padding:40px">Carregando...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ ATIVOS ══ -->
+  <div id="tabAtivos" style="display:none">
+    <div class="page-hero" style="padding:0 0 28px">
+      <div class="page-hero-label">Assinantes</div><h1>Ativos</h1>
+      <p>Todos os assinantes com acesso ativo no momento.</p>
+    </div>
+    <div class="search-bar">
+      <svg width="16" height="16" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <input type="text" id="searchAtivos" placeholder="Pesquisar por nome, e-mail ou produto..." oninput="filtrarAtivos()">
+    </div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>ID</th><th>Cliente</th><th>Produto</th><th>Válido até</th><th>Dias restantes</th><th>Ações</th></tr></thead>
+        <tbody id="ativos-tbody"><tr><td colspan="6" style="color:var(--muted);text-align:center;padding:40px">Carregando...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ USUÁRIOS ══ -->
+  <div id="tabUsuarios" style="display:none">
+    <div class="page-hero" style="padding:0 0 28px">
+      <div class="page-hero-label">Cadastros</div><h1>Usuários</h1>
+      <p>Clique no nome para ver o perfil completo.</p>
+    </div>
+    <div class="search-bar">
+      <svg width="16" height="16" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <input type="text" id="searchUsuarios" placeholder="Pesquisar por nome, e-mail, @handle ou telefone..." oninput="filtrarUsuarios()">
+    </div>
+    <div class="filter-row">
+      <button class="filter-btn active"  id="fu-todos"      onclick="aplicarFiltroUser('todos')">Todos</button>
+      <button class="filter-btn f-green" id="fu-assinante"  onclick="aplicarFiltroUser('assinante')">Assinantes</button>
+      <button class="filter-btn"         id="fu-free"       onclick="aplicarFiltroUser('free')">Não assinantes</button>
+    </div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>@Handle</th><th>Nome</th><th>E-mail</th><th>Telefone</th><th>Assinante?</th><th>Cadastro</th><th>Ações</th></tr></thead>
+        <tbody id="usuarios-tbody"><tr><td colspan="7" style="color:var(--muted);text-align:center;padding:40px">Carregando...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ SUPORTE ══ -->
+  <div id="tabSuporte" style="display:none">
+    <div class="page-hero" style="padding:0 0 28px">
+      <div class="page-hero-label">Atendimento</div><h1>Suporte</h1>
+      <p>Gerencie e responda os chamados dos usuários.</p>
+    </div>
+    <div class="filter-row">
+      <button class="filter-btn active"  id="sf-todos"        onclick="filtrarTickets('todos')">Todos</button>
+      <button class="filter-btn f-yellow" id="sf-aberto"      onclick="filtrarTickets('aberto')">Abertos</button>
+      <button class="filter-btn"          id="sf-respondido"  onclick="filtrarTickets('respondido')">Respondidos</button>
+      <button class="filter-btn f-green"  id="sf-resolvido"   onclick="filtrarTickets('resolvido')">Resolvidos</button>
+    </div>
+    <div id="ticketsList"><div style="color:var(--muted);text-align:center;padding:40px">Carregando...</div></div>
+  </div>
+
+  <!-- ══ CRIAR ASSINANTE ══ -->
+  <div id="tabAssinante" style="display:none">
+    <div class="page-hero" style="padding:0 0 28px">
+      <div class="page-hero-label">Painel</div><h1>Criar Assinante</h1>
+      <p>Adicione um assinante manualmente com 30 dias de acesso imediato.</p>
+    </div>
+    <div style="max-width:480px">
+      <div id="msgAssinanteErro"    style="display:none;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#fca5a5;padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:16px"></div>
+      <div id="msgAssinanteSucesso" style="display:none;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#86efac;padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:16px"></div>
+      <div class="field"><label>E-mail do assinante</label><input type="email" id="emailAssinante" placeholder="cliente@email.com"></div>
+      <div class="field">
+        <label>Produto</label>
+        <select id="produtoAssinante" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:13px 16px;color:var(--text);font-family:var(--font-body);font-size:14px;outline:none">
+          <option value="Lumina Plus">Lumina Plus</option>
+          <option value="LPFL PRO">LPFL PRO</option>
+          <option value="LPFL Normal">LPFL Normal</option>
+          <option value="Brazukas Patch">Brazukas Patch</option>
+        </select>
+      </div>
+      <button class="btn primary" style="width:100%" onclick="criarAssinante()">Criar assinante — 30 dias</button>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<footer class="footer">
+  <div class="footer-logo"><img src="logo.png" alt="Lumina Interactive" style="height:28px;width:auto;opacity:0.85"></div>
+  <div class="footer-copy">© 2026 Lumina Interactive™.</div>
+</footer>
+</div><!-- /adminPanel -->
+
+<!-- ══ MODAL PERFIL USUÁRIO ══ -->
+<div class="user-modal-overlay" id="userModalOverlay" onclick="fecharModal(event)">
+  <div class="user-modal" id="userModal">
+    <div class="user-modal-head">
+      <div class="user-modal-avatar" id="muAvatar">
+      <img id="muAvatarImg" src="" alt="" style="display:none;width:100%;height:100%;border-radius:50%;object-fit:cover">
+      <span id="muAvatarInitial" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%">?</span>
+    </div>
+      <div style="flex:1;min-width:0">
+        <div class="user-modal-title" id="muNome">—</div>
+        <div class="user-modal-handle" id="muHandle">@—</div>
+        <div id="muBadge"></div>
+      </div>
+      <button class="user-modal-close" onclick="fecharModal()">✕</button>
+    </div>
+    <div class="user-modal-body">
+
+      <div class="um-section-label">Informações pessoais</div>
+      <div class="um-rows">
+        <div class="um-row" style="cursor:pointer" onclick="copiarValor('muEmail',this)" title="Clique para copiar">
+          <svg class="um-row-icon" width="14" height="14" viewBox="0 0 24 24" fill="#6aabff"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+          <div style="flex:1"><div class="um-row-label">E-mail (clique para copiar)</div><div class="um-row-val blue" id="muEmail">—</div></div>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--muted)"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+        </div>
+        <div class="um-row" style="cursor:pointer" onclick="copiarValor('muHandleVal',this)" title="Clique para copiar">
+          <svg class="um-row-icon" width="14" height="14" viewBox="0 0 24 24" fill="#6aabff"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+          <div style="flex:1"><div class="um-row-label">@ Handle (clique para copiar)</div><div class="um-row-val blue" id="muHandleVal" style="font-family:monospace">—</div></div>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--muted)"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+        </div>
+        <div class="um-row" style="cursor:pointer" onclick="copiarValor('muTelefone',this)" title="Clique para copiar">
+          <svg class="um-row-icon" width="14" height="14" viewBox="0 0 24 24" fill="#6aabff"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+          <div style="flex:1"><div class="um-row-label">Telefone / WhatsApp (clique para copiar)</div><div class="um-row-val" id="muTelefone">—</div></div>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--muted)"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+        </div>
+        <div class="um-row">
+          <svg class="um-row-icon" width="14" height="14" viewBox="0 0 24 24" fill="#6aabff"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+          <div><div class="um-row-label">Cadastrado em</div><div class="um-row-val" id="muData">—</div></div>
+        </div>
+        <div class="um-row" id="muSenhaRow" style="cursor:pointer" onclick="copiarValor('muSenhaVal', this)">
+          <svg class="um-row-icon" width="14" height="14" viewBox="0 0 24 24" fill="#a78bfa"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+          <div style="flex:1"><div class="um-row-label">Senha (clique para copiar)</div><div class="um-row-val mono" id="muSenhaVal">—</div></div>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--muted)"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+        </div>
+      </div>
+
+      <div class="um-section-label">Assinatura</div>
+      <div id="muAssinatura" class="um-rows"></div>
+
+      <div class="um-section-label">Histórico de pedidos</div>
+      <div id="muPedidos"></div>
+
+      <div class="um-actions" id="muActions"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="comp-lightbox" id="compLightbox" style="display:none" onclick="fecharLightbox()">
+  <button class="comp-lightbox-close" onclick="fecharLightbox()">✕</button>
+  <img id="compLightboxImg" src="" alt="Comprovante">
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="app.js"></script>
+<script>
+// Neutraliza as funções do app.js que conflitam com o admin
+function carregarProdutos() {}
+function iniciarCheckout() {}
+// Client com service role para bypassar RLS em todas as queries do admin
+const supabaseClient = supabase.createClient(
+  "https://tqsalhscgkepttbczyjq.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxc2FsaHNjZ2tlcHR0YmN6eWpxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3OTQ5NTIwNSwiZXhwIjoyMDk1MDcxMjA1fQ.1qvrbIaOyAUED9OmsOqJuSP_HvGKzUMOaA82CPZQp1I"
+);
+// carregarPedidosAdmin será redefinida abaixo — o app.js já rodou a versão antiga, sem efeito
+/* ════════════════════════════
+   ADMINS AUTORIZADOS
+════════════════════════════ */
+const ADMINS = [
+  { email: "lv196814@gmail.com", senha: "LVxV7!_0917", nome: "Luan Vinícius" }
+];
+
+let todosPedidos  = [];
+let todosUsuarios = [];
+let todosTickets  = [];
+let filtroAtual   = "todos";
+let filtroUser    = "todos";
+let filtroTicket  = "todos";
+
+/* ── LOGIN ── */
+function verificarSenha() {
+  const email = document.getElementById("adminEmail").value.trim().toLowerCase();
+  const senha = document.getElementById("adminSenha").value;
+  const adm   = ADMINS.find(a => a.email === email && a.senha === senha);
+  if (adm) {
+    sessionStorage.setItem("lumina_admin", "ok");
+    sessionStorage.setItem("lumina_adm_nome", adm.nome);
+    mostrarPainel(adm.nome);
+  } else {
+    document.getElementById("loginErr").classList.add("show");
+    setTimeout(() => document.getElementById("loginErr").classList.remove("show"), 3000);
+  }
+}
+
+function mostrarPainel(nome) {
+  document.getElementById("adminLoginOverlay").style.display = "none";
+  document.getElementById("adminPanel").style.display = "block";
+  document.getElementById("admNome").textContent = nome || "Admin";
+  iniciarAdmin();
+}
+
+document.getElementById("adminSenha").addEventListener("keydown", e => { if(e.key==="Enter") verificarSenha(); });
+document.getElementById("adminEmail").addEventListener("keydown", e => { if(e.key==="Enter") verificarSenha(); });
+
+// Verifica sessão após tudo carregar
+window.addEventListener("load", () => {
+  if (sessionStorage.getItem("lumina_admin") === "ok") {
+    mostrarPainel(sessionStorage.getItem("lumina_adm_nome") || "Admin");
+  }
+});
+
+function logoutAdmin() {
+  sessionStorage.removeItem("lumina_admin");
+  sessionStorage.removeItem("lumina_adm_nome");
+  location.reload();
+}
+
+/* ── ABAS ── */
+const ABAS = ["Dash","Pedidos","Ativos","Usuarios","Suporte","Assinante"];
+function mudarAba(aba) {
+  ABAS.forEach(a => {
+    document.getElementById("tab"+a).style.display = a === aba ? "block" : "none";
+    document.getElementById("tab"+a+"Btn").classList.toggle("active", a === aba);
+  });
+  if (aba === "Usuarios") carregarUsuarios();
+  if (aba === "Suporte")  carregarTickets();
+}
+
+/* ── INIT ── */
+async function iniciarAdmin() {
+  await carregarPedidosAdmin();
+  await carregarDashboard();
+}
+
+/* ── DASHBOARD ── */
+async function carregarDashboard() {
+  const agora = new Date();
+  const em7   = new Date(); em7.setDate(em7.getDate()+7);
+  const ativos     = todosPedidos.filter(p => (p.status==="ativa"||p.status==="aprovado") && (!p.data_fim || new Date(p.data_fim) > agora));
+  const pendentes  = todosPedidos.filter(p => ["pendente","aguardando_pagamento"].includes(p.status));
+  const cancelados = todosPedidos.filter(p => ["cancelada","cancelado"].includes(p.status));
+  const expirando  = ativos.filter(p => p.data_fim && new Date(p.data_fim) <= em7);
+  document.getElementById("dTotal").textContent      = todosPedidos.length;
+  document.getElementById("dAtivos").textContent     = ativos.length;
+  document.getElementById("dPendentes").textContent  = pendentes.length;
+  document.getElementById("dCancelados").textContent = cancelados.length;
+  document.getElementById("dExpirando").textContent  = expirando.length;
+  try {
+    const { count } = await supabaseClient.from("perfis").select("*",{count:"exact",head:true});
+    document.getElementById("dUsuarios").textContent = count ?? "—";
+  } catch(e) { document.getElementById("dUsuarios").textContent = "—"; }
+  const recentes = todosPedidos.slice(0,6);
+  const tbody = document.getElementById("dash-recentes-tbody");
+  tbody.innerHTML = recentes.length ? recentes.map(p => {
+    const sc = (p.status==="ativa"||p.status==="aprovado") ? "status-aprovado" : (p.status==="cancelada"||p.status==="cancelado") ? "status-cancelado" : "status-pendente";
+    return `<tr>
+      <td style="font-family:monospace;font-size:12px;color:#6aabff">#${p.id}</td>
+      <td><span class="nome-clicavel" onclick="abrirModal('${(p.email||"").replace(/'/g,"\\'")}')">${p.nome_cliente||"—"}</span><div style="font-size:12px;color:#6aabff">${p.email||""}</div></td>
+      <td>${p.produto||"—"}</td>
+      <td><span class="status-badge ${sc}">${p.status||"pendente"}</span></td>
+      <td style="font-size:13px;color:var(--muted)">${p.data_fim ? new Date(p.data_fim).toLocaleDateString("pt-BR") : "—"}</td>
+    </tr>`;
+  }).join("") : `<tr><td colspan="5" style="color:var(--muted);text-align:center;padding:30px">Nenhum pedido.</td></tr>`;
+}
+
+/* ── PEDIDOS ── */
+async function carregarPedidosAdmin() {
+  const { data, error } = await supabaseClient.from("pedidos").select("*").order("id",{ascending:false});
+  if (!error && data) todosPedidos = data;
+  renderPedidos();
+  renderAtivos();
+}
+function aplicarFiltro(status) {
+  filtroAtual = status;
+  document.querySelectorAll("#tabPedidos .filter-row .filter-btn").forEach(b => b.classList.remove("active"));
+  const map = {todos:"f-todos",pendente:"f-pendente",aguardando_pagamento:"f-aguardando",ativa:"f-ativa",cancelada:"f-cancelada"};
+  document.getElementById(map[status]||"f-todos")?.classList.add("active");
+  renderPedidos();
+}
+function filtrarPedidos() { renderPedidos(); }
+function renderPedidos() {
+  const tabela = document.getElementById("pedidos-admin");
+  const busca  = (document.getElementById("searchPedidos")?.value||"").toLowerCase();
+  let lista    = filtroAtual === "todos" ? todosPedidos : todosPedidos.filter(p => p.status === filtroAtual);
+  if (busca) lista = lista.filter(p =>
+    (p.nome_cliente||"").toLowerCase().includes(busca)||(p.email||"").toLowerCase().includes(busca)||
+    (p.produto||"").toLowerCase().includes(busca)||(p.whatsapp||"").includes(busca)
+  );
+  if (!lista.length) { tabela.innerHTML = `<tr><td colspan="9" style="color:var(--muted);text-align:center;padding:40px">Nenhum pedido encontrado.</td></tr>`; return; }
+  tabela.innerHTML = lista.map(p => {
+    const sc  = (p.status==="ativa"||p.status==="aprovado") ? "status-aprovado" : (p.status==="cancelada"||p.status==="cancelado") ? "status-cancelado" : "status-pendente";
+    const fim = p.data_fim ? `<div style="font-size:11px;color:var(--muted);margin-top:4px">Até ${new Date(p.data_fim).toLocaleDateString("pt-BR")}</div>` : "";
+    const comp= p.comprovante_url ? `<span class="comp-thumb" onclick="abrirLightbox('${p.comprovante_url}')"><img src="${p.comprovante_url}" alt="Comprovante"></span>` : `<span style="color:var(--muted);font-size:12px">—</span>`;
+    const wp  = p.whatsapp ? `<a href="https://wa.me/55${(p.whatsapp||"").replace(/\D/g,"")}" target="_blank" style="color:#25d366;text-decoration:none">📱 ${p.whatsapp}</a>` : "—";
+    const emailEsc = (p.email||"").replace(/'/g,"\\'");
+    return `<tr>
+      <td style="font-family:monospace;font-size:12px;color:#6aabff">#${p.id}</td>
+      <td><span class="nome-clicavel" onclick="abrirModal('${emailEsc}')">${p.nome_cliente||"—"}</span><div style="font-size:12px;color:#6aabff">${p.email||""}</div></td>
+      <td>${p.produto||"—"}</td>
+      <td style="font-family:var(--font-hero);font-size:16px;color:var(--blue)">${Number(p.valor||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</td>
+      <td><span class="status-badge ${sc}">${p.status||"pendente"}</span>${fim}</td>
+      <td>${comp}</td>
+      <td style="font-size:13px">${wp}</td>
+      <td style="font-size:12px;color:var(--muted)">${p.data_fim ? new Date(p.data_fim).toLocaleDateString("pt-BR") : "—"}</td>
+      <td>
+        <div class="admin-actions-bar">
+          <button class="btn-action btn-view"    onclick="abrirModal('${emailEsc}')">👤 Perfil</button>
+          <button class="btn-action btn-approve" onclick="aprovarPedido(${p.id})">✅ Aprovar</button>
+          <button class="btn-action btn-renew"   onclick="renovarPedido(${p.id})">🔄 Renovar</button>
+          <button class="btn-action btn-cancel"  onclick="cancelarPedido(${p.id})">⛔ Cancelar</button>
+          <button class="btn-action btn-delete"  onclick="excluirPedido(${p.id})">🗑️</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join("");
+}
+
+/* ── ATIVOS ── */
+function filtrarAtivos() { renderAtivos(); }
+function renderAtivos() {
+  const tbody = document.getElementById("ativos-tbody");
+  if (!tbody) return;
+  const busca = (document.getElementById("searchAtivos")?.value||"").toLowerCase();
+  const agora = new Date();
+  let lista = todosPedidos.filter(p => {
+    const fim = p.data_fim ? new Date(p.data_fim) : (p.validade_ate ? new Date(p.validade_ate) : null);
+    return (p.status==="ativa"||p.status==="aprovado") && (!fim || fim > agora);
+  });
+  if (busca) lista = lista.filter(p =>
+    (p.nome_cliente||"").toLowerCase().includes(busca)||(p.email||"").toLowerCase().includes(busca)||(p.produto||"").toLowerCase().includes(busca)
+  );
+  if (!lista.length) { tbody.innerHTML = `<tr><td colspan="6" style="color:var(--muted);text-align:center;padding:40px">Nenhum assinante ativo.</td></tr>`; return; }
+  tbody.innerHTML = lista.map(p => {
+    const fim  = p.data_fim ? new Date(p.data_fim) : (p.validade_ate ? new Date(p.validade_ate) : null);
+    const dias = fim ? Math.max(0, Math.ceil((fim - agora)/86400000)) : "—";
+    const cor  = typeof dias==="number" ? (dias<=3?"#ef4444":dias<=7?"#fbbf24":"#22c55e") : "var(--muted)";
+    const emailEsc = (p.email||"").replace(/'/g,"\\'");
+    return `<tr>
+      <td style="font-family:monospace;font-size:12px;color:#6aabff">#${p.id}</td>
+      <td><span class="nome-clicavel" onclick="abrirModal('${emailEsc}')">${p.nome_cliente||"—"}</span><div style="font-size:12px;color:#6aabff">${p.email||""}</div></td>
+      <td>${p.produto||"—"}</td>
+      <td style="font-size:13px;color:var(--muted)">${fim ? fim.toLocaleDateString("pt-BR") : "—"}</td>
+      <td><span style="font-family:var(--font-hero);font-size:22px;color:${cor}">${dias}</span>${typeof dias==="number"&&dias<=7?`<div style="font-size:11px;color:${cor}">⚠️ Em breve</div>`:""}</td>
+      <td>
+        <div class="admin-actions-bar">
+          <button class="btn-action btn-view"   onclick="abrirModal('${emailEsc}')">👤 Perfil</button>
+          <button class="btn-action btn-renew"  onclick="renovarPedido(${p.id})">🔄 Renovar</button>
+          <button class="btn-action btn-cancel" onclick="cancelarPedido(${p.id})">⛔ Cancelar</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join("");
+}
+
+/* ── USUÁRIOS ── */
+async function carregarUsuarios() {
+  const tbody = document.getElementById("usuarios-tbody");
+  tbody.innerHTML = `<tr><td colspan="7" style="color:var(--muted);text-align:center;padding:40px">Carregando...</td></tr>`;
+  const { data, error } = await supabaseClient.from("perfis").select("*").order("criado_em",{ascending:false});
+  if (error) { tbody.innerHTML = `<tr><td colspan="7" style="color:#ef4444;text-align:center;padding:20px">Erro: ${error.message}</td></tr>`; return; }
+  todosUsuarios = data || [];
+  document.getElementById("dUsuarios").textContent = todosUsuarios.length;
+  renderUsuarios();
+}
+function filtrarUsuarios() { renderUsuarios(); }
+function aplicarFiltroUser(f) {
+  filtroUser = f;
+  document.querySelectorAll("#tabUsuarios .filter-row .filter-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById({todos:"fu-todos",assinante:"fu-assinante",free:"fu-free"}[f])?.classList.add("active");
+  renderUsuarios();
+}
+function renderUsuarios() {
+  const tbody = document.getElementById("usuarios-tbody");
+  const busca = (document.getElementById("searchUsuarios")?.value||"").toLowerCase();
+  const agora = new Date();
+  const emailsAtivos = new Set(
+    todosPedidos.filter(p => (p.status==="ativa"||p.status==="aprovado") && p.acesso_liberado && (!p.data_fim||new Date(p.data_fim)>agora)).map(p=>(p.email||"").toLowerCase())
+  );
+  let lista = todosUsuarios;
+  if (filtroUser==="assinante") lista = lista.filter(u => emailsAtivos.has((u.email||"").toLowerCase()));
+  if (filtroUser==="free")      lista = lista.filter(u => !emailsAtivos.has((u.email||"").toLowerCase()));
+  if (busca) lista = lista.filter(u =>
+    (u.nome||"").toLowerCase().includes(busca)||(u.email||"").toLowerCase().includes(busca)||
+    (u.id_online||"").toLowerCase().includes(busca)||(u.telefone||"").includes(busca)
+  );
+  if (!lista.length) { tbody.innerHTML = `<tr><td colspan="7" style="color:var(--muted);text-align:center;padding:40px">Nenhum usuário encontrado.</td></tr>`; return; }
+  tbody.innerHTML = lista.map(u => {
+    const isAtivo = emailsAtivos.has((u.email||"").toLowerCase());
+    const badge   = isAtivo ? `<span class="status-badge status-aprovado">✅ Assinante</span>` : `<span class="status-badge status-inativo">Free</span>`;
+    const emailEsc = (u.email||"").replace(/'/g,"\\'");
+    return `<tr>
+      <td class="handle-cell">@${u.id_online||"—"}</td>
+      <td><span class="nome-clicavel" onclick="abrirModal('${emailEsc}')">${u.nome||"—"}</span></td>
+      <td style="font-size:13px;color:#6aabff">${u.email||"—"}</td>
+      <td style="font-size:13px">${u.telefone||"—"}</td>
+      <td>${badge}</td>
+      <td style="font-size:12px;color:var(--muted)">${u.criado_em ? new Date(u.criado_em).toLocaleDateString("pt-BR") : "—"}</td>
+      <td>
+        <div class="admin-actions-bar">
+          <button class="btn-action btn-view" onclick="abrirModal('${emailEsc}')">👤 Perfil</button>
+          ${isAtivo
+            ? `<button class="btn-action btn-cancel" onclick="cancelarPorEmail('${emailEsc}')">⛔ Revogar</button>`
+            : `<button class="btn-action btn-approve" onclick="criarAssinanteEmail('${emailEsc}')">✅ Dar acesso</button>`}
+        </div>
+      </td>
+    </tr>`;
+  }).join("");
+}
+
+/* ── MODAL PERFIL ── */
+function abrirModal(email) {
+  if (!email) return;
+  const agora = new Date();
+  const u     = todosUsuarios.find(x => (x.email||"").toLowerCase() === email.toLowerCase());
+  const peds  = todosPedidos.filter(p => (p.email||"").toLowerCase() === email.toLowerCase());
+  const emailsAtivos = new Set(
+    todosPedidos.filter(p => (p.status==="ativa"||p.status==="aprovado") && p.acesso_liberado && (!p.data_fim||new Date(p.data_fim)>agora)).map(p=>(p.email||"").toLowerCase())
+  );
+  const isAtivo  = emailsAtivos.has(email.toLowerCase());
+  const pedAtivo = peds.find(p => (p.status==="ativa"||p.status==="aprovado") && (!p.data_fim||new Date(p.data_fim)>agora));
+  const pedRef   = peds[0] || {};
+
+  const nomeReal  = u?.nome     || pedRef.nome_cliente || "—";
+  const foneReal  = u?.telefone || pedRef.whatsapp     || "—";
+  const fotoUrl   = u?.foto_url || u?.user_metadata?.foto_url || null;
+  const handleVal = u?.id_online || u?.handle || "";
+
+  document.getElementById("muBadge").innerHTML = isAtivo
+    ? `<span class="status-badge status-aprovado">✅ Assinante ativo</span>`
+    : `<span class="status-badge status-inativo">Free</span>`;
+
+  const imgEl = document.getElementById("muAvatarImg");
+  const iniEl = document.getElementById("muAvatarInitial");
+  const inicial = (nomeReal !== "—" ? nomeReal : email).charAt(0).toUpperCase();
+  if (fotoUrl) {
+    imgEl.src = fotoUrl; imgEl.style.display = "block"; iniEl.style.display = "none";
+  } else {
+    imgEl.style.display = "none"; iniEl.style.display = ""; iniEl.textContent = inicial;
+  }
+
+  document.getElementById("muNome").textContent = nomeReal;
+  document.getElementById("muHandle").textContent = handleVal ? "@"+handleVal : email;
+  const muHandleEl = document.getElementById("muHandleVal");
+  muHandleEl.textContent = handleVal ? "@"+handleVal : "—";
+  muHandleEl.dataset.val = handleVal ? "@"+handleVal : "";
+
+  const muEmailEl = document.getElementById("muEmail");
+  muEmailEl.textContent = email; muEmailEl.dataset.val = email;
+
+  const foneEl = document.getElementById("muTelefone");
+  foneEl.textContent = foneReal; foneEl.dataset.val = foneReal;
+
+  let dataCad = u?.criado_em;
+  if (!dataCad && peds.length) {
+    const oldest = peds.filter(p=>p.criado_em).sort((a,b)=>new Date(a.criado_em)-new Date(b.criado_em))[0];
+    dataCad = oldest?.criado_em;
+  }
+  document.getElementById("muData").textContent = dataCad ? new Date(dataCad).toLocaleDateString("pt-BR") : "—";
+
+  const senhaVal = u?.senha_hash || u?.senha || "—";
+  document.getElementById("muSenhaVal").textContent = senhaVal;
+  document.getElementById("muSenhaVal").dataset.val = senhaVal;
+
+  const assEl = document.getElementById("muAssinatura");
+  if (pedAtivo) {
+    const fim  = pedAtivo.data_fim ? new Date(pedAtivo.data_fim) : null;
+    const dias = fim ? Math.max(0, Math.ceil((fim-agora)/86400000)) : null;
+    const cor  = dias !== null ? (dias<=3?"#ef4444":dias<=7?"#fbbf24":"#22c55e") : "var(--muted)";
+    assEl.innerHTML = `
+      <div class="um-row">
+        <svg class="um-row-icon" width="14" height="14" viewBox="0 0 24 24" fill="#22c55e"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        <div><div class="um-row-label">Produto ativo</div><div class="um-row-val">${pedAtivo.produto||"—"}</div></div>
+      </div>
+      <div class="um-row">
+        <svg class="um-row-icon" width="14" height="14" viewBox="0 0 24 24" fill="${cor}"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+        <div><div class="um-row-label">Válido até</div><div class="um-row-val" style="color:${cor}">${fim ? fim.toLocaleDateString("pt-BR") : "—"} ${dias!==null?"("+dias+" dias)":""}</div></div>
+      </div>`;
+  } else {
+    assEl.innerHTML = `<div class="um-row"><div style="color:var(--muted);font-size:13px">Sem assinatura ativa.</div></div>`;
+  }
+
+  const pedsEl = document.getElementById("muPedidos");
+  if (!peds.length) {
+    pedsEl.innerHTML = `<div style="color:var(--muted);font-size:13px;padding:8px 0">Nenhum pedido encontrado.</div>`;
+  } else {
+    const emailEsc2 = email.replace(/'/g,"\\'");
+    pedsEl.innerHTML = peds.map(p => {
+      const sc = (p.status==="ativa"||p.status==="aprovado") ? "status-aprovado" : (p.status==="cancelada"||p.status==="cancelado") ? "status-cancelado" : "status-pendente";
+      const compBtn = p.comprovante_url
+        ? `<button class="btn-action btn-view" onclick="abrirLightbox('${p.comprovante_url}')">🧾 Ver comprovante</button>`
+        : "";
+      return `<div class="um-pedido-item" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="display:flex;align-items:center;justify-content:space-between;width:100%;gap:10px;flex-wrap:wrap">
+          <div>
+            <div style="font-weight:600;font-size:13px">${p.produto||"—"}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">#${p.id} · R$ ${Number(p.valor||0).toFixed(2).replace(".",",")} · ${p.data_fim ? "Até "+new Date(p.data_fim).toLocaleDateString("pt-BR") : "Sem validade"}</div>
+          </div>
+          <span class="status-badge ${sc}">${p.status||"pendente"}</span>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          ${compBtn}
+          <button class="btn-action btn-delete" onclick="excluirPedidoModal(${p.id},'${emailEsc2}')">🗑️ Excluir pedido</button>
+        </div>
+      </div>`;
+    }).join("");
+    if (peds.length > 1) {
+      pedsEl.innerHTML += `<button class="btn-action btn-delete" style="width:100%;margin-top:4px;justify-content:center;padding:10px" onclick="excluirTodoHistorico('${emailEsc2}')">🗑️ Excluir TODO o histórico (${peds.length} pedidos)</button>`;
+    }
+  }
+
+  const emailEsc = email.replace(/'/g,"\\'");
+  let btns = isAtivo
+    ? `<button class="btn-action btn-cancel" onclick="cancelarPorEmail('${emailEsc}');fecharModal()">⛔ Revogar acesso</button>`
+    : `<button class="btn-action btn-approve" onclick="criarAssinanteEmail('${emailEsc}');fecharModal()">✅ Dar 30d de acesso</button>`;
+  if (pedAtivo) btns += `<button class="btn-action btn-renew" onclick="renovarPedido(${pedAtivo.id});fecharModal()">🔄 Renovar 30d</button>`;
+  if (u?.id) btns += `<button class="btn-action btn-ban" onclick="fecharModal();excluirUsuario('${u.id}','${(u.nome||email).replace(/'/g,"\\'")}')">🗑️ Excluir</button>`;
+  btns += `<button class="btn-action btn-view" onclick="fecharModal()">Fechar</button>`;
+  document.getElementById("muActions").innerHTML = btns;
+
+  document.getElementById("userModalOverlay").classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+function fecharModal(e) {
+  if (e && e.target !== document.getElementById("userModalOverlay")) return;
+  document.getElementById("userModalOverlay").classList.remove("show");
+  document.body.style.overflow = "";
+}
+document.addEventListener("keydown", e => { if(e.key==="Escape") fecharModal(); });
+
+function copiarValor(elId, rowEl) {
+  const val = document.getElementById(elId)?.dataset.val || document.getElementById(elId)?.textContent || "";
+  navigator.clipboard.writeText(val).then(() => {
+    const orig = document.getElementById(elId).textContent;
+    document.getElementById(elId).textContent = "✅ Copiado!";
+    setTimeout(() => { document.getElementById(elId).textContent = orig; }, 1500);
+  });
+}
+
+/* ── SUPORTE / TICKETS ── */
+async function carregarTickets() {
+  const lista = document.getElementById("ticketsList");
+  lista.innerHTML = `<div style="color:var(--muted);text-align:center;padding:40px">Carregando...</div>`;
+  const { data, error } = await supabaseClient.from("tickets").select("*").order("criado_em",{ascending:false});
+  if (error) { lista.innerHTML = `<div style="color:#ef4444;text-align:center;padding:20px">Erro: ${error.message}</div>`; return; }
+  todosTickets = data || [];
+  renderTickets();
+}
+function filtrarTickets(status) {
+  filtroTicket = status;
+  document.querySelectorAll("#tabSuporte .filter-row .filter-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById({todos:"sf-todos",aberto:"sf-aberto",respondido:"sf-respondido",resolvido:"sf-resolvido"}[status])?.classList.add("active");
+  renderTickets();
+}
+function renderTickets() {
+  const lista = document.getElementById("ticketsList");
+  let dados = filtroTicket === "todos" ? todosTickets : todosTickets.filter(t => t.status === filtroTicket);
+  if (!dados.length) { lista.innerHTML = `<div style="color:var(--muted);text-align:center;padding:40px">Nenhum ticket.</div>`; return; }
+  lista.innerHTML = dados.map(t => {
+    const cor = t.status==="resolvido" ? "#22c55e" : t.status==="respondido" ? "#6aabff" : "#fbbf24";
+    const bg  = t.status==="resolvido" ? "rgba(34,197,94,.12)" : t.status==="respondido" ? "rgba(26,107,255,.12)" : "rgba(251,191,36,.12)";
+    const bd  = t.status==="resolvido" ? "rgba(34,197,94,.3)"  : t.status==="respondido" ? "rgba(26,107,255,.3)"  : "rgba(251,191,36,.3)";
+    const data = new Date(t.criado_em);
+    const ds   = data.toLocaleDateString("pt-BR")+" às "+data.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+    return `<div class="ticket-card">
+      <div class="ticket-card-header">
+        <div>
+          <div class="ticket-assunto">${t.assunto||"Sem assunto"}</div>
+          <div class="ticket-meta">De: <strong>${t.nome||"—"}</strong> &lt;${t.email||"—"}&gt; · ${ds}</div>
+        </div>
+        <span style="background:${bg};color:${cor};border:1px solid ${bd};padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap">${t.status||"aberto"}</span>
+      </div>
+      <div class="ticket-mensagem">${t.mensagem||""}</div>
+      ${t.resposta?`<div class="ticket-resposta"><div class="ticket-resposta-label">Resposta</div><div style="font-size:13px">${t.resposta}</div></div>`:""}
+      <div class="ticket-reply-area">
+        <textarea id="resp-${t.id}" placeholder="Digite sua resposta...">${t.resposta||""}</textarea>
+        <div class="ticket-reply-actions">
+          <button class="btn-action btn-approve" onclick="responderTicket(${t.id})">✉️ Responder</button>
+          <button class="btn-action btn-renew"   onclick="mudarStatusTicket(${t.id},'respondido')">💬 Respondido</button>
+          <button class="btn-action btn-approve" onclick="mudarStatusTicket(${t.id},'resolvido')">✅ Resolvido</button>
+          <button class="btn-action btn-delete"  onclick="excluirTicket(${t.id})">🗑️</button>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+async function responderTicket(id) {
+  const r = document.getElementById(`resp-${id}`)?.value.trim();
+  if (!r) { toast("Digite uma resposta.", "err"); return; }
+  const { error } = await supabaseClient.from("tickets").update({resposta:r,status:"respondido"}).eq("id",id);
+  if (error) { toast("Erro: "+error.message,"err"); return; }
+  toast("✉️ Resposta enviada!","ok"); await carregarTickets();
+}
+async function mudarStatusTicket(id, status) {
+  const { error } = await supabaseClient.from("tickets").update({status}).eq("id",id);
+  if (error) { toast("Erro: "+error.message,"err"); return; }
+  toast(`Status alterado para "${status}"`,"ok"); await carregarTickets();
+}
+async function excluirTicket(id) {
+  if (!confirm(`Excluir ticket #${id}?`)) return;
+  const { error } = await supabaseClient.from("tickets").delete().eq("id",id);
+  if (error) { toast("Erro: "+error.message,"err"); return; }
+  toast(`🗑️ Ticket #${id} excluído`,"ok"); await carregarTickets();
+}
+
+/* ── AÇÕES PEDIDOS ── */
+async function aprovarPedido(id) {
+  const p = todosPedidos.find(x=>x.id===id); if (!p) return;
+  const { data:dl } = await supabaseClient.from("downloads_padrao").select("download_url").eq("produto",p.produto).eq("ativo",true).maybeSingle();
+  const hoje=new Date(); const fim=new Date(); fim.setDate(fim.getDate()+30);
+  const { error } = await supabaseClient.from("pedidos").update({status:"ativa",acesso_liberado:true,download_url:dl?.download_url||null,data_pagamento:hoje.toISOString(),data_fim:fim.toISOString()}).eq("id",id);
+  if (error) { toast("Erro: "+error.message,"err"); return; }
+  toast(`✅ Pedido #${id} aprovado — 30 dias`,"ok"); await carregarPedidosAdmin();
+}
+async function renovarPedido(id) {
+  const p = todosPedidos.find(x=>x.id===id);
+  const base = p?.data_fim && new Date(p.data_fim) > new Date() ? new Date(p.data_fim) : new Date();
+  const fim  = new Date(base); fim.setDate(fim.getDate()+30);
+  const { error } = await supabaseClient.from("pedidos").update({status:"ativa",acesso_liberado:true,data_fim:fim.toISOString()}).eq("id",id);
+  if (error) { toast("Erro: "+error.message,"err"); return; }
+  toast(`🔄 Renovado até ${fim.toLocaleDateString("pt-BR")}`,"ok"); await carregarPedidosAdmin();
+}
+async function cancelarPedido(id) {
+  if (!confirm(`Cancelar pedido #${id}?`)) return;
+  const { error } = await supabaseClient.from("pedidos").update({status:"cancelada",acesso_liberado:false}).eq("id",id);
+  if (error) { toast("Erro: "+error.message,"err"); return; }
+  toast(`⛔ Pedido #${id} cancelado`,"ok"); await carregarPedidosAdmin();
+}
+async function excluirPedido(id) {
+  if (!confirm(`Excluir pedido #${id}? Irreversível.`)) return;
+  const { error } = await supabaseClient.from("pedidos").delete().eq("id",id);
+  if (error) { toast("Erro: "+error.message,"err"); return; }
+  toast(`🗑️ Pedido #${id} excluído`,"ok"); await carregarPedidosAdmin();
+}
+async function cancelarPorEmail(email) {
+  if (!confirm(`Revogar acesso de ${email}?`)) return;
+  const { error } = await supabaseClient.from("pedidos").update({status:"cancelada",acesso_liberado:false}).eq("email",email);
+  if (error) { toast("Erro: "+error.message,"err"); return; }
+  toast(`⛔ Acesso de ${email} revogado`,"ok"); await carregarPedidosAdmin(); renderUsuarios();
+}
+async function criarAssinanteEmail(email) {
+  const hoje=new Date(); const fim=new Date(); fim.setDate(fim.getDate()+30);
+  // Tenta buscar nome real: primeiro em perfis, depois em pedidos existentes
+  const { data: perfil } = await supabaseClient.from("perfis").select("nome").eq("email", email).maybeSingle();
+  let nomeReal = perfil?.nome || null;
+  if (!nomeReal) {
+    const pedExistente = todosPedidos.find(p => (p.email||"").toLowerCase() === email.toLowerCase() && p.nome_cliente && p.nome_cliente !== email);
+    nomeReal = pedExistente?.nome_cliente || email;
+  }
+  const { error } = await supabaseClient.from("pedidos").insert([{
+    email, nome_cliente: nomeReal, produto:"Lumina Plus", valor:0,
+    status:"ativa", metodo_pagamento:"manual",
+    acesso_liberado:true, data_pagamento:hoje.toISOString(), data_fim:fim.toISOString()
+  }]);
+  if (error) { toast("Erro: "+error.message,"err"); return; }
+  toast(`✅ Acesso dado para ${nomeReal}`,"ok"); await carregarPedidosAdmin(); renderUsuarios();
+}
+async function excluirUsuario(id, nome) {
+  if (!confirm(`Excluir usuário "${nome}"? Irreversível.`)) return;
+  const { error } = await supabaseClient.from("perfis").delete().eq("id",id);
+  if (error) { toast("Erro: "+error.message,"err"); return; }
+  toast(`🗑️ Usuário excluído`,"ok"); await carregarUsuarios();
+}
+
+/* ── CRIAR ASSINANTE (aba) ── */
+async function criarAssinante() {
+  const email   = document.getElementById("emailAssinante").value.trim();
+  const produto = document.getElementById("produtoAssinante").value;
+  const errEl   = document.getElementById("msgAssinanteErro");
+  const okEl    = document.getElementById("msgAssinanteSucesso");
+  errEl.style.display = okEl.style.display = "none";
+  if (!email) { errEl.textContent="Digite um e-mail."; errEl.style.display="block"; return; }
+  const hoje=new Date(); const fim=new Date(); fim.setDate(fim.getDate()+30);
+  // Busca nome real na tabela perfis
+  const { data: perfil } = await supabaseClient.from("perfis").select("nome").eq("email", email).maybeSingle();
+  const nomeReal = perfil?.nome || email;
+  const { error } = await supabaseClient.from("pedidos").insert([{
+    email, nome_cliente: nomeReal, produto, valor:0,
+    status:"ativa", metodo_pagamento:"manual",
+    acesso_liberado:true, data_pagamento:hoje.toISOString(), data_fim:fim.toISOString()
+  }]);
+  if (error) { errEl.textContent="Erro: "+error.message; errEl.style.display="block"; return; }
+  okEl.textContent=`✅ ${nomeReal} criado! Acesso até ${fim.toLocaleDateString("pt-BR")}.`; okEl.style.display="block";
+  document.getElementById("emailAssinante").value = "";
+  await carregarPedidosAdmin();
+}
+
+async function excluirPedidoModal(id, email) {
+  if (!confirm(`Excluir pedido #${id}? Irreversível.`)) return;
+  const { error } = await supabaseClient.from("pedidos").delete().eq("id", id);
+  if (error) { toast("Erro: "+error.message, "err"); return; }
+  toast(`🗑️ Pedido #${id} excluído`, "ok");
+  await carregarPedidosAdmin();
+  abrirModal(email);
+}
+
+async function excluirTodoHistorico(email) {
+  if (!confirm(`Excluir TODO o histórico de pedidos de ${email}?\n\nEsta ação é irreversível.`)) return;
+  const { error } = await supabaseClient.from("pedidos").delete().eq("email", email);
+  if (error) { toast("Erro: "+error.message, "err"); return; }
+  toast(`🗑️ Histórico de ${email} excluído`, "ok");
+  await carregarPedidosAdmin();
+  abrirModal(email);
+}
+
+/* ── LIGHTBOX ── */
+function abrirLightbox(url) {
+  document.getElementById("compLightboxImg").src = url;
+  document.getElementById("compLightbox").style.display = "flex";
+}
+function fecharLightbox() { document.getElementById("compLightbox").style.display = "none"; }
+
+/* ── UTILITÁRIOS ── */
+function copiarSenha(senha, el) {
+  navigator.clipboard.writeText(senha).then(() => {
+    const orig = el.textContent; el.textContent = "Copiado!";
+    setTimeout(() => { el.textContent = orig; }, 1500);
+  });
+}
+let _tt;
+function toast(msg, tipo="ok") {
+  const el = document.getElementById("toast");
+  el.textContent = msg; el.className = `show ${tipo}`;
+  clearTimeout(_tt); _tt = setTimeout(() => { el.className = ""; }, 3500);
+}
+</script>
+</body>
+</html>
