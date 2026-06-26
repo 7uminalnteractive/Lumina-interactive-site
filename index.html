@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumina Interactive™</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="logo"><img src="logo.png" alt="Lumina Interactive" style="height:36px;width:auto;display:block"></div>
+  <div class="menu">
+    <a href="index.html" class="active">Início</a>
+    <a href="patches.html">Patchs</a>
+    
+    <a href="plus.html">Lumina Plus</a>
+    <a href="login.html" data-auth-link>Login</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-grid">
+    <!-- Lado esquerdo: estático (tag + título) + notícias dinâmicas embaixo -->
+    <div>
+      <div class="tag">A NOVA ERA DO FUTEBOL DIGITAL</div>
+      <h1>Levando o futebol portátil <span class="accent">a outro nível.</span></h1>
+
+      <!-- Bloco padrão (visível enquanto notícias carregam ou se não houver nenhuma) -->
+      <div id="heroDefault">
+        <p class="desc">Patches premium para PES PSP com identidade própria, visual moderno, comunidade ativa e experiência feita para quem vive futebol.</p>
+        <div class="hero-buttons">
+          <a href="patches.html" class="btn primary">Ver Patchs</a>
+          <a href="plus.html" class="btn secondary">Conhecer Lumina Plus</a>
+        </div>
+      </div>
+
+      <!-- Notícias (substitui o bloco padrão quando existirem) -->
+      <div id="heroNoticias" style="display:none;margin-top:20px;display:none;flex-direction:column;gap:12px"></div>
+      <div id="heroBotoes" style="display:none;margin-top:24px">
+        <div class="hero-buttons">
+          <a href="patches.html" class="btn primary">Ver Patchs</a>
+          <a href="plus.html" class="btn secondary">Conhecer Lumina Plus</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-card reveal">
+      <div class="hero-card-badge">LUMINA PLUS</div>
+      <h2>Experiência<br>Premium</h2>
+      <p>Atualizações antecipadas, conteúdos exclusivos e suporte prioritário para assinantes.</p>
+      <div class="stat-grid">
+        <div class="stat"><strong>3</strong><span>Patchs</span></div>
+        <div class="stat"><strong>BR</strong><span>Comunidade</span></div>
+        <div class="stat"><strong>PRO</strong><span>Experiência</span></div>
+        <div class="stat"><strong>PSP</strong><span>Plataforma</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-logo"><img src="logo.png" alt="Lumina Interactive" style="height:32px;width:auto;opacity:0.85"></div>
+  <div class="footer-links">
+    <a href="index.html">Início</a>
+    <a href="patches.html">Patchs</a>
+    
+    <a href="plus.html">Lumina Plus</a>
+    <a href="login.html" data-auth-link>Login</a>
+  </div>
+  <div class="footer-copy">© 2026 Lumina Interactive™. Todos os direitos reservados.</div>
+</footer>
+
+<script src="navbar-auth.js"></script>
+<script>
+const revealEls = document.querySelectorAll('.reveal');
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((e,i) => {
+    if(e.isIntersecting){ setTimeout(()=>e.target.classList.add('visible'),i*60); obs.unobserve(e.target); }
+  });
+},{threshold:0.12});
+revealEls.forEach(el=>obs.observe(el));
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+(async function() {
+  const sb = supabase.createClient(
+    "https://tqsalhscgkepttbczyjq.supabase.co",
+    "sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK"
+  );
+  // Colunas reais da tabela: id, titulo, texto
+  const { data } = await sb.from("noticias").select("id, titulo, texto").order("id", { ascending: false }).limit(5);
+  if (!data || !data.length) return;
+
+  // Oculta bloco padrão e exibe notícias no lugar
+  document.getElementById("heroDefault").style.display = "none";
+
+  const container = document.getElementById("heroNoticias");
+  container.style.display = "flex";
+  container.innerHTML = data.map((n, i) => `
+    <div class="reveal" style="background:linear-gradient(135deg,#0c1528,#080e1c);border:1px solid rgba(26,107,255,0.18);border-radius:14px;padding:16px 18px;display:flex;align-items:flex-start;gap:12px">
+      <div style="width:36px;height:36px;border-radius:9px;background:rgba(26,107,255,0.15);border:1px solid rgba(26,107,255,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">📢</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:14px;color:#fff;margin-bottom:3px;line-height:1.3">${n.titulo}</div>
+        <div style="font-size:12px;color:#94a3b8;line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${n.texto||''}</div>
+      </div>
+    </div>
+  `).join("");
+
+  // Exibe botões abaixo das notícias
+  document.getElementById("heroBotoes").style.display = "block";
+
+  // Reveal animation
+  const els = container.querySelectorAll(".reveal");
+  const obs2 = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) { setTimeout(() => e.target.classList.add("visible"), i * 80); obs2.unobserve(e.target); }
+    });
+  }, { threshold: 0.05 });
+  els.forEach(el => obs2.observe(el));
+  // Força visibilidade imediata (hero já está na viewport)
+  setTimeout(() => els.forEach(el => el.classList.add("visible")), 100);
+})();
+</script>
+</body>
+</html>
