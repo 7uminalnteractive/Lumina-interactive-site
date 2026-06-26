@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumina Interactive™</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="logo"><img src="logo.png" alt="Lumina Interactive" style="height:36px;width:auto;display:block"></div>
+  <div class="menu">
+    <a href="index.html" class="active">Início</a>
+    <a href="patches.html">Patchs</a>
+    
+    <a href="plus.html">Lumina Plus</a>
+    <a href="login.html" data-auth-link>Login</a>
+  </div>
+</nav>
+
+<section class="hero" id="heroSection">
+  <div class="hero-grid-bg"></div>
+
+  <!-- HERO PADRÃO (some quando há notícia) -->
+  <div class="hero-grid" id="heroDefault">
+    <div>
+      <div class="tag">A NOVA ERA DO FUTEBOL DIGITAL</div>
+      <h1>Levando o futebol portátil <span class="accent">a outro nível.</span></h1>
+      <p class="desc">Patches premium para PES PSP com identidade própria, visual moderno, comunidade ativa e experiência feita para quem vive futebol.</p>
+      <div class="hero-buttons">
+        <a href="patches.html" class="btn primary">Ver Patchs</a>
+        <a href="plus.html" class="btn secondary">Conhecer Lumina Plus</a>
+      </div>
+    </div>
+    <div class="hero-card reveal">
+      <div class="hero-card-badge">LUMINA PLUS</div>
+      <h2>Experiência<br>Premium</h2>
+      <p>Atualizações antecipadas, conteúdos exclusivos e suporte prioritário para assinantes.</p>
+      <div class="stat-grid">
+        <div class="stat"><strong>3</strong><span>Patchs</span></div>
+        <div class="stat"><strong>BR</strong><span>Comunidade</span></div>
+        <div class="stat"><strong>PRO</strong><span>Experiência</span></div>
+        <div class="stat"><strong>PSP</strong><span>Plataforma</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO NOTÍCIA (aparece quando há notícia ativa) -->
+  <div id="heroNoticia" style="display:none;position:relative;width:100%;min-height:100vh;overflow:hidden">
+    <!-- Imagem de fundo -->
+    <div id="noticiaFundoEl" style="position:absolute;inset:0;background-size:cover;background-position:center;background-repeat:no-repeat;z-index:0"></div>
+    <!-- Overlay gradiente -->
+    <div style="position:absolute;inset:0;background:linear-gradient(to right, rgba(4,7,15,0.92) 40%, rgba(4,7,15,0.4) 100%);z-index:1"></div>
+    <!-- Conteúdo -->
+    <div style="position:relative;z-index:2;width:100%;max-width:900px;margin:0 auto;padding:120px 24px 60px;box-sizing:border-box">
+      <div id="noticiaTagEl" style="display:inline-block;background:rgba(26,107,255,0.18);color:#6aabff;border:1px solid rgba(26,107,255,0.4);border-radius:8px;padding:5px 16px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:28px"></div>
+      <h1 id="noticiaTituloEl" style="font-size:clamp(40px,8vw,88px);line-height:1.0;letter-spacing:1px;color:#fff;margin:0 0 24px;font-family:var(--font-hero,'Bebas Neue',sans-serif)"></h1>
+      <p id="noticiaTextoEl" style="font-size:clamp(15px,2vw,20px);color:#c8d6f0;line-height:1.7;max-width:560px;margin:0 0 36px"></p>
+      <div id="noticiaBotoesEl" style="display:flex;gap:12px;flex-wrap:wrap"></div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-logo"><img src="logo.png" alt="Lumina Interactive" style="height:32px;width:auto;opacity:0.85"></div>
+  <div class="footer-links">
+    <a href="index.html">Início</a>
+    <a href="patches.html">Patchs</a>
+    
+    <a href="plus.html">Lumina Plus</a>
+    <a href="login.html" data-auth-link>Login</a>
+  </div>
+  <div class="footer-copy">© 2026 Lumina Interactive™. Todos os direitos reservados.</div>
+</footer>
+
+<script src="navbar-auth.js"></script>
+<script>
+const revealEls = document.querySelectorAll('.reveal');
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((e,i) => {
+    if(e.isIntersecting){ setTimeout(()=>e.target.classList.add('visible'),i*60); obs.unobserve(e.target); }
+  });
+},{threshold:0.12});
+revealEls.forEach(el=>obs.observe(el));
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+(async function() {
+  const sb = supabase.createClient(
+    "https://tqsalhscgkepttbczyjq.supabase.co",
+    "sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK"
+  );
+
+  // Busca a notícia mais recente (colunas: id, titulo, texto, btn_nome, btn_url, img_url)
+  const { data } = await sb.from("noticias").select("id, titulo, texto, btn_nome, btn_url, img_url").order("id", { ascending: false }).limit(1);
+  if (!data || !data.length) return;
+
+  const n = data[0];
+
+  // Oculta hero padrão, exibe hero-notícia em tela cheia
+  document.getElementById("heroDefault").style.display = "none";
+  const heroNoticia = document.getElementById("heroNoticia");
+  heroNoticia.style.display = "block";
+
+  // Imagem de fundo (se tiver)
+  if (n.img_url) {
+    document.getElementById("noticiaFundoEl").style.backgroundImage = `url('${n.img_url}')`;
+  }
+
+  // Conteúdo
+  document.getElementById("noticiaTagEl").textContent = "📢 NOVIDADE";
+  document.getElementById("noticiaTituloEl").textContent = n.titulo || "";
+  document.getElementById("noticiaTextoEl").textContent = n.texto || "";
+
+  // Botão customizado (apenas se cadastrado — sem botões padrão fixos)
+  const botoesEl = document.getElementById("noticiaBotoesEl");
+  if (n.btn_nome && n.btn_url) {
+    botoesEl.innerHTML = `<a href="${n.btn_url}" class="btn primary">${n.btn_nome}</a>`;
+  }
+})();
+</script>
+</body>
+</html>
