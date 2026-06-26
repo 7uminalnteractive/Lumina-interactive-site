@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout | Lumina Interactive</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="navbar">
+  <div class="logo"><img src="logo.png" alt="Lumina Interactive" style="height:36px;width:auto;display:block"></div>
+  <div class="menu">
+    <a href="index.html">Início</a><a href="patches.html">Patchs</a>
+    <a href="downloads.html">Downloads</a><a href="plus.html">Lumina Plus</a>
+    <a href="login.html" data-auth-link>Login</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="container">
+
+    <!-- ===== TELA: NÃO LOGADO ===== -->
+    <div id="telaLogin" style="display:none;max-width:480px;margin:80px auto;padding:0 16px">
+      <div style="background:#0c1528;border:1px solid rgba(26,107,255,0.3);border-radius:24px;padding:36px;text-align:center">
+        <div style="width:64px;height:64px;border-radius:50%;background:rgba(26,107,255,0.15);border:1px solid rgba(26,107,255,0.3);display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
+          <svg viewBox="0 0 24 24" fill="#6aabff" width="28" height="28">
+            <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+          </svg>
+        </div>
+        <span class="badge" style="margin-bottom:16px;display:inline-block">Login necessário</span>
+        <h2 style="font-size:24px;margin-bottom:12px">Entre na sua conta</h2>
+        <p style="color:#94a3b8;font-size:14px;line-height:1.7;margin-bottom:28px">
+          Para assinar o <strong style="color:#fff">Lumina Plus</strong>, você precisa estar logado.
+          Assim reconhecemos seus dados automaticamente — sem preencher nada.
+        </p>
+        <a href="login.html?redirect=checkout.html" class="btn primary" style="width:100%;display:block;text-align:center;margin-bottom:12px;box-sizing:border-box">
+          Fazer login
+        </a>
+        <a href="registrar.html?redirect=checkout.html" class="btn secondary" style="width:100%;display:block;text-align:center;box-sizing:border-box">
+          Criar conta grátis
+        </a>
+        <p style="margin-top:20px;font-size:12px;color:#64748b">
+          Já tem conta? O login leva menos de 30 segundos.
+        </p>
+      </div>
+    </div>
+
+    <!-- ===== TELA: CONFIRMAÇÃO (logado) ===== -->
+    <div id="telaConfirmacao" style="display:none">
+      <div class="checkout-layout">
+
+        <!-- Card principal -->
+        <div class="form-card reveal">
+          <div class="badge">Assinatura</div>
+          <h2>Confirmar assinatura</h2>
+          <p style="color:#94a3b8;font-size:14px;margin-bottom:28px">
+            Identificamos sua conta. Confirme abaixo para prosseguir para o pagamento.
+          </p>
+
+          <!-- Perfil reconhecido -->
+          <div id="perfilBox" style="background:#04070f;border:1px solid rgba(26,107,255,0.25);border-radius:16px;padding:20px 22px;margin-bottom:28px;display:flex;align-items:center;gap:16px">
+            <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#1a6bff,#0c3fa0);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg viewBox="0 0 24 24" fill="white" width="22" height="22">
+                <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+              </svg>
+            </div>
+            <div>
+              <div style="font-size:13px;color:#6aabff;margin-bottom:2px">Conta reconhecida</div>
+              <div id="perfilNome" style="font-weight:600;font-size:15px;color:#fff">—</div>
+              <div id="perfilEmail" style="font-size:12px;color:#94a3b8;margin-top:1px">—</div>
+            </div>
+          </div>
+
+          <!-- Método de pagamento -->
+          <div class="field" style="margin-bottom:24px">
+            <label>Método de pagamento</label>
+            <select id="metodo" style="width:100%">
+              <option value="PIX">PIX</option>
+              <option value="PicPay">PicPay</option>
+            </select>
+          </div>
+
+          <button id="btnConfirmar" class="btn primary" style="width:100%" onclick="confirmarAssinatura()">
+            Confirmar e ir para pagamento
+          </button>
+
+          <p style="font-size:11px;color:#64748b;text-align:center;margin-top:14px">
+            Não é você? <a href="login.html?redirect=checkout.html" style="color:#6aabff">Trocar conta</a>
+          </p>
+        </div>
+
+        <!-- Resumo do pedido -->
+        <div class="summary-card reveal">
+          <span class="badge">RESUMO</span>
+          <h2>Lumina Plus</h2>
+          <p style="color:#94a3b8;font-size:14px;margin-bottom:20px">Acesso premium da Lumina Interactive.</p>
+
+          <div style="border-top:1px solid rgba(255,255,255,0.07);padding-top:16px;margin-bottom:16px">
+            <div style="display:flex;justify-content:space-between;font-size:13px;color:#94a3b8;margin-bottom:8px">
+              <span>Plano</span><span style="color:#fff">Lumina Plus</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;color:#94a3b8;margin-bottom:8px">
+              <span>Cobrança</span><span style="color:#fff">Mensal</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:700;margin-top:12px;border-top:1px solid rgba(255,255,255,0.07);padding-top:12px">
+              <span>Total</span><span style="color:#6aabff">R$ 9,90</span>
+            </div>
+          </div>
+
+          <ul style="list-style:none;padding:0;margin:0;font-size:13px;color:#94a3b8;display:flex;flex-direction:column;gap:8px">
+            <li style="display:flex;align-items:center;gap:8px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#22c55e"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+              Acesso a todos os patches PRO
+            </li>
+            <li style="display:flex;align-items:center;gap:8px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#22c55e"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+              Atualizações em primeira mão
+            </li>
+            <li style="display:flex;align-items:center;gap:8px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#22c55e"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+              Suporte prioritário
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===== LOADING ===== -->
+    <div id="telaLoading" style="text-align:center;padding:100px 20px">
+      <div style="width:36px;height:36px;border:3px solid rgba(26,107,255,0.2);border-top-color:#1a6bff;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px"></div>
+      <p style="color:#94a3b8;font-size:14px">Verificando conta...</p>
+    </div>
+
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-logo"><img src="logo.png" alt="Lumina Interactive" style="height:32px;width:auto;opacity:0.85"></div>
+  <div class="footer-links">
+    <a href="index.html">Início</a><a href="patches.html">Patchs</a>
+    <a href="downloads.html">Downloads</a><a href="plus.html">Lumina Plus</a>
+    <a href="login.html" data-auth-link>Login</a>
+  </div>
+  <div class="footer-copy">© 2026 Lumina Interactive™. Todos os direitos reservados.</div>
+</footer>
+
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+const SUPABASE_URL = "https://tqsalhscgkepttbczyjq.supabase.co";
+const SUPABASE_KEY = "sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let usuarioAtual = null;
+
+async function iniciar() {
+  // Tenta pegar sessão via Supabase Auth
+  const { data: { user } } = await sb.auth.getUser();
+
+  if (user) {
+    usuarioAtual = user;
+    mostrarConfirmacao(user);
+    return;
+  }
+
+  // Fallback: localStorage (login manual antigo)
+  const logado = localStorage.getItem("lumina_logado");
+  const email  = localStorage.getItem("lumina_email");
+  const nome   = localStorage.getItem("lumina_nome") || email;
+
+  if (logado === "sim" && email) {
+    usuarioAtual = { email, user_metadata: { full_name: nome } };
+    mostrarConfirmacao(usuarioAtual);
+    return;
+  }
+
+  // Não logado
+  document.getElementById("telaLoading").style.display = "none";
+  document.getElementById("telaLogin").style.display   = "block";
+}
+
+function mostrarConfirmacao(user) {
+  const nome  = user.user_metadata?.full_name
+             || user.user_metadata?.name
+             || user.email
+             || "Usuário";
+  const email = user.email || "";
+
+  document.getElementById("perfilNome").textContent  = nome;
+  document.getElementById("perfilEmail").textContent = email;
+
+  document.getElementById("telaLoading").style.display     = "none";
+  document.getElementById("telaConfirmacao").style.display = "block";
+
+  // Reveal animation
+  document.querySelectorAll(".reveal").forEach((el, i) => {
+    setTimeout(() => el.classList.add("visible"), i * 80);
+  });
+}
+
+async function confirmarAssinatura() {
+  const btn = document.getElementById("btnConfirmar");
+  btn.textContent = "Processando...";
+  btn.disabled = true;
+
+  const metodo = document.getElementById("metodo").value;
+  const nome   = document.getElementById("perfilNome").textContent;
+  const email  = document.getElementById("perfilEmail").textContent;
+
+  const pedido = {
+    nome_cliente:      nome,
+    email:             email,
+    whatsapp:          "",           // sem telefone no novo fluxo
+    produto:           "Lumina Plus",
+    plano:             "lumina-plus",
+    metodo_pagamento:  metodo,
+    status:            "aguardando_pagamento",
+    valor:             9.90,
+    acesso_liberado:   false,
+    user_id:           usuarioAtual?.id || null
+  };
+
+  const { data, error } = await sb.from("pedidos").insert([pedido]).select();
+
+  if (error) {
+    alert("Erro ao registrar pedido: " + error.message);
+    btn.textContent = "Confirmar e ir para pagamento";
+    btn.disabled = false;
+    return;
+  }
+
+  window.location.href = "comprovante.html?pedido_id=" + data[0].id;
+}
+
+iniciar();
+</script>
+
+<script src="navbar-auth.js"></script>
+</body>
+</html>
