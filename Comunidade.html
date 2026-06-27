@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comunidade | Lumina Interactive</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* ════════════════════════════════════════════
+   COMUNIDADE — estilo feed (Instagram-like, dark Lumina)
+   ════════════════════════════════════════════ */
+
+.com-wrap { max-width:560px; margin:0 auto; padding:0 16px 100px; }
+
+/* ── Topo: Feed vs Bate-papo ── */
+.com-tabs {
+  display:flex; gap:6px; border-bottom:1px solid var(--border); margin-bottom:18px;
+}
+.com-tab {
+  display:flex; align-items:center; gap:8px; white-space:nowrap;
+  padding:13px 16px; font-size:14px; font-weight:600; color:var(--muted);
+  border-bottom:2px solid transparent; cursor:pointer; transition:color .15s, border-color .15s;
+  background:none; border-left:none; border-right:none; border-top:none;
+  font-family:var(--font-body);
+}
+.com-tab svg { opacity:.7; flex-shrink:0; }
+.com-tab.active { color:var(--blue); border-bottom-color:var(--blue); }
+.com-tab.active svg { opacity:1; }
+.com-tab-count {
+  background:rgba(255,255,255,0.06); color:var(--muted); font-size:11px; font-weight:700;
+  padding:1px 7px; border-radius:999px; min-width:20px; text-align:center;
+}
+.com-tab.active .com-tab-count { background:var(--blue-dim); color:#6aabff; }
+
+.com-panel { display:none; }
+.com-panel.active { display:block; }
+
+/* ── Chips de categoria (filtro do feed único) ── */
+.com-filters {
+  display:flex; gap:8px; overflow-x:auto; -ms-overflow-style:none; scrollbar-width:none;
+  margin-bottom:18px; padding-bottom:2px;
+}
+.com-filters::-webkit-scrollbar { display:none; }
+.com-chip {
+  white-space:nowrap; padding:8px 16px; border-radius:999px; font-size:13px; font-weight:600;
+  background:var(--bg3); border:1px solid var(--border); color:#94a3b8; cursor:pointer;
+  transition:background .15s, color .15s, border-color .15s; font-family:var(--font-body); flex-shrink:0;
+}
+.com-chip.active { background:var(--blue); border-color:var(--blue); color:#fff; }
+
+/* ── Composer ── */
+.com-composer {
+  background:var(--bg3); border:1px solid var(--border); border-radius:20px;
+  padding:18px; margin-bottom:22px;
+}
+.com-composer-top { display:flex; gap:12px; }
+.com-avatar {
+  width:42px; height:42px; border-radius:50%; flex-shrink:0; object-fit:cover;
+  background:var(--blue-dim); border:1px solid rgba(26,107,255,0.3);
+  display:flex; align-items:center; justify-content:center;
+}
+.com-avatar svg { width:20px; height:20px; fill:#6aabff; }
+.com-composer textarea {
+  width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:14px;
+  padding:13px 16px; color:var(--text); font-family:var(--font-body); font-size:14px;
+  resize:none; outline:none; min-height:46px; line-height:1.5; transition:border-color .2s;
+}
+.com-composer textarea:focus { border-color:rgba(26,107,255,0.5); }
+.com-composer-foot { display:flex; align-items:center; justify-content:space-between; margin-top:14px; gap:12px; flex-wrap:wrap; }
+.com-composer-tools { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.com-tool-btn {
+  display:flex; align-items:center; gap:6px; background:var(--blue-dim); border:1px solid rgba(26,107,255,0.25);
+  color:#6aabff; font-size:12px; font-weight:600; padding:7px 13px; border-radius:999px; cursor:pointer;
+  transition:background .15s; font-family:var(--font-body);
+}
+.com-tool-btn:hover { background:rgba(26,107,255,0.22); }
+.com-cat-select {
+  background:var(--bg2); border:1px solid var(--border); color:var(--text); font-size:12px;
+  font-weight:600; padding:8px 12px; border-radius:999px; outline:none; cursor:pointer; font-family:var(--font-body);
+}
+.com-img-preview { position:relative; margin-top:12px; border-radius:14px; overflow:hidden; display:none; aspect-ratio:1/1; max-width:100%; }
+.com-img-preview img { width:100%; height:100%; object-fit:cover; display:block; border:1px solid var(--border); }
+.com-img-preview .remove-img {
+  position:absolute; top:8px; right:8px; width:26px; height:26px; border-radius:50%;
+  background:rgba(4,7,15,0.8); border:1px solid var(--border); color:#fff; display:flex;
+  align-items:center; justify-content:center; cursor:pointer; font-size:14px; line-height:1;
+}
+.com-locked {
+  text-align:center; padding:32px 20px; color:var(--muted); font-size:14px;
+}
+.com-locked a { color:#6aabff; font-weight:600; }
+
+/* ── Post card estilo Instagram ── */
+.com-post {
+  background:var(--bg3); border:1px solid var(--border); border-radius:16px;
+  margin-bottom:20px; overflow:hidden;
+}
+.com-post-head { display:flex; gap:11px; align-items:center; padding:13px 14px; }
+.com-post-meta { flex:1; min-width:0; }
+.com-post-name { font-weight:700; font-size:13.5px; color:var(--text); display:flex; align-items:center; gap:6px; flex-wrap:wrap; line-height:1.3; }
+.com-post-id { color:var(--blue); font-weight:600; font-size:12.5px; }
+.com-post-time { color:var(--muted); font-size:11.5px; margin-top:1px; }
+.com-post-cat {
+  display:inline-flex; align-items:center; gap:5px; font-size:9.5px; font-weight:700; letter-spacing:1px;
+  text-transform:uppercase; padding:3px 9px; border-radius:999px; flex-shrink:0;
+}
+.com-post-cat.geral    { background:rgba(255,255,255,0.06); color:#94a3b8; border:1px solid var(--border); }
+.com-post-cat.carreira { background:var(--blue-dim); color:#6aabff; border:1px solid rgba(26,107,255,0.3); }
+.com-post-cat.duvida   { background:rgba(251,191,36,0.12); color:#fbbf24; border:1px solid rgba(251,191,36,0.3); }
+.com-post-cat.print    { background:rgba(167,139,250,0.14); color:#c4b5fd; border:1px solid rgba(167,139,250,0.3); }
+
+/* imagem em destaque, quadrada, double-tap to like */
+.com-post-img { position:relative; width:100%; aspect-ratio:1/1; background:var(--bg2); overflow:hidden; user-select:none; }
+.com-post-img img { width:100%; height:100%; object-fit:cover; display:block; cursor:pointer; }
+.com-heart-burst {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) scale(0); pointer-events:none;
+  filter:drop-shadow(0 4px 16px rgba(0,0,0,.4)); opacity:0; z-index:5;
+}
+.com-heart-burst.animate { animation:heartBurst .8s ease; }
+@keyframes heartBurst {
+  0%   { transform:translate(-50%,-50%) scale(0);   opacity:0; }
+  15%  { transform:translate(-50%,-50%) scale(1.15); opacity:1; }
+  30%  { transform:translate(-50%,-50%) scale(0.95); opacity:1; }
+  80%  { transform:translate(-50%,-50%) scale(1);    opacity:1; }
+  100% { transform:translate(-50%,-50%) scale(1);    opacity:0; }
+}
+
+/* texto sem imagem: vira "capa" de texto dentro do card, mesma área quadrada */
+.com-post-textcard {
+  position:relative; width:100%; aspect-ratio:1/1; overflow:hidden; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; padding:32px;
+  background:linear-gradient(160deg,var(--bg3),#0a1020);
+}
+.com-post-textcard::before {
+  content:''; position:absolute; inset:0;
+  background-image:linear-gradient(rgba(26,107,255,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(26,107,255,0.05) 1px,transparent 1px);
+  background-size:32px 32px;
+}
+.com-post-textcard p {
+  position:relative; z-index:1; font-family:var(--font-hero); font-size:clamp(20px,5vw,30px);
+  letter-spacing:.5px; line-height:1.25; color:#f0f4ff; text-align:center;
+  display:-webkit-box; -webkit-line-clamp:7; -webkit-box-orient:vertical; overflow:hidden;
+}
+
+/* barra de ações estilo IG */
+.com-post-actions { display:flex; align-items:center; gap:4px; padding:10px 10px 0; }
+.com-action-btn {
+  display:flex; align-items:center; gap:6px; background:none; border:none; color:var(--text);
+  padding:7px; border-radius:10px; cursor:pointer; transition:opacity .15s, transform .1s; font-family:var(--font-body);
+}
+.com-action-btn:active { transform:scale(0.88); }
+.com-action-btn.liked svg { fill:#ff4d6d; stroke:#ff4d6d; }
+.com-action-btn.saved svg { fill:#6aabff; stroke:#6aabff; }
+.com-action-btn.delete { margin-left:auto; color:#64748b; }
+.com-action-btn.delete:hover { color:#ef4444; }
+
+.com-post-likes { padding:6px 14px 0; font-size:13.5px; font-weight:700; color:var(--text); }
+
+.com-post-caption { padding:6px 14px 0; font-size:13.5px; line-height:1.55; color:#dbe4f5; white-space:pre-wrap; word-break:break-word; }
+.com-post-caption .who { font-weight:700; color:var(--text); margin-right:5px; }
+
+.com-post-viewcomments {
+  padding:6px 14px 0; font-size:13px; color:var(--muted); cursor:pointer; background:none; border:none;
+  font-family:var(--font-body); display:block; text-align:left;
+}
+.com-post-viewcomments:hover { color:#94a3b8; }
+.com-post-time-bottom { padding:8px 14px 14px; font-size:10.5px; letter-spacing:.5px; text-transform:uppercase; color:#475569; }
+
+/* ── Comentários (expandindo embaixo) ── */
+.com-comments { padding:0 14px 14px; display:none; }
+.com-comments.open { display:block; }
+.com-comments-divider { height:1px; background:var(--border); margin-bottom:12px; }
+.com-comment { display:flex; gap:9px; margin-bottom:10px; align-items:flex-start; }
+.com-comment-bubble { flex:1; padding-top:1px; }
+.com-comment-name { font-size:13px; font-weight:700; color:var(--text); }
+.com-comment-id { color:var(--blue); font-weight:600; }
+.com-comment-text { font-size:13px; color:#cbd5e1; line-height:1.5; margin-top:1px; white-space:pre-wrap; word-break:break-word; }
+.com-comment-time { font-size:11px; color:var(--muted); margin-top:3px; }
+.com-comment-form { display:flex; gap:10px; align-items:center; margin-top:6px; padding-top:10px; border-top:1px solid var(--border); }
+.com-comment-form input {
+  flex:1; background:transparent; border:none; border-radius:999px;
+  padding:8px 4px; color:var(--text); font-size:13.5px; outline:none; font-family:var(--font-body);
+}
+.com-comment-send {
+  background:none; border:none; color:var(--blue); font-weight:700; font-size:13px; cursor:pointer;
+  padding:6px 4px; flex-shrink:0; font-family:var(--font-body); opacity:.5;
+}
+.com-comment-send.active { opacity:1; }
+
+/* ── Empty state ── */
+.com-empty { text-align:center; padding:60px 20px; color:var(--muted); }
+.com-empty svg { opacity:.3; margin-bottom:16px; }
+.com-empty-title { font-family:var(--font-hero); font-size:22px; letter-spacing:1px; color:#cbd5e1; margin-bottom:6px; }
+.com-empty-text { font-size:13.5px; line-height:1.6; max-width:320px; margin:0 auto; }
+
+/* ── Chat ── */
+.com-chat-box {
+  background:var(--bg3); border:1px solid var(--border); border-radius:20px;
+  display:flex; flex-direction:column; height:560px; overflow:hidden;
+}
+.com-chat-head { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+.com-chat-dot { width:8px; height:8px; border-radius:50%; background:#22c55e; box-shadow:0 0 8px #22c55e; }
+.com-chat-head-title { font-family:var(--font-hero); font-size:18px; letter-spacing:1px; }
+.com-chat-head-sub { font-size:12px; color:var(--muted); margin-left:auto; }
+.com-chat-msgs { flex:1; overflow-y:auto; padding:18px 20px; display:flex; flex-direction:column; gap:12px; }
+.com-chat-msg { display:flex; gap:10px; max-width:88%; }
+.com-chat-msg.mine { align-self:flex-end; flex-direction:row-reverse; }
+.com-chat-bubble { background:var(--bg2); border-radius:14px; padding:9px 14px; }
+.com-chat-msg.mine .com-chat-bubble { background:var(--blue); }
+.com-chat-msg.mine .com-chat-name,
+.com-chat-msg.mine .com-chat-text { color:#fff; }
+.com-chat-name { font-size:11.5px; font-weight:700; color:#6aabff; }
+.com-chat-text { font-size:13.5px; color:#dbe4f5; line-height:1.45; margin-top:1px; word-break:break-word; }
+.com-chat-form { display:flex; gap:10px; padding:14px 16px; border-top:1px solid var(--border); }
+.com-chat-form input {
+  flex:1; background:var(--bg2); border:1px solid var(--border); border-radius:999px;
+  padding:11px 18px; color:var(--text); font-size:14px; outline:none; font-family:var(--font-body);
+}
+.com-chat-form input:focus { border-color:rgba(26,107,255,0.5); }
+.com-chat-send {
+  background:var(--blue); border:none; color:#fff; width:42px; height:42px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; transition:background .15s;
+}
+.com-chat-send:hover { background:#1558d6; }
+.com-chat-send:disabled { opacity:.5; cursor:not-allowed; }
+
+/* ── Lightbox de imagem ── */
+.com-lightbox { position:fixed; inset:0; z-index:1000; background:rgba(4,7,15,0.92); display:none; align-items:center; justify-content:center; cursor:zoom-out; backdrop-filter:blur(8px); }
+.com-lightbox.open { display:flex; }
+.com-lightbox img { max-width:90vw; max-height:90vh; border-radius:16px; box-shadow:0 0 80px rgba(0,0,0,0.8); }
+
+/* ── Toast ── */
+.com-toast {
+  position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(20px);
+  background:var(--bg3); border:1px solid var(--border); color:var(--text); font-size:13.5px;
+  font-weight:600; padding:13px 22px; border-radius:999px; box-shadow:0 16px 48px rgba(0,0,0,0.5);
+  opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; z-index:500; display:flex; align-items:center; gap:8px;
+}
+.com-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+@media(max-width:640px){
+  .com-chat-box { height:70vh; }
+  .com-composer { padding:14px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="logo"><img src="logo.png" alt="Lumina Interactive" style="height:36px;width:auto;display:block"></div>
+  <div class="menu">
+    <a href="index.html">Início</a>
+    <a href="patches.html">Patchs</a>
+    <a href="Comunidade.html" class="active">Comunidade</a>
+    <a href="plus.html">Lumina Plus</a>
+    <a href="login.html" data-auth-link>Login</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+
+  <div class="page-hero container">
+    <div class="page-hero-label">Lumina Interactive™</div>
+    <h1>Comunidade</h1>
+    <p>O ponto de encontro de quem joga. Mostre sua Master League, divida prints da sua carreira e fique por dentro das notícias.</p>
+  </div>
+
+  <div class="com-wrap">
+
+    <div class="com-tabs" id="comTabs">
+      <button class="com-tab active" data-tab="feed">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v2H4V4zm0 7h16v2H4v-2zm0 7h16v2H4v-2z"/></svg>
+        Feed
+      </button>
+      <button class="com-tab" data-tab="chat">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H8l-4 4V5a1 1 0 0 1 1-1z"/></svg>
+        Bate-papo
+        <span class="com-tab-count" id="countOnline">0</span>
+      </button>
+    </div>
+
+    <!-- ══════════ PAINEL: FEED ÚNICO ══════════ -->
+    <div class="com-panel active" id="panel-feed">
+
+      <div id="composerFeed"></div>
+
+      <div class="com-filters" id="comFilters">
+        <button class="com-chip active" data-filtro="todos">Todos</button>
+        <button class="com-chip" data-filtro="carreira">Carreiras</button>
+        <button class="com-chip" data-filtro="ml">Master League</button>
+        <button class="com-chip" data-filtro="print">Prints</button>
+        <button class="com-chip" data-filtro="duvida">Dúvidas</button>
+      </div>
+
+      <div id="listaFeed"></div>
+    </div>
+
+    <!-- ══════════ PAINEL: BATE-PAPO ══════════ -->
+    <div class="com-panel" id="panel-chat">
+      <div class="com-chat-box">
+        <div class="com-chat-head">
+          <span class="com-chat-dot"></span>
+          <span class="com-chat-head-title">Bate-papo da Comunidade</span>
+          <span class="com-chat-head-sub" id="chatStatusTxt">conectando...</span>
+        </div>
+        <div class="com-chat-msgs" id="chatMsgs"></div>
+        <form class="com-chat-form" id="chatForm">
+          <input type="text" id="chatInput" placeholder="Escreva uma mensagem..." maxlength="500" autocomplete="off">
+          <button type="submit" class="com-chat-send" id="chatSendBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+          </button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-logo"><img src="logo.png" alt="Lumina Interactive" style="height:32px;width:auto;opacity:0.85"></div>
+  <div class="footer-links">
+    <a href="index.html">Início</a>
+    <a href="patches.html">Patchs</a>
+    <a href="Comunidade.html">Comunidade</a>
+    <a href="plus.html">Lumina Plus</a>
+    <a href="login.html" data-auth-link>Login</a>
+  </div>
+  <div class="footer-copy">© 2026 Lumina Interactive™. Todos os direitos reservados.</div>
+</footer>
+
+<!-- Lightbox -->
+<div class="com-lightbox" id="comLightbox">
+  <img id="comLightboxImg" src="" alt="">
+</div>
+
+<!-- Toast -->
+<div class="com-toast" id="comToast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="comunidade.js"></script>
+<script src="navbar-auth.js"></script>
+</body>
+</html>
