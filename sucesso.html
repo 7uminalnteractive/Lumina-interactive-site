@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pedido recebido | Lumina Interactive</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="navbar">
+  <div class="logo"><img src="logo.png" alt="Lumina Interactive" style="height:36px;width:auto;display:block"></div>
+  <div class="menu">
+    <a href="index.html">Início</a><a href="patches.html">Patchs</a>
+    <a href="Comunidade.html">Comunidade</a><a href="plus.html">Lumina Plus</a>
+  </div>
+</nav>
+<div class="page-wrap" style="display:flex;align-items:center;justify-content:center;min-height:100vh;">
+  <div class="confirm-card reveal">
+    <div class="confirm-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+    <span class="badge">PEDIDO RECEBIDO</span>
+    <h1>Obrigado por apoiar a Lumina.</h1>
+    <p>Seu pedido foi registrado. Em breve entraremos em contato pelo WhatsApp ou e-mail informado.</p>
+    <a class="btn primary" href="index.html">Voltar ao início</a>
+  </div>
+</div>
+<footer class="footer">
+  <div class="footer-logo"><img src="logo.png" alt="Lumina Interactive" style="height:32px;width:auto;opacity:0.85"></div>
+  <div class="footer-copy">© 2026 Lumina Interactive™. Todos os direitos reservados.</div>
+</footer>
+<script>
+document.querySelectorAll('.reveal').forEach((el,i)=>setTimeout(()=>el.classList.add('visible'),i*80+100));
+</script>
+
+<script src="navbar-auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Criar Conta | Lumina Interactive</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.check-field {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.2s;
+  margin-bottom: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+.check-field:hover { border-color: rgba(26,107,255,0.4); }
+.check-field input[type="checkbox"] {
+  width: 18px; height: 18px; min-width:18px;
+  accent-color: var(--blue); cursor: pointer; margin-top: 2px;
+}
+.check-field span { font-size: 13px; color: #94a3b8; line-height: 1.6; }
+.check-field span a { color: #6aabff; text-decoration: underline; pointer-events: all; }
+
+/* Status do @ID */
+.id-status {
+  font-size: 12px; margin-top: 6px;
+  display: flex; align-items: center; gap: 6px;
+  min-height: 18px;
+}
+.id-status.disponivel { color: #22c55e; }
+.id-status.ocupado    { color: #ef4444; }
+.id-status.checando   { color: #94a3b8; }
+
+/* Prefixo @ no input */
+.id-input-wrap {
+  display: flex; align-items: center;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.2s;
+  overflow: hidden;
+}
+.id-input-wrap:focus-within { border-color: rgba(26,107,255,0.5); }
+.id-prefix {
+  padding: 13px 0 13px 16px;
+  color: var(--blue); font-weight: 700; font-size: 14px;
+  user-select: none;
+}
+.id-input-wrap input {
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding-left: 4px !important;
+  flex: 1;
+}
+.id-input-wrap input:focus { outline: none; }
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="logo"><img src="logo.png" alt="Lumina Interactive" style="height:36px;width:auto;display:block"></div>
+  <div class="menu">
+    <a href="index.html">Início</a><a href="patches.html">Patchs</a>
+    <a href="Comunidade.html">Comunidade</a><a href="plus.html">Lumina Plus</a>
+    <a href="login.html" data-auth-link>Login</a>
+  </div>
+</nav>
+
+<div class="page-wrap" style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:100px 20px 60px">
+  <div class="form-card" style="width:100%;max-width:500px;margin:0 auto;opacity:1;transform:none">
+    <div class="badge" style="margin-bottom:24px">Novo por aqui?</div>
+    <h2>Criar conta</h2>
+    <p>Preencha seus dados para criar sua conta na Lumina Interactive.</p>
+
+    <div id="msgErro" style="display:none;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);color:#ef4444;padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:16px"></div>
+    <div id="msgSucesso" style="display:none;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);color:#22c55e;padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:16px"></div>
+
+    <div class="field">
+      <label>Nome completo</label>
+      <input type="text" id="nome" placeholder="Seu nome" required>
+    </div>
+    <div class="field">
+      <label>E-mail</label>
+      <input type="email" id="email" placeholder="seuemail@gmail.com" required>
+    </div>
+    <div class="field">
+      <label>Número de telefone</label>
+      <input type="tel" id="telefone" placeholder="(00) 00000-0000" required>
+    </div>
+    <div class="field">
+      <label>@ID Online <span style="color:var(--muted);font-weight:400;font-size:12px">— seu @ único no site</span></label>
+      <div class="id-input-wrap">
+        <span class="id-prefix">@</span>
+        <input type="text" id="idOnline" placeholder="seuapelido" required
+          oninput="verificarIdOnline(this.value)"
+          style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:13px 16px;color:var(--text);font-family:var(--font-body);font-size:14px;outline:none">
+      </div>
+      <div class="id-status" id="idStatus"></div>
+    </div>
+    <div class="field">
+      <label>Senha</label>
+      <input type="password" id="senha" placeholder="Mínimo 6 caracteres" required>
+    </div>
+    <div class="field">
+      <label>Confirmar senha</label>
+      <input type="password" id="senhaConfirm" placeholder="Repita a senha" required>
+    </div>
+
+    <div style="margin:24px 0 20px">
+      <div class="check-field" id="boxTermos" onclick="marcar('termos')">
+        <input type="checkbox" id="termos" onclick="event.stopPropagation()">
+        <span>Li e concordo com os <a href="termos.html" target="_blank" onclick="event.stopPropagation()">Termos de Uso</a> da Lumina Interactive.</span>
+      </div>
+      <div class="check-field" id="boxPrivacidade" onclick="marcar('privacidade')">
+        <input type="checkbox" id="privacidade" onclick="event.stopPropagation()">
+        <span>Compreendo e aceito a <a href="privacidade.html" target="_blank" onclick="event.stopPropagation()">Política de Privacidade</a> da Lumina Interactive.</span>
+      </div>
+    </div>
+
+    <button class="btn primary" type="button" onclick="registrarGoogle()" style="width:100%;background:#1a1a2e;border:1.5px solid rgba(255,255,255,0.15);margin-bottom:12px">
+      <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Registrar com Google
+    </button>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+      <div style="flex:1;height:1px;background:var(--border)"></div>
+      <span style="font-size:12px;color:var(--muted)">ou</span>
+      <div style="flex:1;height:1px;background:var(--border)"></div>
+    </div>
+    <button class="btn primary" id="btnCriar" style="width:100%;margin-bottom:14px" onclick="criarConta()">Criar conta</button>
+    <div style="text-align:center;font-size:13px;color:var(--muted)">
+      Já tem conta? <a href="login.html" style="color:#6aabff">Entrar</a>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-logo"><img src="logo.png" alt="Lumina Interactive" style="height:32px;width:auto;opacity:0.85"></div>
+  <div class="footer-links">
+    <a href="index.html">Início</a><a href="patches.html">Patchs</a>
+    <a href="Comunidade.html">Comunidade</a><a href="plus.html">Lumina Plus</a>
+  </div>
+  <div class="footer-copy">© 2026 Lumina Interactive™. Todos os direitos reservados.</div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+const supabaseClient = supabase.createClient(
+  "https://tqsalhscgkepttbczyjq.supabase.co",
+  "sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK"
+);
+
+let idDisponivel = false;
+let checkTimer = null;
+
+// Verifica disponibilidade do @ID em tempo real
+async function verificarIdOnline(valor) {
+  const statusEl = document.getElementById("idStatus");
+  const id = valor.trim().toLowerCase().replace(/[^a-z0-9_.]/g, "");
+
+  // Atualiza o campo sem caracteres inválidos
+  document.getElementById("idOnline").value = id;
+
+  if (!id || id.length < 3) {
+    statusEl.innerHTML = "";
+    idDisponivel = false;
+    return;
+  }
+
+  statusEl.className = "id-status checando";
+  statusEl.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z" opacity=".3"/><path d="M12 2v4a8 8 0 0 1 0 16v4a12 12 0 0 0 0-24z"/></svg> Verificando...`;
+  idDisponivel = false;
+
+  clearTimeout(checkTimer);
+  checkTimer = setTimeout(async () => {
+    const { data, error } = await supabaseClient
+      .from("perfis").select("id_online").eq("id_online", id).maybeSingle();
+
+    if (error) { statusEl.innerHTML = ""; return; }
+
+    if (data) {
+      statusEl.className = "id-status ocupado";
+      statusEl.innerHTML = `✗ @${id} já está em uso`;
+      idDisponivel = false;
+    } else {
+      statusEl.className = "id-status disponivel";
+      statusEl.innerHTML = `✓ @${id} está disponível!`;
+      idDisponivel = true;
+    }
+  }, 600);
+}
+
+function marcar(id) {
+  const cb = document.getElementById(id);
+  cb.checked = !cb.checked;
+  const box = document.getElementById("box" + id.charAt(0).toUpperCase() + id.slice(1));
+  box.style.borderColor = cb.checked ? "rgba(26,107,255,0.5)" : "";
+}
+
+function mostrarErro(msg) {
+  const el = document.getElementById("msgErro");
+  el.textContent = msg; el.style.display = "block";
+  document.getElementById("msgSucesso").style.display = "none";
+  el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+function mostrarSucesso(msg) {
+  const el = document.getElementById("msgSucesso");
+  el.textContent = msg; el.style.display = "block";
+  document.getElementById("msgErro").style.display = "none";
+}
+
+async function registrarGoogle() {
+  const { error } = await supabaseClient.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo: window.location.origin + "/minha-conta.html" }
+  });
+  if (error) { mostrarErro(error.message); }
+}
+
+async function criarConta() {
+  const nome      = document.getElementById("nome").value.trim();
+  const email     = document.getElementById("email").value.trim();
+  const telefone  = document.getElementById("telefone").value.trim();
+  const idOnline  = document.getElementById("idOnline").value.trim().toLowerCase();
+  const senha     = document.getElementById("senha").value;
+  const senhaC    = document.getElementById("senhaConfirm").value;
+  const termos    = document.getElementById("termos").checked;
+  const privacidade = document.getElementById("privacidade").checked;
+  const btn = document.getElementById("btnCriar");
+
+  if (!nome)        { mostrarErro("Digite seu nome completo."); return; }
+  if (!email)       { mostrarErro("Digite seu e-mail."); return; }
+  if (!telefone)    { mostrarErro("Digite seu número de telefone."); return; }
+  if (!idOnline || idOnline.length < 3) { mostrarErro("O @ID precisa ter ao menos 3 caracteres."); return; }
+  if (!idDisponivel) { mostrarErro("Escolha um @ID disponível antes de continuar."); return; }
+  if (senha.length < 6) { mostrarErro("A senha precisa ter ao menos 6 caracteres."); return; }
+  if (senha !== senhaC) { mostrarErro("As senhas não coincidem."); return; }
+  if (!termos)      { mostrarErro("Você precisa concordar com os Termos de Uso."); return; }
+  if (!privacidade) { mostrarErro("Você precisa aceitar a Política de Privacidade."); return; }
+
+  btn.textContent = "Criando conta..."; btn.disabled = true;
+
+  const { error } = await supabaseClient.auth.signUp({
+    email, password: senha,
+    options: {
+      emailRedirectTo: window.location.origin + "/minha-conta.html",
+      data: { nome, telefone, id_online: idOnline }
+    }
+  });
+
+  if (error) {
+    mostrarErro(error.message);
+    btn.textContent = "Criar conta"; btn.disabled = false;
+    return;
+  }
+
+  mostrarSucesso("Conta criada com sucesso! Fazendo login...");
+  btn.textContent = "Criar conta"; btn.disabled = false;
+  setTimeout(() => { window.location.href = "login.html"; }, 2500);
+}
+</script>
+<script src="navbar-auth.js"></script>
+</body>
+</html>
