@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comunidade | Lumina Interactive</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* ════════════════════════════════════════════
+   COMUNIDADE — estilo feed (Instagram-like, dark Lumina)
+   ════════════════════════════════════════════ */
+
+.com-wrap { max-width:560px; margin:0 auto; padding:0 16px 110px; }
+
+/* ── Barra de navegação fixa embaixo (estilo app) ── */
+.com-tabs-fixed {
+  position:fixed; left:0; right:0; bottom:0; z-index:80;
+  background:var(--bg2); border-top:1px solid var(--border);
+  box-shadow:0 -8px 24px rgba(0,0,0,0.35);
+  display:flex; justify-content:center;
+}
+.com-tabs {
+  display:flex; gap:2px; width:100%; max-width:560px;
+  overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;
+  padding:0 6px; cursor:grab; user-select:none;
+}
+.com-tabs::-webkit-scrollbar { display:none; }
+.com-tabs.dragging { cursor:grabbing; scroll-snap-type:none; }
+.com-tab {
+  display:flex; align-items:center; gap:7px; white-space:nowrap; flex-shrink:0;
+  padding:15px 16px 13px; font-size:13.5px; font-weight:600; color:var(--muted);
+  border-top:2px solid transparent; cursor:pointer; transition:color .15s, border-color .15s;
+  background:none; border-left:none; border-right:none; border-bottom:none;
+  font-family:var(--font-body);
+}
+.com-tab svg { opacity:.7; flex-shrink:0; }
+.com-tab.active { color:var(--blue); border-top-color:var(--blue); }
+.com-tab.active svg { opacity:1; }
+.com-tab-count {
+  background:rgba(255,255,255,0.06); color:var(--muted); font-size:11px; font-weight:700;
+  padding:1px 7px; border-radius:999px; min-width:20px; text-align:center;
+}
+.com-tab.active .com-tab-count { background:var(--blue-dim); color:#6aabff; }
+
+.com-panel { display:none; }
+.com-panel.active { display:block; }
+
+/* ── Composer ── */
+.com-composer {
+  background:var(--bg3); border:1px solid var(--border); border-radius:20px;
+  padding:18px; margin-bottom:22px;
+}
+.com-composer-top { display:flex; gap:12px; }
+.com-avatar {
+  width:42px; height:42px; border-radius:50%; flex-shrink:0; object-fit:cover;
+  background:var(--blue-dim); border:1px solid rgba(26,107,255,0.3);
+  display:flex; align-items:center; justify-content:center;
+}
+.com-avatar svg { width:20px; height:20px; fill:#6aabff; }
+.com-composer textarea {
+  width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:14px;
+  padding:13px 16px; color:var(--text); font-family:var(--font-body); font-size:14px;
+  resize:none; outline:none; min-height:46px; line-height:1.5; transition:border-color .2s;
+}
+.com-composer textarea:focus { border-color:rgba(26,107,255,0.5); }
+.com-composer-foot { display:flex; align-items:center; justify-content:space-between; margin-top:14px; gap:12px; flex-wrap:wrap; }
+.com-composer-tools { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.com-tool-btn {
+  display:flex; align-items:center; gap:6px; background:var(--blue-dim); border:1px solid rgba(26,107,255,0.25);
+  color:#6aabff; font-size:12px; font-weight:600; padding:7px 13px; border-radius:999px; cursor:pointer;
+  transition:background .15s; font-family:var(--font-body);
+}
+.com-tool-btn:hover { background:rgba(26,107,255,0.22); }
+.com-img-preview { position:relative; margin-top:12px; border-radius:14px; overflow:hidden; display:none; aspect-ratio:1/1; max-width:100%; }
+.com-img-preview img { width:100%; height:100%; object-fit:cover; display:block; border:1px solid var(--border); }
+.com-img-preview .remove-img {
+  position:absolute; top:8px; right:8px; width:26px; height:26px; border-radius:50%;
+  background:rgba(4,7,15,0.8); border:1px solid var(--border); color:#fff; display:flex;
+  align-items:center; justify-content:center; cursor:pointer; font-size:14px; line-height:1;
+}
+.com-locked {
+  text-align:center; padding:32px 20px; color:var(--muted); font-size:14px;
+}
+.com-locked a { color:#6aabff; font-weight:600; }
+
+/* ── Post card estilo Instagram ── */
+.com-post {
+  background:var(--bg3); border:1px solid var(--border); border-radius:16px;
+  margin-bottom:20px; overflow:hidden;
+}
+.com-post-head { display:flex; gap:11px; align-items:center; padding:13px 14px; }
+.com-post-meta { flex:1; min-width:0; }
+.com-post-name { font-weight:700; font-size:13.5px; color:var(--text); display:flex; align-items:center; gap:6px; flex-wrap:wrap; line-height:1.3; }
+.com-post-id { color:var(--blue); font-weight:600; font-size:12.5px; }
+.com-post-time { color:var(--muted); font-size:11.5px; margin-top:1px; }
+
+/* hashtags clicáveis dentro do texto do post */
+.com-hashtag { color:#6aabff; font-weight:600; cursor:pointer; }
+.com-hashtag:hover { text-decoration:underline; }
+
+/* imagem em destaque, quadrada, double-tap to like */
+.com-post-img { position:relative; width:100%; aspect-ratio:1/1; background:var(--bg2); overflow:hidden; user-select:none; }
+.com-post-img img { width:100%; height:100%; object-fit:cover; display:block; cursor:pointer; }
+.com-heart-burst {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) scale(0); pointer-events:none;
+  filter:drop-shadow(0 4px 16px rgba(0,0,0,.4)); opacity:0; z-index:5;
+}
+.com-heart-burst.animate { animation:heartBurst .8s ease; }
+@keyframes heartBurst {
+  0%   { transform:translate(-50%,-50%) scale(0);   opacity:0; }
+  15%  { transform:translate(-50%,-50%) scale(1.15); opacity:1; }
+  30%  { transform:translate(-50%,-50%) scale(0.95); opacity:1; }
+  80%  { transform:translate(-50%,-50%) scale(1);    opacity:1; }
+  100% { transform:translate(-50%,-50%) scale(1);    opacity:0; }
+}
+
+/* texto sem imagem: vira "capa" de texto dentro do card, mesma área quadrada */
+.com-post-textcard {
+  position:relative; width:100%; aspect-ratio:1/1; overflow:hidden; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; padding:32px;
+  background:linear-gradient(160deg,var(--bg3),#0a1020);
+}
+.com-post-textcard::before {
+  content:''; position:absolute; inset:0;
+  background-image:linear-gradient(rgba(26,107,255,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(26,107,255,0.05) 1px,transparent 1px);
+  background-size:32px 32px;
+}
+.com-post-textcard p {
+  position:relative; z-index:1; font-family:var(--font-hero); font-size:clamp(20px,5vw,30px);
+  letter-spacing:.5px; line-height:1.25; color:#f0f4ff; text-align:center;
+  display:-webkit-box; -webkit-line-clamp:7; -webkit-box-orient:vertical; overflow:hidden;
+}
+
+/* barra de ações estilo IG */
+.com-post-actions { display:flex; align-items:center; gap:4px; padding:10px 10px 0; }
+.com-action-btn {
+  display:flex; align-items:center; gap:6px; background:none; border:none; color:var(--text);
+  padding:7px; border-radius:10px; cursor:pointer; transition:opacity .15s, transform .1s; font-family:var(--font-body);
+}
+.com-action-btn:active { transform:scale(0.88); }
+.com-action-btn.liked svg { fill:#ff4d6d; stroke:#ff4d6d; }
+.com-action-btn.saved svg { fill:#6aabff; stroke:#6aabff; }
+.com-action-btn.delete { margin-left:auto; color:#64748b; }
+.com-action-btn.delete:hover { color:#ef4444; }
+
+.com-post-likes { padding:6px 14px 0; font-size:13.5px; font-weight:700; color:var(--text); }
+
+.com-post-caption { padding:6px 14px 0; font-size:13.5px; line-height:1.55; color:#dbe4f5; white-space:pre-wrap; word-break:break-word; }
+.com-post-caption .who { font-weight:700; color:var(--text); margin-right:5px; }
+
+.com-post-viewcomments {
+  padding:6px 14px 0; font-size:13px; color:var(--muted); cursor:pointer; background:none; border:none;
+  font-family:var(--font-body); display:block; text-align:left;
+}
+.com-post-viewcomments:hover { color:#94a3b8; }
+.com-post-time-bottom { padding:8px 14px 14px; font-size:10.5px; letter-spacing:.5px; text-transform:uppercase; color:#475569; }
+
+/* ── Comentários (expandindo embaixo) ── */
+.com-comments { padding:0 14px 14px; display:none; }
+.com-comments.open { display:block; }
+.com-comments-divider { height:1px; background:var(--border); margin-bottom:12px; }
+.com-comment { display:flex; gap:9px; margin-bottom:10px; align-items:flex-start; }
+.com-comment-bubble { flex:1; padding-top:1px; }
+.com-comment-name { font-size:13px; font-weight:700; color:var(--text); }
+.com-comment-id { color:var(--blue); font-weight:600; }
+.com-comment-text { font-size:13px; color:#cbd5e1; line-height:1.5; margin-top:1px; white-space:pre-wrap; word-break:break-word; }
+.com-comment-time { font-size:11px; color:var(--muted); margin-top:3px; }
+.com-comment-form { display:flex; gap:10px; align-items:center; margin-top:6px; padding-top:10px; border-top:1px solid var(--border); }
+.com-comment-form input {
+  flex:1; background:transparent; border:none; border-radius:999px;
+  padding:8px 4px; color:var(--text); font-size:13.5px; outline:none; font-family:var(--font-body);
+}
+.com-comment-send {
+  background:none; border:none; color:var(--blue); font-weight:700; font-size:13px; cursor:pointer;
+  padding:6px 4px; flex-shrink:0; font-family:var(--font-body); opacity:.5;
+}
+.com-comment-send.active { opacity:1; }
+
+/* ── Empty state ── */
+.com-empty { text-align:center; padding:60px 20px; color:var(--muted); }
+.com-empty svg { opacity:.3; margin-bottom:16px; }
+.com-empty-title { font-family:var(--font-hero); font-size:22px; letter-spacing:1px; color:#cbd5e1; margin-bottom:6px; }
+.com-empty-text { font-size:13.5px; line-height:1.6; max-width:320px; margin:0 auto; }
+
+/* ── Editor de imagem (crop + flip) ── */
+.img-editor-overlay {
+  position:fixed; inset:0; z-index:600; background:rgba(4,7,15,0.95); backdrop-filter:blur(10px);
+  display:none; flex-direction:column; align-items:center; justify-content:center;
+}
+.img-editor-overlay.open { display:flex; }
+.img-editor-wrap {
+  width:100%; max-width:480px; display:flex; flex-direction:column; align-items:center;
+  gap:0; padding:0 0 env(safe-area-inset-bottom);
+}
+.img-editor-title {
+  font-family:var(--font-hero); font-size:15px; letter-spacing:.5px; color:var(--text);
+  padding:16px 20px; width:100%; display:flex; align-items:center; justify-content:space-between;
+}
+.img-editor-title button {
+  background:none; border:none; color:var(--muted); cursor:pointer; font-size:13px; font-family:var(--font-body); padding:4px 8px;
+}
+.img-editor-canvas-wrap {
+  position:relative; width:100%; background:#000;
+  overflow:hidden; touch-action:none; cursor:crosshair;
+  /* altura definida por JS */
+}
+.img-editor-canvas-wrap canvas { display:block; width:100%; height:100%; }
+/* máscara de crop (overlay escuro nas bordas) */
+.img-editor-crop-mask {
+  position:absolute; inset:0; pointer-events:none;
+  box-shadow:inset 0 0 0 9999px rgba(0,0,0,0.52);
+}
+.img-editor-crop-rect {
+  position:absolute; border:2px solid #fff; box-sizing:border-box; pointer-events:none;
+}
+.img-editor-crop-rect::before, .img-editor-crop-rect::after,
+.img-editor-crop-corner { position:absolute; background:#fff; }
+/* linhas de grade */
+.img-editor-crop-rect::before { content:''; left:33.33%; top:0; width:1px; height:100%; opacity:.4; }
+.img-editor-crop-rect::after  { content:''; top:33.33%; left:0; height:1px; width:100%; opacity:.4; }
+
+.img-editor-tools {
+  display:flex; gap:8px; padding:14px 16px; width:100%; box-sizing:border-box;
+  border-top:1px solid var(--border); background:var(--bg2);
+}
+.img-editor-tool-btn {
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
+  background:var(--bg3); border:1px solid var(--border); border-radius:12px; padding:10px 6px;
+  color:var(--text); font-size:11px; font-weight:700; cursor:pointer; font-family:var(--font-body);
+  transition:background .12s, border-color .12s;
+}
+.img-editor-tool-btn:hover, .img-editor-tool-btn.active { background:rgba(26,107,255,0.15); border-color:var(--blue); color:#6aabff; }
+.img-editor-tool-btn svg { flex-shrink:0; }
+.img-editor-foot {
+  display:flex; gap:10px; padding:14px 16px; width:100%; box-sizing:border-box; background:var(--bg2);
+}
+.img-editor-foot .btn { flex:1; padding:12px; font-size:14px; }
+
+/* ── Lightbox de imagem ── */
+.com-lightbox { position:fixed; inset:0; z-index:1000; background:rgba(4,7,15,0.92); display:none; align-items:center; justify-content:center; cursor:zoom-out; backdrop-filter:blur(8px); }
+.com-lightbox.open { display:flex; }
+.com-lightbox img { max-width:90vw; max-height:90vh; border-radius:16px; box-shadow:0 0 80px rgba(0,0,0,0.8); }
+
+/* ── Toast ── */
+.com-toast {
+  position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(20px);
+  background:var(--bg3); border:1px solid var(--border); color:var(--text); font-size:13.5px;
+  font-weight:600; padding:13px 22px; border-radius:999px; box-shadow:0 16px 48px rgba(0,0,0,0.5);
+  opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; z-index:500; display:flex; align-items:center; gap:8px;
+}
+.com-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* ── PESQUISAR ── */
+.busca-box { position:relative; margin-bottom:18px; }
+.busca-box input {
+  width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:14px;
+  padding:13px 16px 13px 42px; color:var(--text); font-size:14px; outline:none; font-family:var(--font-body);
+  transition:border-color .2s;
+}
+.busca-box input:focus { border-color:rgba(26,107,255,0.5); }
+.busca-box svg { position:absolute; left:14px; top:50%; transform:translateY(-50%); fill:var(--muted); pointer-events:none; }
+.busca-dica { font-size:12.5px; color:var(--muted); text-align:center; padding:8px 0 18px; }
+.busca-resultado-item {
+  display:flex; align-items:center; gap:12px; padding:13px 14px; cursor:pointer;
+  background:var(--bg3); border:1px solid var(--border); border-radius:16px; margin-bottom:10px;
+  transition:border-color .15s;
+}
+.busca-resultado-item:hover { border-color:rgba(255,255,255,0.14); }
+.busca-resultado-nome { font-size:14px; font-weight:700; color:var(--text); }
+.busca-resultado-sub { font-size:12.5px; color:var(--blue); margin-top:1px; }
+.busca-resultado-bio { font-size:12px; color:var(--muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:340px; }
+.busca-hashtag-icon {
+  width:44px; height:44px; border-radius:50%; flex-shrink:0; background:var(--blue-dim);
+  display:flex; align-items:center; justify-content:center; font-family:var(--font-hero); font-size:18px; color:#6aabff;
+}
+
+/* ── PERFIL PÚBLICO / MEU PERFIL ── */
+.perfil-capa { height:96px; border-radius:20px 20px 0 0; background:linear-gradient(135deg,#0f1e3d,#142d5c 60%,var(--blue) 130%); position:relative; }
+.perfil-card { background:var(--bg3); border:1px solid var(--border); border-radius:20px; margin-bottom:22px; overflow:hidden; }
+.perfil-info { padding:0 20px 20px; position:relative; }
+.perfil-avatar-wrap { margin-top:-38px; margin-bottom:10px; }
+.perfil-avatar-wrap .com-avatar { width:76px; height:76px; border:3px solid var(--bg3); }
+.perfil-nome { font-family:var(--font-hero); font-size:22px; letter-spacing:.5px; line-height:1.1; }
+.perfil-id { color:var(--blue); font-weight:600; font-size:13.5px; margin-top:2px; }
+.perfil-bio { font-size:13.5px; color:#cbd5e1; line-height:1.55; margin-top:10px; white-space:pre-wrap; word-break:break-word; }
+.perfil-bio.vazia { color:var(--muted); font-style:italic; }
+.perfil-stats { display:flex; gap:22px; margin-top:14px; }
+.perfil-stat-num { font-size:16px; font-weight:700; color:var(--text); }
+.perfil-stat-label { font-size:11.5px; color:var(--muted); }
+.perfil-acoes { margin-top:16px; display:flex; gap:10px; }
+.perfil-acoes .btn { flex:1; text-align:center; padding:10px; font-size:13.5px; }
+
+/* grid de posts (fotos/vídeos) no perfil */
+.perfil-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:3px; }
+.perfil-grid-item { position:relative; aspect-ratio:1/1; overflow:hidden; cursor:pointer; background:var(--bg2); }
+.perfil-grid-item img { width:100%; height:100%; object-fit:cover; display:block; }
+.perfil-grid-item.texto { display:flex; align-items:center; justify-content:center; padding:10px; background:linear-gradient(160deg,var(--bg3),#0a1020); }
+.perfil-grid-item.texto p { font-size:10.5px; line-height:1.35; color:#cbd5e1; text-align:center; display:-webkit-box; -webkit-line-clamp:5; -webkit-box-orient:vertical; overflow:hidden; }
+
+/* editar perfil */
+.editar-perfil-form { padding:20px; }
+
+/* banner editável */
+.editar-banner-preview {
+  width:100%; height:96px; border-radius:14px; overflow:hidden; cursor:pointer;
+  background:linear-gradient(135deg,#0f1e3d,#142d5c 60%,var(--blue) 130%);
+  position:relative; margin-bottom:4px; border:1px dashed rgba(26,107,255,0.4);
+  transition:border-color .2s;
+}
+.editar-banner-preview:hover { border-color:rgba(26,107,255,0.8); }
+.editar-banner-preview img { width:100%; height:100%; object-fit:cover; display:block; }
+.editar-banner-overlay {
+  position:absolute; inset:0; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; gap:6px; background:rgba(4,7,15,0.45); color:#a0b4d0;
+  font-size:12px; font-weight:600; font-family:var(--font-body);
+  opacity:0; transition:opacity .2s;
+}
+.editar-banner-preview:hover .editar-banner-overlay,
+.editar-banner-preview.sem-banner .editar-banner-overlay { opacity:1; }
+.editar-perfil-avatar-row { display:flex; align-items:center; gap:16px; margin-bottom:20px; }
+.editar-perfil-avatar-row .com-avatar { width:64px; height:64px; }
+.campo-label { font-size:12.5px; font-weight:600; color:var(--muted); margin-bottom:6px; display:block; }
+.campo-input {
+  width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:12px;
+  padding:11px 14px; color:var(--text); font-size:14px; outline:none; font-family:var(--font-body);
+  margin-bottom:16px; transition:border-color .2s;
+}
+.campo-input:focus { border-color:rgba(26,107,255,0.5); }
+.campo-textarea { resize:none; min-height:80px; line-height:1.5; }
+.campo-contador { font-size:11px; color:var(--muted); text-align:right; margin-top:-12px; margin-bottom:16px; }
+
+/* ── SELO DE VERIFICADO (dourado = aprovado/comprado · azul = assinante Plus) ── */
+.selo-verificado { display:inline-flex; flex-shrink:0; vertical-align:middle; }
+.selo-verificado svg { display:block; }
+.selo-verificado.dourado svg circle, .selo-verificado.dourado svg path.bg { fill:#f0b429; }
+.selo-verificado.azul svg circle, .selo-verificado.azul svg path.bg { fill:#1a6bff; }
+
+/* botão engrenagem no header do perfil */
+.perfil-config-btn {
+  position:absolute; top:16px; right:16px; width:36px; height:36px; border-radius:50%; z-index:5;
+  background:rgba(4,7,15,0.4); border:1px solid var(--border); display:flex; align-items:center;
+  justify-content:center; cursor:pointer; color:var(--text); transition:background .15s;
+}
+.perfil-config-btn:hover { background:rgba(4,7,15,0.6); }
+
+/* stat clicável (posts / seguidores / seguindo) */
+.perfil-stat { cursor:pointer; transition:opacity .15s; background:none; border:none; padding:0; text-align:left; font-family:var(--font-body); }
+.perfil-stat:hover { opacity:.75; }
+
+/* botão seguir / seguindo */
+.btn-seguir { background:var(--blue); border:1px solid var(--blue); color:#fff; }
+.btn-seguir:hover { background:#1558d6; }
+.btn-seguir.seguindo { background:transparent; border:1px solid var(--border); color:var(--text); }
+.btn-seguir.seguindo:hover { background:rgba(239,68,68,0.1); border-color:rgba(239,68,68,0.4); color:#ef4444; }
+.btn-seguir .label-hover { display:none; }
+.btn-seguir.seguindo .label-padrao { display:inline; }
+.btn-seguir.seguindo .label-hover { display:none; }
+.btn-seguir.seguindo:hover .label-padrao { display:none; }
+.btn-seguir.seguindo:hover .label-hover { display:inline; }
+
+/* header da thread de DM clicável -> vai pro perfil */
+.dm-thread-userinfo { display:flex; align-items:center; gap:12px; cursor:pointer; flex:1; min-width:0; border-radius:10px; padding:4px 6px; margin:-4px -6px; transition:background .15s; }
+.dm-thread-userinfo:hover { background:rgba(255,255,255,0.04); }
+
+/* ── Modal: seguidores / seguindo ── */
+.seg-modal-overlay {
+  position:fixed; inset:0; z-index:300; background:rgba(4,7,15,0.7); backdrop-filter:blur(6px);
+  display:none; align-items:flex-end; justify-content:center;
+}
+.seg-modal-overlay.open { display:flex; }
+@media(min-width:560px){ .seg-modal-overlay { align-items:center; } }
+.seg-modal {
+  background:var(--bg2); border:1px solid var(--border); border-radius:20px 20px 0 0; width:100%; max-width:480px;
+  max-height:82vh; display:flex; flex-direction:column; overflow:hidden;
+  box-shadow:0 -16px 48px rgba(0,0,0,0.5);
+}
+@media(min-width:560px){ .seg-modal { border-radius:20px; max-height:74vh; margin:0 16px; } }
+.seg-modal-head {
+  display:flex; align-items:center; padding:16px 18px; border-bottom:1px solid var(--border); flex-shrink:0; position:relative;
+}
+.seg-modal-tabs { display:flex; gap:6px; flex:1; }
+.seg-modal-tab {
+  flex:1; text-align:center; padding:9px 10px; border-radius:999px; font-size:13px; font-weight:700;
+  background:none; border:1px solid transparent; color:var(--muted); cursor:pointer; font-family:var(--font-body);
+  transition:background .15s, color .15s;
+}
+.seg-modal-tab.active { background:var(--blue-dim); color:#6aabff; border-color:rgba(26,107,255,0.3); }
+.seg-modal-close {
+  background:none; border:none; color:var(--muted); cursor:pointer; padding:6px; margin-left:8px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+}
+.seg-modal-close:hover { color:var(--text); }
+.seg-modal-body { overflow-y:auto; padding:10px 12px 18px; flex:1; }
+.seg-item { display:flex; align-items:center; gap:11px; padding:10px 8px; border-radius:14px; transition:background .15s; }
+.seg-item:hover { background:rgba(255,255,255,0.03); }
+.seg-item-info { flex:1; min-width:0; cursor:pointer; }
+.seg-item-name { font-size:13.5px; font-weight:700; color:var(--text); display:flex; align-items:center; gap:5px; }
+.seg-item-id { font-size:12px; color:var(--blue); margin-top:1px; }
+.seg-item .btn-seguir { padding:7px 14px; font-size:12px; border-radius:999px; flex-shrink:0; font-weight:700; cursor:pointer; }
+
+/* ── CONFIGURAÇÕES: sub-abas ── */
+.config-tabs, .atividade-tabs {
+  display:flex; gap:8px; overflow-x:auto; -ms-overflow-style:none; scrollbar-width:none; margin-bottom:18px;
+}
+.config-tabs::-webkit-scrollbar, .atividade-tabs::-webkit-scrollbar { display:none; }
+.config-tab, .atividade-tab {
+  white-space:nowrap; padding:9px 16px; border-radius:999px; font-size:13px; font-weight:600;
+  background:var(--bg3); border:1px solid var(--border); color:#94a3b8; cursor:pointer;
+  transition:background .15s, color .15s, border-color .15s; font-family:var(--font-body); flex-shrink:0;
+}
+.config-tab.active, .atividade-tab.active { background:var(--blue); border-color:var(--blue); color:#fff; }
+.config-panel { display:none; }
+.config-panel.active { display:block; }
+.atividade-sub-panel { display:none; }
+.atividade-sub-panel.active { display:block; }
+
+/* lista de atividade (vistos, curtidas, salvos, compartilhados) */
+.atividade-item {
+  display:flex; align-items:center; gap:12px; padding:12px 14px; cursor:pointer;
+  background:var(--bg3); border:1px solid var(--border); border-radius:14px; margin-bottom:10px;
+  transition:border-color .15s;
+}
+.atividade-item:hover { border-color:rgba(255,255,255,0.14); }
+.atividade-item-thumb { width:48px; height:48px; border-radius:10px; object-fit:cover; flex-shrink:0; background:var(--bg2); }
+.atividade-item-thumb.texto { display:flex; align-items:center; justify-content:center; }
+.atividade-item-info { flex:1; min-width:0; }
+.atividade-item-texto { font-size:13px; color:#cbd5e1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.atividade-item-time { font-size:11.5px; color:var(--muted); margin-top:2px; }
+
+/* ── VERIFICADO: opções e selos ── */
+.verificado-opcao {
+  display:flex; align-items:center; gap:14px; padding:18px; cursor:pointer;
+  background:var(--bg3); border:1px solid var(--border); border-radius:18px; margin-bottom:12px;
+  transition:border-color .15s;
+}
+.verificado-opcao:hover { border-color:rgba(240,180,41,0.4); }
+.verificado-opcao svg:last-child { color:var(--muted); flex-shrink:0; }
+.verificado-selo {
+  width:48px; height:48px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+}
+.verificado-selo.dourado { background:linear-gradient(135deg,#f0b429,#c9890a); box-shadow:0 0 20px rgba(240,180,41,0.3); }
+.verificado-selo.azul { background:linear-gradient(135deg,#1a6bff,#0c3fa0); box-shadow:0 0 20px rgba(26,107,255,0.3); }
+.verificado-opcao-info { flex:1; min-width:0; }
+.verificado-opcao-titulo { font-size:14.5px; font-weight:700; color:var(--text); }
+.verificado-opcao-sub { font-size:12.5px; color:var(--muted); margin-top:2px; line-height:1.4; }
+
+@media(max-width:640px){
+  .com-composer { padding:14px; }
+}
+
+/* ── MENSAGENS (DM) ── */
+.dm-search-box { position:relative; margin-bottom:14px; }
+.dm-search-box input {
+  width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:14px;
+  padding:12px 16px 12px 40px; color:var(--text); font-size:14px; outline:none; font-family:var(--font-body);
+  transition:border-color .2s;
+}
+.dm-search-box input:focus { border-color:rgba(26,107,255,0.5); }
+.dm-search-box svg { position:absolute; left:13px; top:50%; transform:translateY(-50%); fill:var(--muted); }
+.dm-search-results {
+  background:var(--bg3); border:1px solid var(--border); border-radius:14px; margin-bottom:18px;
+  overflow:hidden; display:none;
+}
+.dm-search-results.open { display:block; }
+.dm-search-item {
+  display:flex; align-items:center; gap:12px; padding:12px 14px; cursor:pointer;
+  border-bottom:1px solid var(--border); transition:background .15s;
+}
+.dm-search-item:last-child { border-bottom:none; }
+.dm-search-item:hover { background:rgba(255,255,255,0.03); }
+.dm-search-item-name { font-size:13.5px; font-weight:700; color:var(--text); }
+.dm-search-item-id { font-size:12px; color:var(--blue); }
+
+.dm-list-item {
+  display:flex; align-items:center; gap:12px; padding:13px 14px; cursor:pointer;
+  background:var(--bg3); border:1px solid var(--border); border-radius:16px; margin-bottom:10px;
+  transition:border-color .15s;
+}
+.dm-list-item:hover { border-color:rgba(255,255,255,0.14); }
+.dm-list-item-info { flex:1; min-width:0; }
+.dm-list-item-name { font-size:14px; font-weight:700; color:var(--text); }
+.dm-list-item-preview { font-size:12.5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px; }
+.dm-list-item-time { font-size:11px; color:#475569; flex-shrink:0; }
+
+/* thread 1-a-1 — tela cheia quando aberta */
+.dm-thread-box {
+  position:fixed; inset:0; z-index:200; background:var(--bg);
+  display:flex; flex-direction:column; overflow:hidden;
+}
+.dm-thread-head {
+  padding:14px 16px; padding-top:max(14px, env(safe-area-inset-top));
+  border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px;
+  background:var(--bg2); flex-shrink:0;
+}
+.dm-thread-back { background:none; border:none; color:var(--text); cursor:pointer; display:flex; align-items:center; padding:4px; flex-shrink:0; }
+.dm-thread-title { font-family:var(--font-hero); font-size:18px; letter-spacing:1px; line-height:1; display:flex; align-items:center; gap:6px; }
+.dm-thread-sub { font-size:11.5px; color:var(--blue); }
+.dm-thread-msgs { flex:1; overflow-y:auto; padding:18px 20px; display:flex; flex-direction:column; gap:4px; }
+.dm-msg { display:flex; gap:10px; max-width:88%; margin-bottom:8px; position:relative; }
+.dm-msg.mine { align-self:flex-end; flex-direction:row-reverse; }
+.dm-bubble { background:var(--bg2); border-radius:14px; padding:9px 14px; cursor:pointer; user-select:none; -webkit-user-select:none; transition:background .12s; position:relative; max-width:100%; }
+.dm-bubble:active { background:rgba(255,255,255,0.08); }
+.dm-msg.mine .dm-bubble { background:var(--blue); }
+.dm-msg.mine .dm-bubble:active { background:#1558d6; }
+.dm-msg.mine .dm-text { color:#fff; }
+.dm-text { font-size:13.5px; color:#dbe4f5; line-height:1.45; word-break:break-word; white-space:pre-wrap; }
+.dm-msg.apagada .dm-text { color:var(--muted); font-style:italic; }
+.dm-msg.apagada .dm-bubble { cursor:default; background:transparent !important; border:1px dashed var(--border); }
+.dm-msg.apagada .dm-bubble:active { background:transparent !important; }
+
+/* preview de resposta dentro da bolha */
+.dm-reply-preview {
+  border-left:3px solid var(--blue); background:rgba(255,255,255,0.06); border-radius:6px;
+  padding:5px 9px; margin-bottom:6px; font-size:12px; color:var(--muted); max-width:220px;
+  overflow:hidden;
+}
+.dm-msg.mine .dm-reply-preview { background:rgba(255,255,255,0.16); border-left-color:#fff; }
+.dm-reply-preview-name { font-weight:700; color:#9db8e8; font-size:11.5px; }
+.dm-msg.mine .dm-reply-preview-name { color:#dbe7ff; }
+.dm-reply-preview-text { white-space:nowrap; text-overflow:ellipsis; overflow:hidden; }
+
+/* imagem / sticker dentro da mensagem */
+.dm-msg-img { max-width:220px; max-height:280px; border-radius:10px; display:block; cursor:zoom-in; }
+.dm-bubble:has(.dm-msg-img):not(:has(.dm-text)) { padding:5px; background:transparent !important; }
+.dm-msg-sticker { width:120px; height:120px; display:block; object-fit:contain; }
+.dm-bubble:has(.dm-msg-sticker) { padding:0; background:transparent !important; }
+
+/* barra "respondendo a" acima do input */
+.dm-reply-bar {
+  display:none; align-items:center; gap:10px; padding:9px 16px; background:var(--bg3);
+  border-top:1px solid var(--border); flex-shrink:0;
+}
+.dm-reply-bar.open { display:flex; }
+.dm-reply-bar-line { flex:1; min-width:0; border-left:3px solid var(--blue); padding-left:9px; }
+.dm-reply-bar-name { font-size:12px; font-weight:700; color:#6aabff; }
+.dm-reply-bar-text { font-size:12.5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.dm-reply-bar-close { background:none; border:none; color:var(--muted); cursor:pointer; padding:4px; flex-shrink:0; }
+
+/* preview de imagem escolhida antes de enviar */
+.dm-img-staged {
+  display:none; align-items:center; gap:10px; padding:9px 16px; background:var(--bg3);
+  border-top:1px solid var(--border); flex-shrink:0;
+}
+.dm-img-staged.open { display:flex; }
+.dm-img-staged img { width:46px; height:46px; border-radius:8px; object-fit:cover; flex-shrink:0; }
+.dm-img-staged-label { flex:1; font-size:12.5px; color:var(--muted); }
+.dm-img-staged-close { background:none; border:none; color:var(--muted); cursor:pointer; padding:4px; flex-shrink:0; }
+
+.dm-form {
+  display:flex; align-items:center; gap:6px; padding:10px 10px; padding-bottom:max(10px, env(safe-area-inset-bottom));
+  border-top:1px solid var(--border); background:var(--bg2); flex-shrink:0; overflow:hidden;
+}
+.dm-form input {
+  flex:1; min-width:0; background:var(--bg3); border:1px solid var(--border); border-radius:999px;
+  padding:10px 14px; color:var(--text); font-size:14px; outline:none; font-family:var(--font-body);
+}
+.dm-form input:focus { border-color:rgba(26,107,255,0.5); }
+.dm-attach-btn {
+  background:none; border:none; color:var(--muted); width:36px; height:36px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; transition:background .15s, color .15s;
+}
+.dm-attach-btn:hover { background:rgba(255,255,255,0.06); color:var(--text); }
+.dm-send-btn {
+  background:var(--blue); border:none; color:#fff; width:40px; height:40px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; transition:background .15s;
+}
+.dm-send-btn:hover { background:#1558d6; }
+
+/* ── menu de contexto da mensagem (bottom sheet) ── */
+.dm-msg-menu-overlay {
+  position:fixed; inset:0; z-index:400; background:rgba(4,7,15,0.7); backdrop-filter:blur(6px);
+  display:none; align-items:flex-end; justify-content:center;
+}
+.dm-msg-menu-overlay.open { display:flex; }
+@media(min-width:560px){ .dm-msg-menu-overlay { align-items:center; } }
+.dm-msg-menu {
+  background:var(--bg2); border:1px solid var(--border); border-radius:20px 20px 0 0; width:100%; max-width:420px;
+  overflow:hidden; box-shadow:0 -16px 48px rgba(0,0,0,0.5); padding-bottom:max(6px, env(safe-area-inset-bottom));
+}
+@media(min-width:560px){ .dm-msg-menu { border-radius:16px; margin:0 16px; } }
+.dm-msg-menu-preview {
+  padding:14px 18px; border-bottom:1px solid var(--border); font-size:13px; color:var(--muted);
+  max-height:80px; overflow:hidden; white-space:pre-wrap; word-break:break-word;
+}
+.dm-msg-menu-item {
+  display:flex; align-items:center; gap:14px; padding:14px 18px; cursor:pointer; font-size:14.5px;
+  color:var(--text); font-weight:600; transition:background .12s; background:none; border:none; width:100%; text-align:left;
+  font-family:var(--font-body);
+}
+.dm-msg-menu-item:hover { background:rgba(255,255,255,0.05); }
+.dm-msg-menu-item svg { flex-shrink:0; opacity:.8; }
+.dm-msg-menu-item.danger { color:#ef4444; }
+.dm-msg-menu-item.danger svg { opacity:1; }
+
+/* ── seletor de figurinhas ── */
+.dm-sticker-overlay {
+  position:fixed; inset:0; z-index:400; background:rgba(4,7,15,0.7); backdrop-filter:blur(6px);
+  display:none; align-items:flex-end; justify-content:center;
+}
+.dm-sticker-overlay.open { display:flex; }
+@media(min-width:560px){ .dm-sticker-overlay { align-items:center; } }
+.dm-sticker-sheet {
+  background:var(--bg2); border:1px solid var(--border); border-radius:20px 20px 0 0; width:100%; max-width:480px;
+  max-height:60vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 -16px 48px rgba(0,0,0,0.5);
+}
+@media(min-width:560px){ .dm-sticker-sheet { border-radius:16px; margin:0 16px; max-height:55vh; } }
+.dm-sticker-sheet-head {
+  display:flex; align-items:center; justify-content:space-between; padding:14px 18px;
+  border-bottom:1px solid var(--border); flex-shrink:0;
+}
+.dm-sticker-sheet-head h3 { font-family:var(--font-hero); font-size:15px; letter-spacing:.5px; }
+.dm-sticker-sheet-close { background:none; border:none; color:var(--muted); cursor:pointer; padding:4px; }
+.dm-sticker-grid {
+  display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; padding:16px 18px; overflow-y:auto;
+}
+.dm-sticker-grid-item {
+  font-size:34px; line-height:1; aspect-ratio:1; display:flex; align-items:center; justify-content:center;
+  background:var(--bg3); border:1px solid var(--border); border-radius:14px; cursor:pointer; transition:background .12s, transform .12s;
+}
+.dm-sticker-grid-item:hover { background:rgba(255,255,255,0.06); transform:scale(1.05); }
+
+/* ── encaminhar mensagem ── */
+.dm-forward-overlay {
+  position:fixed; inset:0; z-index:400; background:rgba(4,7,15,0.7); backdrop-filter:blur(6px);
+  display:none; align-items:flex-end; justify-content:center;
+}
+.dm-forward-overlay.open { display:flex; }
+@media(min-width:560px){ .dm-forward-overlay { align-items:center; } }
+.dm-forward-sheet {
+  background:var(--bg2); border:1px solid var(--border); border-radius:20px 20px 0 0; width:100%; max-width:480px;
+  max-height:74vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 -16px 48px rgba(0,0,0,0.5);
+}
+@media(min-width:560px){ .dm-forward-sheet { border-radius:16px; margin:0 16px; max-height:68vh; } }
+.dm-forward-sheet-head {
+  display:flex; align-items:center; justify-content:space-between; padding:14px 18px;
+  border-bottom:1px solid var(--border); flex-shrink:0;
+}
+.dm-forward-sheet-head h3 { font-family:var(--font-hero); font-size:15px; letter-spacing:.5px; }
+.dm-forward-sheet-close { background:none; border:none; color:var(--muted); cursor:pointer; padding:4px; }
+.dm-forward-list { overflow-y:auto; padding:8px 10px; }
+.dm-forward-item {
+  display:flex; align-items:center; gap:12px; padding:11px 10px; cursor:pointer; border-radius:12px; transition:background .12s;
+}
+.dm-forward-item:hover { background:rgba(255,255,255,0.05); }
+.dm-forward-item-name { font-size:13.5px; font-weight:700; color:var(--text); flex:1; min-width:0; }
+.dm-forward-item-check { color:var(--blue); flex-shrink:0; display:none; }
+.dm-forward-item.selected .dm-forward-item-check { display:block; }
+.dm-forward-item.selected { background:rgba(26,107,255,0.1); }
+.dm-forward-sheet-foot { padding:14px 18px; padding-bottom:max(14px, env(safe-area-inset-bottom)); border-top:1px solid var(--border); flex-shrink:0; }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="logo"><img src="logo.png" alt="Lumina Interactive" style="height:36px;width:auto;display:block"></div>
+  <div class="menu">
+    <a href="index.html">Início</a>
+    <a href="patches.html">Patchs</a>
+    <a href="Comunidade.html" class="active">Comunidade</a>
+    <a href="plus.html">Lumina Plus</a>
+    <a href="login.html" data-auth-link>Login</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+
+  <div class="page-hero container">
+    <div class="page-hero-label">Lumina Interactive™</div>
+    <h1>Comunidade</h1>
+    <p>O ponto de encontro de quem joga. Mostre sua Master League, divida prints da sua carreira e fique por dentro das notícias.</p>
+  </div>
+
+  <div class="com-wrap">
+
+    <!-- ══════════ PAINEL: FEED ÚNICO ══════════ -->
+    <div class="com-panel active" id="panel-feed">
+
+      <div id="composerFeed"></div>
+
+      <div id="listaFeed"></div>
+    </div>
+
+    <!-- ══════════ PAINEL: PESQUISAR ══════════ -->
+    <div class="com-panel" id="panel-pesquisar">
+
+      <!-- Tela: busca e resultados -->
+      <div id="buscaTelaResultados">
+        <div class="busca-box">
+          <svg width="16" height="16" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <input type="text" id="buscaGeralInput" placeholder="Pesquisar por @ID ou #hashtag..." oninput="pesquisarGeral()">
+        </div>
+        <div class="busca-dica" id="buscaDica">Digite um @ID pra encontrar um jogador ou uma #hashtag pra ver os posts marcados.</div>
+        <div id="buscaResultados"></div>
+      </div>
+
+      <!-- Tela: perfil público de outro jogador -->
+      <div id="buscaTelaPerfil" style="display:none">
+        <button class="dm-thread-back" onclick="voltarParaBusca()" style="margin-bottom:14px">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+          Voltar
+        </button>
+        <div id="perfilPublicoConteudo"></div>
+      </div>
+
+    </div>
+
+    <!-- ══════════ PAINEL: MENSAGENS (DM) ══════════ -->
+    <div class="com-panel" id="panel-mensagens">
+
+      <!-- Tela: lista de conversas + busca -->
+      <div id="dmTelaLista">
+        <div class="dm-search-box">
+          <svg width="16" height="16" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <input type="text" id="dmSearchInput" placeholder="Buscar jogador por @ID..." oninput="buscarUsuarioPorId()">
+        </div>
+        <div class="dm-search-results" id="dmSearchResults"></div>
+        <div id="dmConversasList"></div>
+      </div>
+
+      <!-- Tela: thread de uma conversa -->
+      <div id="dmTelaThread" style="display:none">
+        <div class="dm-thread-box">
+          <div class="dm-thread-head">
+            <button class="dm-thread-back" onclick="voltarParaListaDm()">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <div class="dm-thread-userinfo" id="dmThreadUserInfo" onclick="abrirPerfilDaThreadDm()">
+              <div id="dmThreadAvatar"></div>
+              <div>
+                <div class="dm-thread-title" id="dmThreadNome">—</div>
+                <div class="dm-thread-sub" id="dmThreadId">—</div>
+              </div>
+            </div>
+          </div>
+          <div class="dm-thread-msgs" id="dmThreadMsgs"></div>
+
+          <div class="dm-reply-bar" id="dmReplyBar">
+            <div class="dm-reply-bar-line">
+              <div class="dm-reply-bar-name" id="dmReplyBarNome">—</div>
+              <div class="dm-reply-bar-text" id="dmReplyBarTexto">—</div>
+            </div>
+            <button type="button" class="dm-reply-bar-close" onclick="cancelarResposta()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+
+          <div class="dm-img-staged" id="dmImgStaged">
+            <img id="dmImgStagedPreview" src="">
+            <div class="dm-img-staged-label">Imagem pronta pra enviar</div>
+            <button type="button" class="dm-img-staged-close" onclick="cancelarImagemStaged()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+
+          <form class="dm-form" id="dmForm">
+            <input type="file" id="dmImgInput" accept="image/*" style="display:none" onchange="stageImagemDm()">
+            <button type="button" class="dm-attach-btn" title="Enviar foto" onclick="document.getElementById('dmImgInput').click()">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+            </button>
+            <button type="button" class="dm-attach-btn" title="Enviar figurinha" onclick="abrirSeletorStickers()">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 9h.01M15 9h.01M8 14s1.5 2 4 2 4-2 4-2"/><path d="M12 22c5.5 0 10-4.5 10-10S17.5 2 12 2 2 6.5 2 12c0 1.8.5 3.6 1.3 5.1L2 22l4.9-1.3C8.4 21.5 10.2 22 12 22z"/></svg>
+            </button>
+            <input type="text" id="dmInput" placeholder="Escreva uma mensagem..." maxlength="500" autocomplete="off">
+            <button type="submit" class="dm-send-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+            </button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══════════ PAINEL: MEU PERFIL (Comunidade) ══════════ -->
+    <div class="com-panel" id="panel-perfil">
+
+      <!-- Tela: visualização do meu perfil -->
+      <div id="meuPerfilView">
+        <div style="text-align:center;color:var(--muted);font-size:13px;padding:30px 0">Carregando...</div>
+      </div>
+
+      <!-- Tela: edição do perfil (foto, nome, bio) -->
+      <div id="meuPerfilEditar" style="display:none">
+        <div class="perfil-card">
+          <div class="editar-perfil-form">
+            <!-- Banner editável -->
+            <label class="campo-label">Banner do perfil</label>
+            <div id="editarBannerPreview" class="editar-banner-preview" onclick="document.getElementById('editarBannerInput').click()">
+              <div class="editar-banner-overlay">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <span>Alterar banner</span>
+              </div>
+            </div>
+            <input type="file" id="editarBannerInput" accept="image/*" style="display:none" onchange="previewBannerPerfil()">
+            <div class="editar-perfil-avatar-row" style="margin-top:18px">
+              <div id="editarAvatarPreview"></div>
+              <div>
+                <input type="file" id="editarFotoInput" accept="image/*" style="display:none" onchange="previewFotoPerfil()">
+                <button type="button" class="com-tool-btn" onclick="document.getElementById('editarFotoInput').click()">Alterar foto</button>
+              </div>
+            </div>
+            <label class="campo-label">Nome</label>
+            <input type="text" id="editarNomeInput" class="campo-input" maxlength="40" placeholder="Seu nome">
+            <label class="campo-label">Bio</label>
+            <textarea id="editarBioInput" class="campo-input campo-textarea" maxlength="150" placeholder="Conte um pouco sobre você, seu time, sua Master League..." oninput="atualizarContadorBio()"></textarea>
+            <div class="campo-contador"><span id="bioContador">0</span>/150</div>
+            <div style="display:flex;gap:10px">
+              <button class="btn" onclick="cancelarEdicaoPerfil()" style="flex:1;padding:11px;font-size:13.5px">Cancelar</button>
+              <button class="btn primary" id="btnSalvarPerfil" onclick="salvarMeuPerfil()" style="flex:1;padding:11px;font-size:13.5px">Salvar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tela: Configurações (engrenagem) -->
+      <div id="meuPerfilConfig" style="display:none">
+        <button class="dm-thread-back" onclick="fecharConfiguracoes()" style="margin-bottom:14px">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+          Voltar ao perfil
+        </button>
+
+        <div class="config-tabs" id="configTabs">
+          <button class="config-tab active" data-config="atividade">Sua atividade</button>
+          <button class="config-tab" data-config="verificado">Solicitar verificado</button>
+        </div>
+
+        <!-- SUB-ABA: Sua atividade -->
+        <div class="config-panel active" id="config-atividade">
+          <div class="atividade-tabs" id="atividadeTabs">
+            <button class="atividade-tab active" data-ativ="vistos">Vistos</button>
+            <button class="atividade-tab" data-ativ="curtidas">Curtidas</button>
+            <button class="atividade-tab" data-ativ="salvos">Salvos</button>
+            <button class="atividade-tab" data-ativ="compartilhados">Compartilhados</button>
+          </div>
+          <div id="atividadeLista"></div>
+        </div>
+
+        <!-- SUB-ABA: Solicitar verificado -->
+        <div class="config-panel" id="config-verificado">
+
+          <!-- Tela: escolha entre solicitar ou comprar -->
+          <div id="verificadoEscolha">
+            <div class="verificado-opcao" onclick="abrirSolicitarVerificado()">
+              <div class="verificado-selo dourado">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 2l2.4 4.86 5.36.78-3.88 3.78.92 5.34L12 14.27l-4.8 2.49.92-5.34-3.88-3.78 5.36-.78z"/></svg>
+              </div>
+              <div class="verificado-opcao-info">
+                <div class="verificado-opcao-titulo">Solicitar verificado</div>
+                <div class="verificado-opcao-sub">Envie suas informações para análise da equipe Lumina.</div>
+              </div>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+            <div class="verificado-opcao" onclick="abrirComprarVerificado()">
+              <div class="verificado-selo dourado">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 2l2.4 4.86 5.36.78-3.88 3.78.92 5.34L12 14.27l-4.8 2.49.92-5.34-3.88-3.78 5.36-.78z"/></svg>
+              </div>
+              <div class="verificado-opcao-info">
+                <div class="verificado-opcao-titulo">Comprar Lumina Verified+</div>
+                <div class="verificado-opcao-sub">Garanta seu selo dourado por R$ 5,00.</div>
+              </div>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+          </div>
+
+          <!-- Tela: formulário de solicitação -->
+          <div id="verificadoSolicitarForm" style="display:none">
+            <button class="dm-thread-back" onclick="voltarEscolhaVerificado()" style="margin-bottom:14px">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+              Voltar
+            </button>
+            <div class="perfil-card">
+              <div class="editar-perfil-form">
+                <span class="badge">Lumina Verified+</span>
+                <h2 style="font-family:var(--font-hero);font-size:26px;letter-spacing:1px;margin:10px 0 6px">Solicitar verificado</h2>
+                <p style="color:#94a3b8;font-size:13.5px;line-height:1.6;margin-bottom:22px">Preencha as informações abaixo. Nossa equipe vai analisar seu pedido.</p>
+
+                <label class="campo-label">Nome completo</label>
+                <input type="text" id="verifNomeInput" class="campo-input" placeholder="Seu nome completo">
+                <label class="campo-label">Email</label>
+                <input type="email" id="verifEmailInput" class="campo-input" placeholder="seuemail@exemplo.com">
+                <label class="campo-label">Link do seu canal</label>
+                <input type="text" id="verifLinkInput" class="campo-input" placeholder="https://youtube.com/seucanal">
+                <label class="campo-label">Print (comprovando o canal)</label>
+                <input type="file" id="verifPrintInput" accept="image/*" style="display:none" onchange="previewPrintVerificado()">
+                <button type="button" class="com-tool-btn" style="margin-bottom:16px" onclick="document.getElementById('verifPrintInput').click()">Selecionar imagem</button>
+                <div id="verifPrintPreview" class="com-img-preview" style="margin-bottom:16px"></div>
+
+                <button class="btn primary" id="btnEnviarVerificacao" onclick="enviarSolicitacaoVerificado()" style="width:100%;padding:12px">Enviar informações</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tela: obrigado / em análise -->
+          <div id="verificadoSucesso" style="display:none">
+            <div class="confirm-card" style="margin:40px auto">
+              <div class="confirm-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+              <span class="badge">PEDIDO EM ANÁLISE</span>
+              <h1 style="font-size:32px">Obrigado por apoiar a Lumina.</h1>
+              <p>Seu pedido foi enviado para análise. Você receberá o seu Lumina Verified+ em até 10 horas.</p>
+              <button class="btn primary" onclick="fecharConfiguracoes()">Voltar ao perfil</button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+  </div>
+</div>
+
+<footer class="footer" style="margin-bottom:64px">
+  <div class="footer-logo"><img src="logo.png" alt="Lumina Interactive" style="height:32px;width:auto;opacity:0.85"></div>
+  <div class="footer-links">
+    <a href="index.html">Início</a>
+    <a href="patches.html">Patchs</a>
+    <a href="Comunidade.html">Comunidade</a>
+    <a href="plus.html">Lumina Plus</a>
+    <a href="login.html" data-auth-link>Login</a>
+  </div>
+  <div class="footer-copy">© 2026 Lumina Interactive™. Todos os direitos reservados.</div>
+</footer>
+
+<!-- Barra de navegação fixa embaixo (estilo app) -->
+<div class="com-tabs-fixed">
+  <div class="com-tabs" id="comTabs">
+    <button class="com-tab active" data-tab="feed">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v2H4V4zm0 7h16v2H4v-2zm0 7h16v2H4v-2z"/></svg>
+      Feed
+    </button>
+    <button class="com-tab" data-tab="pesquisar">
+      <svg width="16" height="16" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      Pesquisar
+    </button>
+    <button class="com-tab" data-tab="mensagens">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      Mensagens
+    </button>
+    <button class="com-tab" data-tab="perfil">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+      Meu perfil
+    </button>
+  </div>
+</div>
+
+<!-- Modal: Seguidores / Seguindo -->
+<div class="seg-modal-overlay" id="segModalOverlay" onclick="if(event.target===this) fecharModalSeguidores()">
+  <div class="seg-modal">
+    <div class="seg-modal-head">
+      <div class="seg-modal-tabs">
+        <button class="seg-modal-tab active" id="segTabSeguidores" onclick="trocarAbaSeguidores('seguidores')">Seguidores</button>
+        <button class="seg-modal-tab" id="segTabSeguindo" onclick="trocarAbaSeguidores('seguindo')">Seguindo</button>
+      </div>
+      <button class="seg-modal-close" onclick="fecharModalSeguidores()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="seg-modal-body" id="segModalBody"></div>
+  </div>
+</div>
+
+<!-- Menu de contexto da mensagem (responder / encaminhar / apagar) -->
+<div class="dm-msg-menu-overlay" id="dmMsgMenuOverlay" onclick="if(event.target===this) fecharMenuMensagem()">
+  <div class="dm-msg-menu">
+    <div class="dm-msg-menu-preview" id="dmMsgMenuPreview"></div>
+    <button type="button" class="dm-msg-menu-item" id="dmMsgMenuResponder" onclick="responderMensagemAtual()">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 17l-5-5 5-5M4 12h11a4 4 0 0 1 4 4v1"/></svg>
+      Responder
+    </button>
+    <button type="button" class="dm-msg-menu-item" id="dmMsgMenuEncaminhar" onclick="abrirEncaminharMensagemAtual()">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 17l5-5-5-5M20 12H9a4 4 0 0 0-4 4v1"/></svg>
+      Encaminhar
+    </button>
+    <button type="button" class="dm-msg-menu-item" id="dmMsgMenuApagarMim" onclick="apagarMensagemAtual(false)">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+      Apagar pra mim
+    </button>
+    <button type="button" class="dm-msg-menu-item danger" id="dmMsgMenuApagarTodos" onclick="apagarMensagemAtual(true)" style="display:none">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+      Apagar pra todos
+    </button>
+  </div>
+</div>
+
+<!-- Seletor de figurinhas -->
+<div class="dm-sticker-overlay" id="dmStickerOverlay" onclick="if(event.target===this) fecharSeletorStickers()">
+  <div class="dm-sticker-sheet">
+    <div class="dm-sticker-sheet-head">
+      <h3>Figurinhas</h3>
+      <button type="button" class="dm-sticker-sheet-close" onclick="fecharSeletorStickers()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="dm-sticker-grid" id="dmStickerGrid"></div>
+  </div>
+</div>
+
+<!-- Encaminhar mensagem -->
+<div class="dm-forward-overlay" id="dmForwardOverlay" onclick="if(event.target===this) fecharEncaminhar()">
+  <div class="dm-forward-sheet">
+    <div class="dm-forward-sheet-head">
+      <h3>Encaminhar mensagem</h3>
+      <button type="button" class="dm-forward-sheet-close" onclick="fecharEncaminhar()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="dm-forward-list" id="dmForwardList"></div>
+    <div class="dm-forward-sheet-foot">
+      <button type="button" class="btn primary" id="dmForwardEnviarBtn" style="width:100%;padding:11px;font-size:14px" onclick="confirmarEncaminhar()" disabled>Encaminhar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Editor de imagem (crop + flip) -->
+<div class="img-editor-overlay" id="imgEditorOverlay">
+  <div class="img-editor-wrap">
+    <div class="img-editor-title">
+      <span>Editar imagem</span>
+      <button onclick="cancelarEditor()">Cancelar</button>
+    </div>
+    <div class="img-editor-canvas-wrap" id="imgEditorCanvasWrap">
+      <canvas id="imgEditorCanvas"></canvas>
+      <div class="img-editor-crop-mask" id="imgEditorCropMask"></div>
+      <div class="img-editor-crop-rect" id="imgEditorCropRect"></div>
+    </div>
+    <div class="img-editor-tools">
+      <button class="img-editor-tool-btn" onclick="editorFlip('h')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h4M17 12h4M5 8l-2 4 2 4M19 8l2 4-2 4"/></svg>
+        Inverter H
+      </button>
+      <button class="img-editor-tool-btn" onclick="editorFlip('v')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M12 3v4M12 17v4M8 5l4-2 4 2M8 19l4 2 4-2"/></svg>
+        Inverter V
+      </button>
+      <button class="img-editor-tool-btn" onclick="editorRotate(-90)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        Girar
+      </button>
+      <button class="img-editor-tool-btn active" id="editorBtnCrop" onclick="editorToggleCrop()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/></svg>
+        Cortar
+      </button>
+    </div>
+    <div class="img-editor-foot">
+      <button class="btn" onclick="cancelarEditor()">Cancelar</button>
+      <button class="btn primary" onclick="confirmarEditor()">Usar imagem</button>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox de imagem -->
+<div class="com-lightbox" id="comLightbox">
+  <img id="comLightboxImg" src="" alt="">
+</div>
+
+<!-- Toast -->
+<div class="com-toast" id="comToast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="comunidade.js"></script>
+<script src="navbar-auth.js"></script>
+</body>
+</html>
