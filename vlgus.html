@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="pageTitle">VL Gus | Lumina Interactive</title>
+<meta name="description" id="pageDesc" content="Patches de futebol para PSP produzidos por VL Gus.">
+<link rel="stylesheet" href="style.css">
+
+<!-- ═══ ADSTERRA ═══
+     Anúncios carregados via iframe (srcdoc) por bloco, usando as
+     "keys" geradas no painel da Adsterra para cada ad unit.
+-->
+
+<style>
+:root{
+  --vg-purple: #a78bfa;
+  --vg-purple-glow: rgba(167,139,250,.35);
+}
+
+/* ── NAVBAR local (independente, mas com o mesmo tema) ── */
+.vg-navbar{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid var(--border);background:rgba(4,7,15,.85);backdrop-filter:blur(10px);position:sticky;top:0;z-index:500}
+.vg-navbar .vg-logo{display:flex;align-items:center;gap:10px;font-family:var(--font-hero);font-size:22px;letter-spacing:1px}
+.vg-navbar .vg-logo img{height:30px}
+.vg-navbar .vg-logo b{color:var(--vg-purple)}
+.vg-navbar .vg-links{display:flex;align-items:center}
+.vg-navbar .vg-links a{color:var(--muted);font-size:13px;font-weight:600;margin-left:22px;transition:color .15s}
+.vg-navbar .vg-links a:hover{color:var(--text)}
+
+.vg-burger{display:none;background:none;border:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;z-index:600}
+.vg-burger span{width:22px;height:2px;background:var(--text);border-radius:2px;transition:transform .2s,opacity .2s}
+.vg-burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.vg-burger.open span:nth-child(2){opacity:0}
+.vg-burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+@media(max-width:640px){
+  .vg-burger{display:flex}
+  .vg-navbar .vg-links{
+    position:fixed;top:66px;left:0;right:0;
+    background:rgba(4,7,15,.97);backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--border);
+    flex-direction:column;align-items:flex-start;padding:8px 24px 20px;
+    transform:translateY(-12px);opacity:0;pointer-events:none;
+    transition:transform .2s,opacity .2s;
+  }
+  .vg-navbar .vg-links.open{transform:translateY(0);opacity:1;pointer-events:auto}
+  .vg-navbar .vg-links a{margin-left:0;padding:12px 0;width:100%;border-bottom:1px solid var(--border);font-size:14px}
+  .vg-navbar .vg-links a:last-child{border-bottom:none}
+}
+
+/* ── HERO LISTAGEM ── */
+.vg-hero{position:relative;padding:70px 24px 50px;text-align:center;overflow:hidden;background:linear-gradient(135deg,#04070f 0%,#0c0820 60%,#04070f 100%);border-bottom:1px solid var(--border)}
+.vg-hero::before{content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:600px;height:300px;background:radial-gradient(ellipse,rgba(167,139,250,.15) 0%,transparent 70%);pointer-events:none}
+.vg-hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.3);border-radius:100px;padding:6px 18px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--vg-purple);margin-bottom:24px}
+.vg-hero h1{font-family:var(--font-hero);font-size:clamp(40px,8vw,80px);line-height:0.95;letter-spacing:1px;color:#fff;margin-bottom:16px;position:relative}
+.vg-hero h1 span{background:linear-gradient(90deg,var(--vg-purple),#6aabff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.vg-hero p{color:var(--muted);font-size:15px;max-width:520px;margin:0 auto;line-height:1.7;position:relative}
+
+/* ── LISTAGEM ── */
+.vg-list-wrap{max-width:1200px;margin:0 auto;padding:48px 24px 100px}
+.vg-toolbar-pub{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:32px}
+.search-bar-pub{flex:1;min-width:220px;display:flex;align-items:center;gap:12px;background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:13px 18px}
+.search-bar-pub svg{flex-shrink:0;fill:var(--muted)}
+.search-bar-pub input{background:none;border:none;outline:none;color:var(--text);font-family:var(--font-body);font-size:14px;width:100%}
+.search-bar-pub input::placeholder{color:var(--muted)}
+
+.vg-pub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px}
+.vg-pub-card{background:var(--bg2);border:1px solid var(--border);border-radius:22px;overflow:hidden;transition:transform .25s,box-shadow .25s,border-color .25s;cursor:pointer;position:relative}
+.vg-pub-card:hover{transform:translateY(-6px);box-shadow:0 24px 60px rgba(167,139,250,.15);border-color:rgba(167,139,250,.35)}
+.vg-pub-cover{width:100%;aspect-ratio:16/9;background:var(--bg3);overflow:hidden;position:relative}
+.vg-pub-cover img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+.vg-pub-card:hover .vg-pub-cover img{transform:scale(1.06)}
+.vg-pub-cover-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:var(--font-hero);font-size:44px;letter-spacing:2px;color:rgba(255,255,255,.08)}
+.vg-pub-badge{position:absolute;top:12px;left:12px;background:rgba(4,7,15,.75);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:999px;padding:4px 12px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#c4b5fd}
+.vg-pub-body{padding:20px}
+.vg-pub-name{font-family:var(--font-hero);font-size:24px;letter-spacing:.5px;margin-bottom:6px}
+.vg-pub-meta{color:var(--muted);font-size:12px;margin-bottom:12px}
+.vg-pub-cats{display:flex;flex-wrap:wrap;gap:6px}
+.vg-pub-cat{background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.25);color:#c4b5fd;font-size:10px;font-weight:700;letter-spacing:.5px;padding:3px 10px;border-radius:999px;text-transform:uppercase}
+.vg-empty{text-align:center;padding:100px 20px;color:var(--muted)}
+
+/* ── AD SLOT ── */
+.ad-slot{max-width:1000px;margin:36px auto;padding:0 24px;text-align:center}
+.ad-slot-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;opacity:.5}
+.ad-slot-inner{display:flex;justify-content:center;overflow-x:auto}
+.ad-slot iframe{border:none;flex-shrink:0}
+
+/* ── PÁGINA DE DETALHE ── */
+.vg-detail-hero{position:relative;width:100%;min-height:52vh;overflow:hidden;display:flex;align-items:flex-end}
+.vg-detail-bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(.55) saturate(1.1)}
+.vg-detail-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,var(--bg) 5%,rgba(4,7,15,.3) 60%,rgba(4,7,15,.6) 100%)}
+.vg-detail-hero-content{position:relative;z-index:2;max-width:1100px;margin:0 auto;padding:60px 24px 40px;width:100%}
+.vg-detail-badges{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.vg-detail-badge{background:rgba(167,139,250,.2);border:1px solid rgba(167,139,250,.4);color:#c4b5fd;padding:5px 14px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.vg-detail-badge.plat{background:rgba(26,107,255,.2);border-color:rgba(26,107,255,.4);color:#6aabff}
+.vg-detail-title{font-family:var(--font-hero);font-size:clamp(38px,7vw,64px);line-height:1;letter-spacing:1px;color:#fff;margin-bottom:14px;text-shadow:0 4px 30px rgba(0,0,0,.5)}
+.vg-detail-sub{color:#c8d6f0;font-size:14px;margin-bottom:24px}
+.vg-detail-cta-row{display:flex;gap:14px;flex-wrap:wrap}
+
+.btn-hero-primary{background:var(--vg-purple);color:#1a0b3d;border:none;border-radius:14px;padding:16px 30px;font-family:var(--font-body);font-weight:800;font-size:15px;cursor:pointer;transition:transform .15s,box-shadow .2s;box-shadow:0 0 40px rgba(167,139,250,.4);display:inline-flex;align-items:center;gap:10px}
+.btn-hero-primary:hover{transform:translateY(-2px);box-shadow:0 0 50px rgba(167,139,250,.6)}
+.btn-hero-secondary{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:14px;padding:16px 30px;font-family:var(--font-body);font-weight:700;font-size:15px;cursor:pointer;transition:background .2s,transform .15s;display:inline-flex;align-items:center;gap:10px;backdrop-filter:blur(8px)}
+.btn-hero-secondary:hover{background:rgba(255,255,255,.12);transform:translateY(-2px)}
+
+.vg-detail-body{max-width:1000px;margin:0 auto;padding:50px 24px 100px}
+.vg-section{margin-bottom:48px}
+.vg-section-title{font-family:var(--font-hero);font-size:26px;letter-spacing:1px;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.vg-section-title::before{content:'';width:4px;height:22px;background:var(--vg-purple);border-radius:2px}
+.vg-desc-text{color:#c8d6f0;font-size:15px;line-height:1.85;white-space:pre-line}
+
+.vg-novidades{list-style:none;display:flex;flex-direction:column;gap:10px}
+.vg-novidades li{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 18px;font-size:14px;color:#dbe4f5;display:flex;align-items:center;gap:12px}
+.vg-novidades li::before{content:'✓';color:var(--vg-purple);font-weight:900;flex-shrink:0}
+
+.vg-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.vg-gallery img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:14px;border:1px solid var(--border);cursor:pointer;transition:transform .2s,border-color .2s}
+.vg-gallery img:hover{transform:scale(1.03);border-color:rgba(167,139,250,.4)}
+
+.vg-video-wrap{position:relative;width:100%;aspect-ratio:16/9;border-radius:18px;overflow:hidden;border:1px solid var(--border);background:var(--bg3)}
+.vg-video-wrap iframe{width:100%;height:100%;border:none}
+
+.vg-lightbox{position:fixed;inset:0;background:rgba(4,7,15,.92);backdrop-filter:blur(6px);z-index:5000;display:none;align-items:center;justify-content:center;padding:24px}
+.vg-lightbox.show{display:flex}
+.vg-lightbox img{max-width:90vw;max-height:90vh;border-radius:12px}
+.vg-lightbox-close{position:absolute;top:20px;right:28px;background:none;border:none;color:#fff;font-size:32px;cursor:pointer}
+
+.vg-download-final{text-align:center;padding:40px 30px;background:linear-gradient(135deg,rgba(167,139,250,.08),rgba(26,107,255,.05));border:1px solid rgba(167,139,250,.25);border-radius:24px}
+.vg-download-final h3{font-family:var(--font-hero);font-size:30px;letter-spacing:1px;margin-bottom:10px}
+.vg-download-final p{color:var(--muted);font-size:14px;margin-bottom:24px}
+
+/* ── INTERSTITIAL ── */
+.interstitial-overlay{position:fixed;inset:0;background:rgba(4,7,15,.96);backdrop-filter:blur(10px);z-index:9000;display:none;align-items:center;justify-content:center;padding:20px}
+.interstitial-overlay.show{display:flex}
+.interstitial-box{background:var(--bg2);border:1px solid var(--border);border-radius:26px;padding:40px;width:100%;max-width:520px;box-shadow:0 0 100px rgba(167,139,250,.15);text-align:center;position:relative}
+.interstitial-cover{width:96px;height:96px;border-radius:18px;object-fit:cover;margin:0 auto 18px;border:1px solid var(--border);box-shadow:0 10px 40px rgba(0,0,0,.4)}
+.interstitial-box h3{font-family:var(--font-hero);font-size:26px;letter-spacing:1px;margin-bottom:6px}
+.interstitial-box .isub{color:var(--muted);font-size:13px;margin-bottom:22px}
+.interstitial-timer-ring{width:84px;height:84px;margin:10px auto 22px;position:relative;display:flex;align-items:center;justify-content:center}
+.interstitial-timer-ring svg{transform:rotate(-90deg);width:84px;height:84px}
+.interstitial-timer-ring circle{fill:none;stroke-width:5}
+.interstitial-timer-ring .bg-ring{stroke:var(--border)}
+.interstitial-timer-ring .prog-ring{stroke:var(--vg-purple);stroke-linecap:round;transition:stroke-dashoffset 1s linear}
+.interstitial-timer-num{position:absolute;font-family:var(--font-hero);font-size:26px;color:#fff}
+.interstitial-ad-slot{background:var(--bg3);border:1px dashed var(--border);border-radius:14px;padding:16px;margin-bottom:22px;min-height:90px;display:flex;align-items:center;justify-content:center}
+.btn-continuar{width:100%;padding:16px;border:none;border-radius:14px;font-family:var(--font-body);font-weight:800;font-size:15px;cursor:pointer;transition:all .2s}
+.btn-continuar.locked{background:var(--bg3);color:var(--muted);cursor:not-allowed}
+.btn-continuar.unlocked{background:var(--vg-purple);color:#1a0b3d;box-shadow:0 0 30px rgba(167,139,250,.5)}
+.btn-continuar.unlocked:hover{transform:translateY(-2px)}
+.interstitial-close{position:absolute;top:16px;right:18px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer}
+.interstitial-close:hover{color:var(--text)}
+
+@media(max-width:640px){
+  .vg-detail-cta-row{flex-direction:column}
+  .btn-hero-primary,.btn-hero-secondary{width:100%;justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<nav class="vg-navbar">
+  <a href="index.html" class="vg-logo"><img src="logo.png" alt="Lumina"> VL <b>Gus</b></a>
+  <button class="vg-burger" id="vgBurger" onclick="toggleVgMenu()" aria-label="Abrir menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="vg-links" id="vgLinks">
+    <a href="index.html">Lumina Interactive</a>
+    <a href="patches.html">Patchs Lumina</a>
+    <a href="vlgus.html">VL Gus</a>
+  </div>
+</nav>
+
+<!-- ══════════ LISTAGEM ══════════ -->
+<div id="vgListagem">
+  <section class="vg-hero">
+    <div class="vg-hero-badge">
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--vg-purple);display:inline-block"></span>
+      Canal VL Gus
+    </div>
+    <h1>PATCHES DE FUTEBOL<br><span>DIRETO DO VL GUS.</span></h1>
+    <p>Todos os patches de PSP produzidos pelo VL Gus, em um só lugar. Visual atualizado, elenco em dia e download simples.</p>
+  </section>
+
+  <div class="vg-list-wrap">
+    <div class="vg-toolbar-pub">
+      <div class="search-bar-pub">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+        <input type="text" id="buscaPub" placeholder="Buscar patch..." oninput="renderListagem()">
+      </div>
+    </div>
+    <div class="vg-pub-grid" id="vgPubGrid"></div>
+    <div class="vg-empty" id="vgPubEmpty" style="display:none">Nenhum patch encontrado.</div>
+  </div>
+
+  <!-- Ad slot na listagem -->
+  <div class="ad-slot">
+    <div class="ad-slot-label">Publicidade</div>
+    <div class="ad-slot-inner" id="adSlotListagem"></div>
+  </div>
+</div>
+
+<!-- ══════════ DETALHE DO PATCH ══════════ -->
+<div id="vgDetalhe" style="display:none">
+  <section class="vg-detail-hero">
+    <div class="vg-detail-bg" id="detBg"></div>
+    <div class="vg-detail-hero-content">
+      <div class="vg-detail-badges">
+        <span class="vg-detail-badge plat" id="detPlataforma">PSP</span>
+        <span class="vg-detail-badge" id="detVersao" style="display:none">v1.0</span>
+      </div>
+      <h1 class="vg-detail-title" id="detNome">Nome do Patch</h1>
+      <p class="vg-detail-sub" id="detData">Publicado em --/--/----</p>
+      <div class="vg-detail-cta-row">
+        <button class="btn-hero-primary" onclick="scrollToVideo()">▶ Assistir Gameplay</button>
+        <button class="btn-hero-secondary" onclick="abrirInterstitial()">⬇ Baixar Patch</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="vg-detail-body">
+
+    <!-- Ad abaixo da capa -->
+    <div class="ad-slot" style="margin-top:0">
+      <div class="ad-slot-label">Publicidade</div>
+      <div class="ad-slot-inner" id="adSlotCapa"></div>
+    </div>
+
+    <div class="vg-section" id="secDescricao">
+      <div class="vg-section-title">Sobre o Patch</div>
+      <p class="vg-desc-text" id="detDescricao"></p>
+    </div>
+
+    <div class="vg-section" id="secNovidades" style="display:none">
+      <div class="vg-section-title">Novidades</div>
+      <ul class="vg-novidades" id="detNovidades"></ul>
+    </div>
+
+    <!-- Ad entre a descrição e a galeria -->
+    <div class="ad-slot">
+      <div class="ad-slot-label">Publicidade</div>
+      <div class="ad-slot-inner" id="adSlotDescricao"></div>
+    </div>
+
+    <div class="vg-section" id="secGaleria" style="display:none">
+      <div class="vg-section-title">Screenshots</div>
+      <div class="vg-gallery" id="detGaleria"></div>
+    </div>
+
+    <!-- Ad após a galeria -->
+    <div class="ad-slot">
+      <div class="ad-slot-label">Publicidade</div>
+      <div class="ad-slot-inner" id="adSlotGaleria"></div>
+    </div>
+
+    <div class="vg-section" id="secVideo" style="display:none">
+      <div class="vg-section-title">Gameplay</div>
+      <div class="vg-video-wrap" id="videoWrap"></div>
+    </div>
+
+    <!-- Ad antes do botão final de download -->
+    <div class="ad-slot">
+      <div class="ad-slot-label">Publicidade</div>
+      <div class="ad-slot-inner" id="adSlotDownload"></div>
+    </div>
+
+    <div class="vg-section vg-download-final">
+      <h3>Pronto para jogar?</h3>
+      <p>Baixe o patch agora e leve essa experiência para o seu PSP.</p>
+      <button class="btn-hero-primary" onclick="abrirInterstitial()" style="margin:0 auto">⬇ Baixar Patch</button>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox de imagens -->
+<div class="vg-lightbox" id="vgLightbox" onclick="fecharLightbox()">
+  <button class="vg-lightbox-close" onclick="fecharLightbox()">✕</button>
+  <img id="vgLightboxImg" src="">
+</div>
+
+<!-- ══════════ INTERSTITIAL DE DOWNLOAD ══════════ -->
+<div class="interstitial-overlay" id="interstitialOverlay">
+  <div class="interstitial-box">
+    <button class="interstitial-close" onclick="fecharInterstitial()">✕</button>
+    <img class="interstitial-cover" id="interCover" src="">
+    <h3 id="interNome">Nome do Patch</h3>
+    <p class="isub" id="interResumo">Preparando seu download...</p>
+
+    <div class="interstitial-timer-ring">
+      <svg>
+        <circle class="bg-ring" cx="42" cy="42" r="36"></circle>
+        <circle class="prog-ring" id="progRing" cx="42" cy="42" r="36" stroke-dasharray="226" stroke-dashoffset="0"></circle>
+      </svg>
+      <div class="interstitial-timer-num" id="timerNum">10</div>
+    </div>
+
+    <div class="interstitial-ad-slot">
+      <div class="ad-slot-inner" id="adSlotInterstitial"></div>
+    </div>
+
+    <button class="btn-continuar locked" id="btnContinuar" disabled>Aguarde...</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+/* ════════════════════════════
+   CONFIG
+════════════════════════════ */
+const SUPABASE_URL = "https://tqsalhscgkepttbczyjq.supabase.co";
+const SUPABASE_KEY = "sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const CONTADOR_SEGUNDOS = 10; // tempo do interstitial antes de liberar o download
+const RING_CIRCUM = 226; // 2 * PI * 36 (raio do círculo do timer)
+
+let patchAtual = null;
+let todosPatchesPub = [];
+
+/* ════════════════════════════
+   MENU MOBILE
+════════════════════════════ */
+function toggleVgMenu(){
+  document.getElementById("vgBurger").classList.toggle("open");
+  document.getElementById("vgLinks").classList.toggle("open");
+}
+document.addEventListener("click", (e)=>{
+  const links = document.getElementById("vgLinks");
+  const burger = document.getElementById("vgBurger");
+  if (links.classList.contains("open") && !links.contains(e.target) && !burger.contains(e.target)){
+    links.classList.remove("open");
+    burger.classList.remove("open");
+  }
+});
+
+/* ════════════════════════════
+   ROTEAMENTO
+════════════════════════════ */
+function getParam(nome){
+  return new URLSearchParams(window.location.search).get(nome);
+}
+
+function youtubeEmbedUrl(url){
+  if (!url) return null;
+  let id = null;
+  const m1 = url.match(/[?&]v=([^&]+)/);
+  const m2 = url.match(/youtu\.be\/([^?&]+)/);
+  const m3 = url.match(/embed\/([^?&]+)/);
+  if (m1) id = m1[1];
+  else if (m2) id = m2[1];
+  else if (m3) id = m3[1];
+  return id ? `https://www.youtube.com/embed/${id}` : null;
+}
+
+/* ════════════════════════════
+   ADSTERRA — Banners
+════════════════════════════ */
+const ADSTERRA_KEYS = {
+  '300x250': { key: '3e4608efd48e8238cb61e4c8537143b5', width: 300, height: 250 },
+  '728x90':  { key: 'c75c0d9af3c6a37a602ae4c7c6c2065d', width: 728, height: 90 }
+};
+
+// Define qual tamanho vai em cada slot da página
+const AD_SLOTS_CONFIG = {
+  adSlotListagem:     '728x90',
+  adSlotCapa:         '728x90',
+  adSlotDescricao:    '300x250',
+  adSlotGaleria:      '300x250',
+  adSlotDownload:     '728x90',
+  adSlotInterstitial: '300x250'
+};
+
+function criarBannerAdsterra(size){
+  const cfg = ADSTERRA_KEYS[size];
+  if (!cfg) return null;
+  const iframe = document.createElement('iframe');
+  iframe.width = cfg.width;
+  iframe.height = cfg.height;
+  iframe.scrolling = 'no';
+  iframe.style.border = 'none';
+  iframe.srcdoc = `
+    <html><head><style>body{margin:0;padding:0;background:transparent}</style></head>
+    <body>
+      <script>
+        atOptions = {
+          'key' : '${cfg.key}',
+          'format' : 'iframe',
+          'height' : ${cfg.height},
+          'width' : ${cfg.width},
+          'params' : {}
+        };
+      <\/script>
+      <script src="https://www.highperformanceformat.com/${cfg.key}/invoke.js"><\/script>
+    </body></html>
+  `;
+  return iframe;
+}
+
+function tentarCarregarAds(){
+  Object.entries(AD_SLOTS_CONFIG).forEach(([elId, size])=>{
+    const container = document.getElementById(elId);
+    if (!container || container.dataset.loaded) return;
+    const iframe = criarBannerAdsterra(size);
+    if (iframe){
+      container.appendChild(iframe);
+      container.dataset.loaded = "1";
+    }
+  });
+}
+
+(async function init(){
+  const slug = getParam("slug");
+  const isPreview = getParam("preview") === "1";
+
+  if (isPreview){
+    const dados = JSON.parse(sessionStorage.getItem("vlgus_preview_data") || "null");
+    if (dados){
+      mostrarDetalhe(dados, true);
+      return;
+    }
+  }
+
+  if (slug){
+    const { data, error } = await supabaseClient
+      .from("vlgus_patches")
+      .select("*")
+      .eq("slug", slug)
+      .eq("publicado", true)
+      .maybeSingle();
+
+    if (error || !data){
+      document.getElementById("vgListagem").style.display = "none";
+      document.getElementById("vgDetalhe").innerHTML = "<div style='padding:120px 24px;text-align:center;color:var(--muted)'><h2 style='font-family:var(--font-hero);font-size:32px;color:#fff;margin-bottom:12px'>Patch não encontrado</h2><p>Este patch não existe ou foi despublicado.</p><br><a href='vlgus.html' style='color:var(--vg-purple);font-weight:700'>← Voltar para VL Gus</a></div>";
+      document.getElementById("vgDetalhe").style.display = "block";
+      return;
+    }
+    mostrarDetalhe(data, false);
+  } else {
+    await carregarListagem();
+  }
+})();
+
+/* ════════════════════════════
+   LISTAGEM
+════════════════════════════ */
+async function carregarListagem(){
+  const { data, error } = await supabaseClient
+    .from("vlgus_patches")
+    .select("*")
+    .eq("publicado", true)
+    .order("data_publicacao", { ascending: false });
+
+  todosPatchesPub = (!error && data) ? data : [];
+  renderListagem();
+}
+
+function renderListagem(){
+  const busca = (document.getElementById("buscaPub").value || "").trim().toLowerCase();
+  const lista = todosPatchesPub.filter(p => p.nome.toLowerCase().includes(busca));
+  const grid = document.getElementById("vgPubGrid");
+  const empty = document.getElementById("vgPubEmpty");
+
+  if (lista.length === 0){
+    grid.innerHTML = "";
+    empty.style.display = "block";
+    return;
+  }
+  empty.style.display = "none";
+
+  grid.innerHTML = lista.map(p => `
+    <a class="vg-pub-card" href="vlgus.html?slug=${encodeURIComponent(p.slug)}">
+      <div class="vg-pub-cover">
+        ${p.capa_url ? `<img src="${p.capa_url}" alt="${p.nome}">` : `<div class="vg-pub-cover-placeholder">${p.nome.slice(0,2).toUpperCase()}</div>`}
+        <div class="vg-pub-badge">${p.plataforma || 'PSP'}${p.versao ? ' · ' + p.versao : ''}</div>
+      </div>
+      <div class="vg-pub-body">
+        <div class="vg-pub-name">${p.nome}</div>
+        <div class="vg-pub-meta">Atualizado em ${new Date(p.data_publicacao).toLocaleDateString('pt-BR')}</div>
+        <div class="vg-pub-cats">${(p.categorias||[]).map(c=>`<span class="vg-pub-cat">${c}</span>`).join('')}</div>
+      </div>
+    </a>
+  `).join("");
+
+  setTimeout(tentarCarregarAds, 200);
+}
+
+/* ════════════════════════════
+   DETALHE
+════════════════════════════ */
+function mostrarDetalhe(p, isPreview){
+  document.getElementById("vgListagem").style.display = "none";
+  document.getElementById("vgDetalhe").style.display = "block";
+  patchAtual = p;
+
+  document.getElementById("pageTitle").textContent = `${p.nome} | VL Gus`;
+  document.getElementById("pageDesc").setAttribute("content", (p.descricao || "").slice(0,150));
+
+  document.getElementById("detBg").style.backgroundImage = p.capa_url ? `url('${p.capa_url}')` : "linear-gradient(135deg,#150a30,#04070f)";
+  document.getElementById("detPlataforma").textContent = p.plataforma || "PSP";
+  if (p.versao){
+    const v = document.getElementById("detVersao");
+    v.textContent = p.versao;
+    v.style.display = "inline-block";
+  }
+  document.getElementById("detNome").textContent = p.nome;
+  document.getElementById("detData").textContent = "Publicado em " + new Date(p.data_publicacao).toLocaleDateString('pt-BR');
+  document.getElementById("detDescricao").textContent = p.descricao || "Sem descrição disponível.";
+
+  if (p.novidades && p.novidades.trim()){
+    const linhas = p.novidades.split("\n").map(l=>l.trim()).filter(Boolean);
+    document.getElementById("detNovidades").innerHTML = linhas.map(l=>`<li>${l}</li>`).join("");
+    document.getElementById("secNovidades").style.display = "block";
+  }
+
+  if (p.screenshots && p.screenshots.length){
+    document.getElementById("detGaleria").innerHTML = p.screenshots.map(url=>`<img src="${url}" onclick="abrirLightbox('${url}')">`).join("");
+    document.getElementById("secGaleria").style.display = "block";
+  }
+
+  const embed = youtubeEmbedUrl(p.video_youtube);
+  if (embed){
+    document.getElementById("videoWrap").innerHTML = `<iframe src="${embed}" title="Gameplay" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+    document.getElementById("secVideo").style.display = "block";
+  }
+
+  if (isPreview){
+    document.querySelectorAll('.ad-slot, .interstitial-ad-slot').forEach(el=>{
+      el.style.opacity = "0.4";
+    });
+  }
+
+  setTimeout(tentarCarregarAds, 200);
+}
+
+function abrirLightbox(url){
+  document.getElementById("vgLightboxImg").src = url;
+  document.getElementById("vgLightbox").classList.add("show");
+}
+function fecharLightbox(){
+  document.getElementById("vgLightbox").classList.remove("show");
+}
+function scrollToVideo(){
+  const el = document.getElementById("secVideo");
+  if (el.style.display !== "none") el.scrollIntoView({ behavior:"smooth", block:"start" });
+  else document.getElementById("secDescricao").scrollIntoView({ behavior:"smooth" });
+}
+
+/* ════════════════════════════
+   INTERSTITIAL DE DOWNLOAD
+════════════════════════════ */
+let interTimer = null;
+
+function abrirInterstitial(){
+  if (!patchAtual) return;
+  document.getElementById("interCover").src = patchAtual.capa_url || "logo.png";
+  document.getElementById("interNome").textContent = patchAtual.nome;
+  document.getElementById("interResumo").textContent = (patchAtual.descricao || "").slice(0,90) + "...";
+
+  const btn = document.getElementById("btnContinuar");
+  btn.className = "btn-continuar locked";
+  btn.disabled = true;
+  btn.textContent = "Aguarde...";
+  btn.onclick = null;
+
+  let restante = CONTADOR_SEGUNDOS;
+  document.getElementById("timerNum").textContent = restante;
+  const ring = document.getElementById("progRing");
+  ring.style.strokeDashoffset = "0";
+
+  document.getElementById("interstitialOverlay").classList.add("show");
+  setTimeout(tentarCarregarAds, 150);
+
+  clearInterval(interTimer);
+  interTimer = setInterval(()=>{
+    restante--;
+    document.getElementById("timerNum").textContent = Math.max(restante,0);
+    const offset = RING_CIRCUM * (1 - restante / CONTADOR_SEGUNDOS);
+    ring.style.strokeDashoffset = offset;
+
+    if (restante <= 0){
+      clearInterval(interTimer);
+      btn.className = "btn-continuar unlocked";
+      btn.disabled = false;
+      btn.textContent = "⬇ Continuar Download";
+      btn.onclick = ()=>{
+        window.open(patchAtual.link_download, "_blank");
+        fecharInterstitial();
+      };
+    }
+  }, 1000);
+}
+
+function fecharInterstitial(){
+  clearInterval(interTimer);
+  document.getElementById("interstitialOverlay").classList.remove("show");
+}
+</script>
+</body>
+</html>
