@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin VL Gus | Lumina Interactive</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* ── LOGIN ── */
+.admin-login-overlay{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px}
+.admin-login-box{background:var(--bg2);border:1px solid var(--border);border-radius:24px;padding:48px 40px;width:100%;max-width:420px;box-shadow:0 0 80px rgba(26,107,255,.12)}
+.admin-login-box h2{font-family:var(--font-hero);font-size:32px;letter-spacing:1px;margin-bottom:6px;text-align:center}
+.admin-login-box p{color:var(--muted);font-size:14px;margin-bottom:28px;text-align:center}
+.adm-field{margin-bottom:14px}
+.adm-field label{display:block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.adm-field input,.adm-field textarea,.adm-field select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:13px 16px;color:var(--text);font-family:var(--font-body);font-size:14px;outline:none;transition:border-color .2s;box-sizing:border-box}
+.adm-field input:focus,.adm-field textarea:focus,.adm-field select:focus{border-color:rgba(26,107,255,.5)}
+.adm-field textarea{resize:vertical;min-height:90px}
+.btn-err{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#fca5a5;border-radius:10px;padding:11px 14px;font-size:13px;margin-bottom:14px;display:none}
+.btn-err.show{display:block}
+.btn-adm-login{width:100%;padding:15px;background:var(--blue);color:#fff;border:none;border-radius:12px;font-family:var(--font-body);font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;transition:background .2s,transform .15s;box-shadow:0 0 24px rgba(26,107,255,.35)}
+.btn-adm-login:hover{background:#1558d6;transform:translateY(-1px)}
+
+/* ── LAYOUT GERAL ── */
+.vg-wrap{max-width:1200px;margin:0 auto;padding:40px 24px 100px}
+.vg-header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:32px}
+.vg-title{font-family:var(--font-hero);font-size:40px;letter-spacing:1px}
+.vg-title span{color:var(--blue)}
+.vg-sub{color:var(--muted);font-size:14px;margin-top:4px}
+.btn-primary{background:var(--blue);color:#fff;border:none;border-radius:12px;padding:13px 22px;font-family:var(--font-body);font-weight:700;font-size:14px;cursor:pointer;transition:background .2s,transform .15s;box-shadow:0 0 24px rgba(26,107,255,.3)}
+.btn-primary:hover{background:#1558d6;transform:translateY(-1px)}
+.btn-ghost{background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:12px 20px;font-family:var(--font-body);font-weight:600;font-size:14px;cursor:pointer;transition:border-color .2s}
+.btn-ghost:hover{border-color:rgba(26,107,255,.4)}
+
+/* ── SEARCH / SORT BAR ── */
+.vg-toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+.search-bar{flex:1;min-width:220px;display:flex;align-items:center;gap:12px;background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:12px 18px;transition:border-color .2s}
+.search-bar:focus-within{border-color:rgba(26,107,255,.5)}
+.search-bar svg{flex-shrink:0;fill:var(--muted)}
+.search-bar input{background:none;border:none;outline:none;color:var(--text);font-family:var(--font-body);font-size:14px;width:100%}
+.search-bar input::placeholder{color:var(--muted)}
+.sort-select{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:12px 16px;color:var(--text);font-family:var(--font-body);font-size:14px}
+
+/* ── LISTA DE PATCHES ── */
+.vg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.vg-card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;overflow:hidden;transition:border-color .2s,transform .2s}
+.vg-card:hover{transform:translateY(-3px);border-color:rgba(26,107,255,.25)}
+.vg-cover{position:relative;width:100%;aspect-ratio:16/9;background:var(--bg3);overflow:hidden}
+.vg-cover img{width:100%;height:100%;object-fit:cover;display:block}
+.vg-cover-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:var(--font-hero);font-size:36px;letter-spacing:2px;color:rgba(255,255,255,.1)}
+.vg-status{position:absolute;top:10px;left:10px;padding:4px 12px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;backdrop-filter:blur(8px)}
+.vg-status.pub{background:rgba(34,197,94,.2);border:1px solid rgba(34,197,94,.4);color:#86efac}
+.vg-status.rasc{background:rgba(100,116,139,.2);border:1px solid rgba(100,116,139,.4);color:#94a3b8}
+.vg-body{padding:18px 18px 16px}
+.vg-name{font-family:var(--font-hero);font-size:22px;letter-spacing:.5px;margin-bottom:4px}
+.vg-meta{color:var(--muted);font-size:12px;margin-bottom:14px}
+.vg-actions{display:flex;gap:6px;flex-wrap:wrap}
+.btn-action{display:inline-flex;align-items:center;gap:4px;padding:7px 12px;border-radius:8px;border:none;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font-body);transition:opacity .15s,transform .1s}
+.btn-action:hover{opacity:.85;transform:translateY(-1px)}
+.btn-edit{background:#3b82f6;color:#fff}
+.btn-toggle{background:#fbbf24;color:#000}
+.btn-toggle.on{background:#22c55e;color:#000}
+.btn-del{background:#ef4444;color:#fff}
+.btn-view2{background:var(--bg3);border:1px solid var(--border)!important;color:var(--text)}
+
+.vg-empty{text-align:center;padding:80px 20px;color:var(--muted)}
+
+/* ── MODAL FORM ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(4,7,15,.85);backdrop-filter:blur(4px);z-index:2000;display:none;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto}
+.modal-overlay.show{display:flex}
+.modal-box{background:var(--bg2);border:1px solid var(--border);border-radius:24px;padding:36px;width:100%;max-width:760px;box-shadow:0 0 100px rgba(0,0,0,.5)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.modal-header h3{font-family:var(--font-hero);font-size:28px;letter-spacing:1px}
+.modal-close{background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1}
+.modal-close:hover{color:var(--text)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-row.single{grid-template-columns:1fr}
+@media(max-width:600px){.form-row{grid-template-columns:1fr}}
+
+.cat-chip-input{display:flex;flex-wrap:wrap;gap:6px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:10px 12px}
+.cat-chip{background:var(--blue-dim);border:1px solid rgba(26,107,255,.4);color:#6aabff;padding:4px 10px;border-radius:999px;font-size:12px;display:flex;align-items:center;gap:6px}
+.cat-chip button{background:none;border:none;color:#6aabff;cursor:pointer;font-size:13px;line-height:1}
+.cat-chip-input input{flex:1;min-width:100px;background:none;border:none;outline:none;color:var(--text);font-size:13px}
+
+.ss-list{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.ss-thumb{position:relative;width:90px;height:60px;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+.ss-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.ss-thumb button{position:absolute;top:2px;right:2px;background:rgba(239,68,68,.9);border:none;color:#fff;width:18px;height:18px;border-radius:50%;font-size:11px;line-height:1;cursor:pointer}
+
+.upload-box{border:2px dashed var(--border);border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:border-color .2s;background:var(--bg3)}
+.upload-box:hover{border-color:rgba(26,107,255,.4)}
+.upload-box input{display:none}
+.cover-preview{width:100%;max-width:280px;border-radius:12px;margin-top:12px;display:none}
+
+.modal-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:28px}
+
+#vgMsg{font-size:13px;margin-top:14px;display:none}
+
+/* ── PREVIEW ── */
+.preview-frame{border:1px solid var(--border);border-radius:16px;overflow:hidden;max-height:70vh;overflow-y:auto}
+
+#toast{position:fixed;bottom:24px;right:24px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 20px;font-size:13px;box-shadow:0 10px 40px rgba(0,0,0,.4);z-index:3000;display:none}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div class="admin-login-overlay" id="loginOverlay">
+  <div class="admin-login-box">
+    <h2>VL <span style="color:var(--blue)">Gus</span></h2>
+    <p>Painel administrativo de patches</p>
+    <div class="btn-err" id="loginErr">Credenciais inválidas.</div>
+    <div class="adm-field">
+      <label>E-mail</label>
+      <input type="email" id="loginEmail" autocomplete="username">
+    </div>
+    <div class="adm-field">
+      <label>Senha</label>
+      <input type="password" id="loginSenha" autocomplete="current-password">
+    </div>
+    <button class="btn-adm-login" onclick="fazerLogin()">Entrar</button>
+  </div>
+</div>
+
+<!-- ══ CONTEÚDO ══ -->
+<div class="vg-wrap" id="vgConteudo" style="display:none">
+  <div class="vg-header">
+    <div>
+      <div class="vg-title">VL <span>Gus</span> — Admin</div>
+      <div class="vg-sub">Gerencie os patches publicados na plataforma</div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <a href="vlgus.html" target="_blank" class="btn-ghost">Ver site público</a>
+      <button class="btn-primary" onclick="abrirModal()">+ Novo Patch</button>
+    </div>
+  </div>
+
+  <div class="vg-toolbar">
+    <div class="search-bar">
+      <svg width="16" height="16" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+      <input type="text" id="buscaInput" placeholder="Buscar patch por nome..." oninput="renderLista()">
+    </div>
+    <select class="sort-select" id="ordenacaoSelect" onchange="renderLista()">
+      <option value="data_desc">Mais recentes</option>
+      <option value="data_asc">Mais antigos</option>
+      <option value="nome_asc">Nome (A-Z)</option>
+      <option value="nome_desc">Nome (Z-A)</option>
+    </select>
+  </div>
+
+  <div class="vg-grid" id="vgGrid"></div>
+  <div class="vg-empty" id="vgEmpty" style="display:none">Nenhum patch cadastrado ainda.</div>
+</div>
+
+<!-- ══ MODAL FORM ══ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="modalTitulo">Novo Patch</h3>
+      <button class="modal-close" onclick="fecharModal()">✕</button>
+    </div>
+
+    <input type="hidden" id="fPatchId">
+
+    <div class="form-row">
+      <div class="adm-field">
+        <label>Nome do Patch *</label>
+        <input type="text" id="fNome" oninput="atualizarSlugPreview()">
+      </div>
+      <div class="adm-field">
+        <label>Versão</label>
+        <input type="text" id="fVersao" placeholder="Ex: v3.2">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="adm-field">
+        <label>Plataforma</label>
+        <input type="text" id="fPlataforma" value="PSP">
+      </div>
+      <div class="adm-field">
+        <label>Data de publicação</label>
+        <input type="date" id="fData">
+      </div>
+    </div>
+
+    <div class="adm-field">
+      <label>URL amigável (slug)</label>
+      <input type="text" id="fSlug" placeholder="ex: brazukas-patch-v3">
+      <div style="font-size:11px;color:var(--muted);margin-top:6px">Link final: lumina.com.br/vlgus.html?slug=<span id="slugPreview" style="color:#6aabff"></span></div>
+    </div>
+
+    <div class="adm-field">
+      <label>Capa do Patch</label>
+      <div class="upload-box" onclick="document.getElementById('fCapaFile').click()">
+        <input type="file" id="fCapaFile" accept="image/*" onchange="preverCapa(event)">
+        📷 Clique para enviar a imagem de capa
+      </div>
+      <img id="capaPreviewImg" class="cover-preview">
+      <input type="hidden" id="fCapaUrl">
+    </div>
+
+    <div class="adm-field">
+      <label>Descrição completa</label>
+      <textarea id="fDescricao" rows="4"></textarea>
+    </div>
+
+    <div class="adm-field">
+      <label>Lista de novidades (uma por linha)</label>
+      <textarea id="fNovidades" rows="4" placeholder="Nova torcida animada&#10;Elenco atualizado 2026&#10;Novos uniformes"></textarea>
+    </div>
+
+    <div class="adm-field">
+      <label>Screenshots / Prints</label>
+      <div class="upload-box" onclick="document.getElementById('fSsFile').click()">
+        <input type="file" id="fSsFile" accept="image/*" multiple onchange="adicionarScreenshots(event)">
+        🖼️ Clique para enviar uma ou mais imagens
+      </div>
+      <div class="ss-list" id="ssList"></div>
+    </div>
+
+    <div class="form-row">
+      <div class="adm-field">
+        <label>Vídeo de gameplay (URL do YouTube)</label>
+        <input type="text" id="fVideo" placeholder="https://youtube.com/watch?v=...">
+      </div>
+      <div class="adm-field">
+        <label>Link de download *</label>
+        <input type="text" id="fDownload" placeholder="https://...">
+      </div>
+    </div>
+
+    <div class="adm-field">
+      <label>Categorias</label>
+      <div class="cat-chip-input" id="catChipInput">
+        <input type="text" id="catInput" placeholder="Digite e pressione Enter" onkeydown="handleCatKey(event)">
+      </div>
+    </div>
+
+    <div class="adm-field" style="display:flex;align-items:center;gap:10px;margin-top:20px">
+      <input type="checkbox" id="fPublicado" style="width:auto">
+      <label style="margin:0;text-transform:none;font-size:14px;color:var(--text)">Publicar imediatamente (visível ao público)</label>
+    </div>
+
+    <div id="vgMsg"></div>
+
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="abrirPreview()">👁️ Pré-visualizar</button>
+      <button class="btn-ghost" onclick="fecharModal()">Cancelar</button>
+      <button class="btn-primary" onclick="salvarPatch()">Salvar Patch</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL PREVIEW ══ -->
+<div class="modal-overlay" id="previewOverlay">
+  <div class="modal-box" style="max-width:900px;padding:20px">
+    <div class="modal-header" style="padding:0 16px">
+      <h3>Pré-visualização</h3>
+      <button class="modal-close" onclick="document.getElementById('previewOverlay').classList.remove('show')">✕</button>
+    </div>
+    <div class="preview-frame">
+      <iframe id="previewIframe" style="width:100%;height:70vh;border:none;background:var(--bg)"></iframe>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+/* ════════════════════════════
+   CONFIG SUPABASE (service role — bypassa RLS, mesmo padrão do admin.html)
+════════════════════════════ */
+const supabaseClient = supabase.createClient(
+  "https://tqsalhscgkepttbczyjq.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxc2FsaHNjZ2tlcHR0YmN6eWpxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3OTQ5NTIwNSwiZXhwIjoyMDk1MDcxMjA1fQ.1qvrbIaOyAUED9OmsOqJuSP_HvGKzUMOaA82CPZQp1I",
+  { auth: { persistSession: false } }
+);
+
+const ADMINS = [
+  { email: "lv196814@gmail.com", senha: "LVxV7!_0917", nome: "Luan Vinícius" }
+];
+
+/* ════════════════════════════
+   LOGIN
+════════════════════════════ */
+function fazerLogin(){
+  const email = document.getElementById("loginEmail").value.trim().toLowerCase();
+  const senha = document.getElementById("loginSenha").value;
+  const err = document.getElementById("loginErr");
+  const admin = ADMINS.find(a => a.email.toLowerCase() === email && a.senha === senha);
+  if (!admin){
+    err.classList.add("show");
+    return;
+  }
+  err.classList.remove("show");
+  sessionStorage.setItem("vlgus_admin_logado", "1");
+  document.getElementById("loginOverlay").style.display = "none";
+  document.getElementById("vgConteudo").style.display = "block";
+  carregarPatches();
+}
+
+(function verificarSessao(){
+  if (sessionStorage.getItem("vlgus_admin_logado") === "1"){
+    document.getElementById("loginOverlay").style.display = "none";
+    document.getElementById("vgConteudo").style.display = "block";
+    document.addEventListener("DOMContentLoaded", carregarPatches);
+  }
+})();
+
+/* ════════════════════════════
+   ESTADO
+════════════════════════════ */
+let todosPatches = [];
+let categoriasAtuais = [];
+let screenshotsAtuais = [];
+
+function toast(texto, cor){
+  const t = document.getElementById("toast");
+  t.textContent = texto;
+  t.style.borderColor = cor || "var(--border)";
+  t.style.display = "block";
+  setTimeout(()=> t.style.display = "none", 3000);
+}
+
+function slugify(texto){
+  return texto.toString().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .toLowerCase().trim()
+    .replace(/[^a-z0-9\s-]/g,"")
+    .replace(/\s+/g,"-")
+    .replace(/-+/g,"-");
+}
+
+function atualizarSlugPreview(){
+  const slugField = document.getElementById("fSlug");
+  if (!slugField.dataset.tocado){
+    slugField.value = slugify(document.getElementById("fNome").value);
+  }
+  document.getElementById("slugPreview").textContent = slugField.value || "...";
+}
+document.addEventListener("input", (e)=>{
+  if (e.target && e.target.id === "fSlug"){
+    e.target.dataset.tocado = "1";
+    document.getElementById("slugPreview").textContent = e.target.value || "...";
+  }
+});
+
+/* ════════════════════════════
+   CARREGAR / LISTAR
+════════════════════════════ */
+async function carregarPatches(){
+  const { data, error } = await supabaseClient
+    .from("vlgus_patches")
+    .select("*")
+    .order("data_publicacao", { ascending: false });
+  if (error){
+    toast("Erro ao carregar patches: " + error.message, "#ef4444");
+    return;
+  }
+  todosPatches = data || [];
+  renderLista();
+}
+
+function renderLista(){
+  const busca = document.getElementById("buscaInput").value.trim().toLowerCase();
+  const ordenacao = document.getElementById("ordenacaoSelect").value;
+
+  let lista = todosPatches.filter(p => p.nome.toLowerCase().includes(busca));
+
+  lista.sort((a,b)=>{
+    if (ordenacao === "data_desc") return new Date(b.data_publicacao) - new Date(a.data_publicacao);
+    if (ordenacao === "data_asc")  return new Date(a.data_publicacao) - new Date(b.data_publicacao);
+    if (ordenacao === "nome_asc")  return a.nome.localeCompare(b.nome);
+    if (ordenacao === "nome_desc") return b.nome.localeCompare(a.nome);
+    return 0;
+  });
+
+  const grid = document.getElementById("vgGrid");
+  const empty = document.getElementById("vgEmpty");
+
+  if (lista.length === 0){
+    grid.innerHTML = "";
+    empty.style.display = "block";
+    return;
+  }
+  empty.style.display = "none";
+
+  grid.innerHTML = lista.map(p => `
+    <div class="vg-card">
+      <div class="vg-cover">
+        ${p.capa_url ? `<img src="${p.capa_url}" alt="${p.nome}">` : `<div class="vg-cover-placeholder">${p.nome.slice(0,2).toUpperCase()}</div>`}
+        <div class="vg-status ${p.publicado ? 'pub' : 'rasc'}">${p.publicado ? 'Publicado' : 'Rascunho'}</div>
+      </div>
+      <div class="vg-body">
+        <div class="vg-name">${p.nome}</div>
+        <div class="vg-meta">${p.plataforma || 'PSP'} ${p.versao ? '· ' + p.versao : ''} · ${new Date(p.data_publicacao).toLocaleDateString('pt-BR')}</div>
+        <div class="vg-actions">
+          <button class="btn-action btn-view2" onclick="window.open('vlgus.html?slug=${p.slug}','_blank')">Ver</button>
+          <button class="btn-action btn-edit" onclick="editarPatch('${p.id}')">Editar</button>
+          <button class="btn-action btn-toggle ${p.publicado ? 'on' : ''}" onclick="alternarPublicado('${p.id}', ${!p.publicado})">${p.publicado ? 'Despublicar' : 'Publicar'}</button>
+          <button class="btn-action btn-del" onclick="excluirPatch('${p.id}')">Excluir</button>
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+
+/* ════════════════════════════
+   MODAL / FORM
+════════════════════════════ */
+function abrirModal(patch){
+  document.getElementById("modalTitulo").textContent = patch ? "Editar Patch" : "Novo Patch";
+  document.getElementById("fPatchId").value = patch ? patch.id : "";
+  document.getElementById("fNome").value = patch ? patch.nome : "";
+  document.getElementById("fVersao").value = patch ? (patch.versao || "") : "";
+  document.getElementById("fPlataforma").value = patch ? (patch.plataforma || "PSP") : "PSP";
+  document.getElementById("fData").value = patch ? patch.data_publicacao.slice(0,10) : new Date().toISOString().slice(0,10);
+  document.getElementById("fSlug").value = patch ? patch.slug : "";
+  document.getElementById("fSlug").dataset.tocado = patch ? "1" : "";
+  document.getElementById("slugPreview").textContent = patch ? patch.slug : "...";
+  document.getElementById("fCapaUrl").value = patch ? (patch.capa_url || "") : "";
+  const capaImg = document.getElementById("capaPreviewImg");
+  if (patch && patch.capa_url){ capaImg.src = patch.capa_url; capaImg.style.display = "block"; }
+  else { capaImg.style.display = "none"; capaImg.src = ""; }
+  document.getElementById("fDescricao").value = patch ? (patch.descricao || "") : "";
+  document.getElementById("fNovidades").value = patch ? (patch.novidades || "") : "";
+  document.getElementById("fVideo").value = patch ? (patch.video_youtube || "") : "";
+  document.getElementById("fDownload").value = patch ? (patch.link_download || "") : "";
+  document.getElementById("fPublicado").checked = patch ? !!patch.publicado : false;
+
+  categoriasAtuais = patch && patch.categorias ? [...patch.categorias] : [];
+  renderCategorias();
+
+  screenshotsAtuais = patch && patch.screenshots ? [...patch.screenshots] : [];
+  renderScreenshots();
+
+  document.getElementById("vgMsg").style.display = "none";
+  document.getElementById("modalOverlay").classList.add("show");
+}
+
+function fecharModal(){
+  document.getElementById("modalOverlay").classList.remove("show");
+}
+
+function editarPatch(id){
+  const patch = todosPatches.find(p => p.id === id);
+  if (patch) abrirModal(patch);
+}
+
+/* Categorias (chips) */
+function renderCategorias(){
+  const container = document.getElementById("catChipInput");
+  const input = document.getElementById("catInput");
+  container.querySelectorAll(".cat-chip").forEach(c => c.remove());
+  categoriasAtuais.forEach((cat, i)=>{
+    const chip = document.createElement("span");
+    chip.className = "cat-chip";
+    chip.innerHTML = `${cat} <button onclick="removerCategoria(${i})">✕</button>`;
+    container.insertBefore(chip, input);
+  });
+}
+function handleCatKey(e){
+  if (e.key === "Enter" && e.target.value.trim()){
+    e.preventDefault();
+    categoriasAtuais.push(e.target.value.trim());
+    e.target.value = "";
+    renderCategorias();
+  }
+}
+function removerCategoria(i){
+  categoriasAtuais.splice(i,1);
+  renderCategorias();
+}
+
+/* Upload de capa */
+async function preverCapa(e){
+  const file = e.target.files[0];
+  if (!file) return;
+  const preview = document.getElementById("capaPreviewImg");
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = "block";
+
+  toast("Enviando capa...");
+  const ext = file.name.split(".").pop();
+  const path = `capas/${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`;
+  const { error } = await supabaseClient.storage.from("vlgus-midia").upload(path, file, { upsert:true, contentType:file.type });
+  if (error){ toast("Erro no upload da capa: " + error.message, "#ef4444"); return; }
+  const { data } = supabaseClient.storage.from("vlgus-midia").getPublicUrl(path);
+  document.getElementById("fCapaUrl").value = data.publicUrl;
+  toast("Capa enviada!", "#22c55e");
+}
+
+/* Upload de screenshots (múltiplas) */
+async function adicionarScreenshots(e){
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
+  toast(`Enviando ${files.length} imagem(ns)...`);
+  for (const file of files){
+    const ext = file.name.split(".").pop();
+    const path = `screenshots/${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`;
+    const { error } = await supabaseClient.storage.from("vlgus-midia").upload(path, file, { upsert:true, contentType:file.type });
+    if (error){ toast("Erro: " + error.message, "#ef4444"); continue; }
+    const { data } = supabaseClient.storage.from("vlgus-midia").getPublicUrl(path);
+    screenshotsAtuais.push(data.publicUrl);
+  }
+  renderScreenshots();
+  toast("Screenshots enviados!", "#22c55e");
+  e.target.value = "";
+}
+function renderScreenshots(){
+  const list = document.getElementById("ssList");
+  list.innerHTML = screenshotsAtuais.map((url,i)=>`
+    <div class="ss-thumb">
+      <img src="${url}">
+      <button onclick="removerScreenshot(${i})">✕</button>
+    </div>
+  `).join("");
+}
+function removerScreenshot(i){
+  screenshotsAtuais.splice(i,1);
+  renderScreenshots();
+}
+
+/* ════════════════════════════
+   SALVAR / PUBLICAR / EXCLUIR
+════════════════════════════ */
+async function salvarPatch(){
+  const msg = document.getElementById("vgMsg");
+  const id = document.getElementById("fPatchId").value;
+  const nome = document.getElementById("fNome").value.trim();
+  const slug = document.getElementById("fSlug").value.trim() || slugify(nome);
+  const download = document.getElementById("fDownload").value.trim();
+
+  if (!nome || !download){
+    msg.textContent = "⚠️ Preencha ao menos o Nome e o Link de download.";
+    msg.style.color = "#ef4444"; msg.style.display = "block";
+    return;
+  }
+
+  const payload = {
+    nome,
+    slug,
+    versao: document.getElementById("fVersao").value.trim(),
+    plataforma: document.getElementById("fPlataforma").value.trim() || "PSP",
+    capa_url: document.getElementById("fCapaUrl").value || null,
+    descricao: document.getElementById("fDescricao").value.trim(),
+    novidades: document.getElementById("fNovidades").value.trim(),
+    screenshots: screenshotsAtuais,
+    video_youtube: document.getElementById("fVideo").value.trim(),
+    link_download: download,
+    categorias: categoriasAtuais,
+    publicado: document.getElementById("fPublicado").checked,
+    data_publicacao: document.getElementById("fData").value ? new Date(document.getElementById("fData").value).toISOString() : new Date().toISOString()
+  };
+
+  msg.textContent = "⏳ Salvando...";
+  msg.style.color = "#fbbf24"; msg.style.display = "block";
+
+  let error;
+  if (id){
+    ({ error } = await supabaseClient.from("vlgus_patches").update(payload).eq("id", id));
+  } else {
+    ({ error } = await supabaseClient.from("vlgus_patches").insert(payload));
+  }
+
+  if (error){
+    msg.textContent = "Erro ao salvar: " + error.message;
+    msg.style.color = "#ef4444";
+    return;
+  }
+
+  msg.style.display = "none";
+  fecharModal();
+  toast("Patch salvo com sucesso!", "#22c55e");
+  carregarPatches();
+}
+
+async function alternarPublicado(id, novoValor){
+  const { error } = await supabaseClient.from("vlgus_patches").update({ publicado: novoValor }).eq("id", id);
+  if (error){ toast("Erro: " + error.message, "#ef4444"); return; }
+  toast(novoValor ? "Patch publicado!" : "Patch despublicado.", "#22c55e");
+  carregarPatches();
+}
+
+async function excluirPatch(id){
+  if (!confirm("Tem certeza que deseja excluir este patch? Essa ação não pode ser desfeita.")) return;
+  const { error } = await supabaseClient.from("vlgus_patches").delete().eq("id", id);
+  if (error){ toast("Erro: " + error.message, "#ef4444"); return; }
+  toast("Patch excluído.", "#22c55e");
+  carregarPatches();
+}
+
+/* ════════════════════════════
+   PREVIEW
+════════════════════════════ */
+function abrirPreview(){
+  const dadosPreview = {
+    nome: document.getElementById("fNome").value.trim() || "Nome do Patch",
+    versao: document.getElementById("fVersao").value.trim(),
+    plataforma: document.getElementById("fPlataforma").value.trim() || "PSP",
+    capa_url: document.getElementById("fCapaUrl").value,
+    descricao: document.getElementById("fDescricao").value.trim(),
+    novidades: document.getElementById("fNovidades").value.trim(),
+    screenshots: screenshotsAtuais,
+    video_youtube: document.getElementById("fVideo").value.trim(),
+    link_download: document.getElementById("fDownload").value.trim(),
+    categorias: categoriasAtuais,
+    data_publicacao: document.getElementById("fData").value || new Date().toISOString()
+  };
+  sessionStorage.setItem("vlgus_preview_data", JSON.stringify(dadosPreview));
+  document.getElementById("previewIframe").src = "vlgus.html?preview=1";
+  document.getElementById("previewOverlay").classList.add("show");
+}
+</script>
+</body>
+</html>
