@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin-vlgus
+Disallow: /minha-conta
+Disallow: /perfil-usuario
+Disallow: /checkout
+Disallow: /checkout-verificado
+Disallow: /comprovante
+Disallow: /comprovante-verificado
+Disallow: /redefinir-senha
+Disallow: /sucesso
+
+Sitemap: https://lumina-interactive.vercel.app/sitemap.xml
