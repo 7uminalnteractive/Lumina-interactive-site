@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Provisionar Hospedagem | Lumina Interactive (uso interno)</title>
+<link rel="stylesheet" href="style.css">
+<style>
+:root{ --tema:#7c5cff; }
+.wrap{max-width:760px;margin:0 auto;padding:60px 24px 100px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:32px;margin-bottom:20px}
+.card h3{font-family:var(--font-hero);font-size:22px;margin-bottom:16px}
+.adm-field{margin-bottom:14px}
+.adm-field label{display:block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.adm-field input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-size:14px;box-sizing:border-box}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px}
+th,td{padding:10px;border-bottom:1px solid var(--border);text-align:left}
+th{color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase}
+.btn-primary{background:var(--tema);color:#fff;border:none;border-radius:10px;padding:11px 18px;font-weight:700;cursor:pointer;font-size:13px}
+#msg{font-size:13px;margin-top:12px;padding:10px 14px;border-radius:8px;display:none}
+#msg.ok{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#86efac;display:block}
+#msg.err{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#fca5a5;display:block}
+.pedido-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="logo"><img src="logo.png" alt="Lumina Interactive" style="height:36px;width:auto;display:block"></div>
+  <div class="menu"><a href="admin.html">← Admin geral</a></div>
+</nav>
+
+<div class="wrap">
+  <h1 style="font-family:var(--font-hero);font-size:32px;margin-bottom:6px">Provisionar Hospedagem</h1>
+  <p style="color:var(--muted);font-size:13px;margin-bottom:32px">
+    Ferramenta de uso interno. Use depois de aprovar um pedido de "Hospedagem" no admin geral, para criar o acesso do cliente ao painel dele.
+  </p>
+
+  <div class="card">
+    <h3>1. Pedidos de Hospedagem aprovados sem conta ainda</h3>
+    <div id="listaPedidos">Carregando...</div>
+  </div>
+
+  <div class="card">
+    <h3>2. Criar acesso do cliente</h3>
+    <div class="adm-field">
+      <label>Identificador do site (tenant_id) — sem espaços, ex: joaogames</label>
+      <input type="text" id="fTenant">
+    </div>
+    <div class="adm-field">
+      <label>E-mail do cliente (o mesmo do pedido)</label>
+      <input type="email" id="fEmail">
+    </div>
+    <div class="adm-field">
+      <label>Senha de acesso ao painel dele</label>
+      <input type="text" id="fSenha">
+    </div>
+    <div class="adm-field">
+      <label>Nome do cliente</label>
+      <input type="text" id="fNome">
+    </div>
+    <button class="btn-primary" onclick="criarConta()">Criar acesso</button>
+    <div id="msg"></div>
+    <p style="font-size:12px;color:var(--muted);margin-top:16px">
+      Depois de criar, envie para o cliente:<br>
+      • Painel: <code>hospedagem-admin.html</code> (login com o e-mail e senha acima)<br>
+      • Página pública dele: <code>hospedagem-site.html?tenant=SEU_TENANT_ID</code>
+    </p>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+const supabaseClient = supabase.createClient(
+  "https://tqsalhscgkepttbczyjq.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxc2FsaHNjZ2tlcHR0YmN6eWpxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3OTQ5NTIwNSwiZXhwIjoyMDk1MDcxMjA1fQ.1qvrbIaOyAUED9OmsOqJuSP_HvGKzUMOaA82CPZQp1I",
+  { auth: { persistSession: false } }
+);
+
+async function carregarPedidosSemConta(){
+  const { data: pedidos } = await supabaseClient
+    .from("pedidos")
+    .select("*")
+    .eq("produto", "Hospedagem")
+    .eq("acesso_liberado", true)
+    .order("id", { ascending:false });
+
+  const { data: contas } = await supabaseClient.from("hospedagem_contas").select("email");
+  const emailsComConta = new Set((contas||[]).map(c => c.email.toLowerCase()));
+
+  const pendentes = (pedidos||[]).filter(p => !emailsComConta.has((p.email||"").toLowerCase()));
+
+  const div = document.getElementById("listaPedidos");
+  if (!pendentes.length){
+    div.innerHTML = `<p style="color:var(--muted);font-size:13px">Nenhum pedido aprovado aguardando criação de conta.</p>`;
+    return;
+  }
+  div.innerHTML = pendentes.map(p => `
+    <div class="pedido-row">
+      <span><strong>${p.nome_cliente||"—"}</strong> · ${p.email} · vence ${p.data_fim ? new Date(p.data_fim).toLocaleDateString("pt-BR") : "—"}</span>
+      <button class="btn-primary" onclick="preencher('${(p.email||'').replace(/'/g,"")}','${(p.nome_cliente||'').replace(/'/g,"")}')">Usar este pedido</button>
+    </div>
+  `).join("");
+}
+
+function preencher(email, nome){
+  document.getElementById("fEmail").value = email;
+  document.getElementById("fNome").value = nome;
+  document.getElementById("fTenant").focus();
+}
+
+async function criarConta(){
+  const tenant_id = document.getElementById("fTenant").value.trim().toLowerCase().replace(/[^a-z0-9-]/g, "");
+  const email = document.getElementById("fEmail").value.trim().toLowerCase();
+  const senha = document.getElementById("fSenha").value;
+  const nome = document.getElementById("fNome").value.trim();
+  const msg = document.getElementById("msg");
+
+  if (!tenant_id || !email || !senha){
+    msg.className = "err";
+    msg.textContent = "Preencha tenant_id, e-mail e senha.";
+    return;
+  }
+
+  const { error: errConta } = await supabaseClient.from("hospedagem_contas").insert([{
+    tenant_id, email, senha, nome
+  }]);
+
+  if (errConta){
+    msg.className = "err";
+    msg.textContent = "Erro ao criar conta: " + errConta.message;
+    return;
+  }
+
+  const { error: errSite } = await supabaseClient.from("hospedagem_sites").upsert([{
+    tenant_id
+  }], { onConflict: "tenant_id" });
+
+  if (errSite){
+    msg.className = "err";
+    msg.textContent = "Conta criada, mas houve erro ao preparar a página: " + errSite.message;
+    return;
+  }
+
+  msg.className = "ok";
+  msg.textContent = `✅ Conta criada! Painel: hospedagem-admin.html (login ${email}) · Página: hospedagem-site.html?tenant=${tenant_id}`;
+  await carregarPedidosSemConta();
+}
+
+carregarPedidosSemConta();
+</script>
+</body>
+</html>

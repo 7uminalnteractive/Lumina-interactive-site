@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meu Painel — Hospedagem | Lumina Interactive</title>
+<link rel="stylesheet" href="style.css">
+<style>
+:root{ --tema:#7c5cff; --tema-dim:rgba(124,92,255,0.12); }
+
+.admin-login-overlay{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px}
+.admin-login-box{background:var(--bg2);border:1px solid var(--border);border-radius:24px;padding:48px 40px;width:100%;max-width:420px;box-shadow:0 0 80px rgba(124,92,255,.12)}
+.admin-login-box h2{font-family:var(--font-hero);font-size:32px;letter-spacing:1px;margin-bottom:6px;text-align:center}
+.admin-login-box p{color:var(--muted);font-size:14px;margin-bottom:28px;text-align:center}
+.adm-field{margin-bottom:14px}
+.adm-field label{display:block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.adm-field input,.adm-field textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:13px 16px;color:var(--text);font-family:var(--font-body);font-size:14px;outline:none;transition:border-color .2s;box-sizing:border-box}
+.adm-field input:focus,.adm-field textarea:focus{border-color:rgba(124,92,255,.5)}
+.adm-field textarea{resize:vertical;min-height:90px}
+.adm-hint{font-size:11px;color:var(--muted);margin-top:6px}
+.btn-err{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#fca5a5;border-radius:10px;padding:11px 14px;font-size:13px;margin-bottom:14px;display:none}
+.btn-err.show{display:block}
+.btn-adm-login{width:100%;padding:15px;background:var(--tema);color:#fff;border:none;border-radius:12px;font-family:var(--font-body);font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;transition:background .2s,transform .15s;box-shadow:0 0 24px rgba(124,92,255,.35)}
+.btn-adm-login:hover{filter:brightness(1.1);transform:translateY(-1px)}
+
+/* Bloqueio por assinatura vencida/inativa */
+.locked-box{background:var(--bg2);border:1px solid rgba(239,68,68,.3);border-radius:24px;padding:40px;max-width:480px;margin:80px auto;text-align:center}
+.locked-box h2{font-family:var(--font-hero);font-size:28px;margin-bottom:12px}
+.locked-box p{color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:24px}
+
+.bz-wrap{max-width:900px;margin:0 auto;padding:40px 24px 120px}
+.bz-header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.bz-title{font-family:var(--font-hero);font-size:36px;letter-spacing:1px}
+.bz-title span{color:var(--tema)}
+.bz-sub{color:var(--muted);font-size:13px;margin-top:4px}
+.btn-primary{background:var(--tema);color:#fff;border:none;border-radius:12px;padding:13px 22px;font-family:var(--font-body);font-weight:700;font-size:14px;cursor:pointer;transition:filter .2s,transform .15s;box-shadow:0 0 24px rgba(124,92,255,.3)}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-ghost{background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:12px 20px;font-family:var(--font-body);font-weight:600;font-size:14px;cursor:pointer;transition:border-color .2s;text-decoration:none;display:inline-flex;align-items:center}
+.btn-ghost:hover{border-color:rgba(124,92,255,.4)}
+
+.plano-box{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:16px 20px;margin-bottom:24px}
+.plano-info{font-size:13px;color:var(--muted)}
+.plano-info strong{color:#fff}
+.plano-dias{font-family:var(--font-hero);font-size:22px;letter-spacing:.5px}
+.plano-dias.ok{color:#4ade80}
+.plano-dias.aviso{color:#fbbf24}
+
+.bz-section{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:28px 26px;margin-bottom:20px}
+.bz-section h3{font-family:var(--font-hero);font-size:19px;letter-spacing:.5px;margin-bottom:18px;color:#fff}
+.bz-section h3 span{color:var(--tema)}
+
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:640px){.form-row{grid-template-columns:1fr}}
+
+.upload-box{border:2px dashed var(--border);border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:border-color .2s;background:var(--bg3)}
+.upload-box:hover{border-color:rgba(124,92,255,.4)}
+.upload-box input{display:none}
+.cover-preview{width:100%;max-width:340px;border-radius:12px;margin-top:12px;display:none;aspect-ratio:16/9;object-fit:cover}
+
+.ss-list{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.ss-thumb{position:relative;width:110px;height:70px;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+.ss-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.ss-thumb button{position:absolute;top:2px;right:2px;background:rgba(239,68,68,.9);border:none;color:#fff;width:18px;height:18px;border-radius:50%;font-size:11px;line-height:1;cursor:pointer}
+
+.feat-row{display:grid;grid-template-columns:60px 1fr auto;grid-template-rows:auto auto;gap:10px;align-items:center;margin-bottom:14px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px}
+.feat-row input:first-child{grid-row:1/3;text-align:center;padding:9px 8px}
+.feat-row textarea{grid-column:2;resize:vertical;min-height:44px}
+.feat-del{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.35);color:#fca5a5;border-radius:8px;width:38px;height:38px;cursor:pointer;font-size:14px;grid-row:1/3}
+@media(max-width:640px){.feat-row{grid-template-columns:50px 1fr auto}}
+
+.color-row{display:flex;align-items:center;gap:12px}
+.color-row input[type=color]{width:52px;height:44px;border:1px solid var(--border);border-radius:10px;background:var(--bg3);cursor:pointer;padding:2px}
+
+.sticky-bar{position:sticky;bottom:0;background:rgba(4,7,15,.9);backdrop-filter:blur(14px);border-top:1px solid var(--border);padding:16px 0;margin-top:24px;display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+
+#bzMsg{font-size:13px;margin-bottom:14px;display:none;padding:11px 14px;border-radius:10px}
+#bzMsg.ok{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#86efac;display:block}
+#bzMsg.err{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#fca5a5;display:block}
+#bzMsg.loading{background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3);color:#fde68a;display:block}
+
+#toast{position:fixed;bottom:24px;right:24px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 20px;font-size:13px;box-shadow:0 10px 40px rgba(0,0,0,.4);z-index:3000;display:none}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div class="admin-login-overlay" id="loginOverlay">
+  <div class="admin-login-box">
+    <h2>Meu <span style="color:var(--tema)">Painel</span></h2>
+    <p>Acesse com o e-mail e senha da sua hospedagem</p>
+    <div class="btn-err" id="loginErr">E-mail ou senha inválidos.</div>
+    <div class="adm-field">
+      <label>E-mail</label>
+      <input type="email" id="loginEmail" autocomplete="username">
+    </div>
+    <div class="adm-field">
+      <label>Senha</label>
+      <input type="password" id="loginSenha" autocomplete="current-password">
+    </div>
+    <button class="btn-adm-login" onclick="fazerLogin()">Entrar</button>
+    <p style="text-align:center;font-size:12px;color:var(--muted);margin-top:18px">Ainda não tem uma hospedagem? <a href="hospedagem.html" style="color:var(--tema)">Assine aqui</a></p>
+  </div>
+</div>
+
+<!-- ══ BLOQUEADO (assinatura vencida/inativa) ══ -->
+<div id="telaBloqueado" style="display:none">
+  <nav class="navbar">
+    <div class="logo"><img src="logo.png" alt="Lumina Interactive" style="height:36px;width:auto;display:block"></div>
+    <div class="menu"><a href="index.html">Início</a><a href="hospedagem.html">Hospedagem</a></div>
+  </nav>
+  <div class="locked-box">
+    <h2>🔒 Acesso bloqueado</h2>
+    <p id="motivoBloqueio">Sua assinatura de hospedagem está vencida ou ainda não foi aprovada. Renove o pagamento para recuperar o acesso ao seu painel e reativar sua página.</p>
+    <a href="hospedagem-checkout.html" class="btn primary" style="background:var(--tema);border-color:var(--tema)">Renovar assinatura</a>
+  </div>
+</div>
+
+<!-- ══ CONTEÚDO ══ -->
+<div id="bzConteudo" style="display:none">
+  <nav class="navbar">
+    <div class="logo"><img src="logo.png" alt="Lumina Interactive" style="height:36px;width:auto;display:block"></div>
+    <div class="menu"><a href="index.html">Início</a><a href="hospedagem.html">Hospedagem</a></div>
+  </nav>
+
+  <div class="bz-wrap">
+    <div class="bz-header">
+      <div>
+        <div class="bz-title">Meu <span>Painel</span></div>
+        <div class="bz-sub" id="tenantInfo">—</div>
+      </div>
+      <a href="#" target="_blank" id="linkSitePublico" class="btn-ghost">Ver minha página</a>
+    </div>
+
+    <div class="plano-box">
+      <div class="plano-info">Assinatura ativa até <strong id="dataFimTexto">—</strong></div>
+      <div class="plano-dias" id="diasRestantes">—</div>
+    </div>
+
+    <div id="bzMsg"></div>
+
+    <!-- CAPA / HERO -->
+    <div class="bz-section">
+      <h3>Capa <span>&amp; Hero</span></h3>
+      <div class="adm-field">
+        <label>Nome do site (aparece na aba do navegador)</label>
+        <input type="text" id="fNomeSite" placeholder="Meu Site">
+      </div>
+      <div class="adm-field">
+        <label>Imagem de capa (fundo do topo da página)</label>
+        <div class="upload-box" onclick="document.getElementById('fCapaFile').click()">
+          <input type="file" id="fCapaFile" accept="image/*" onchange="preverCapa(event)">
+          📷 Clique para enviar a imagem de capa
+        </div>
+        <img id="capaPreviewImg" class="cover-preview">
+        <input type="hidden" id="fCapaUrl">
+      </div>
+      <div class="adm-field">
+        <label>Cor de tema da página</label>
+        <div class="color-row">
+          <input type="color" id="fCorTema" value="#1a6bff">
+          <span class="adm-hint" style="margin:0">Usada nos destaques, botões e título da sua página.</span>
+        </div>
+      </div>
+      <div class="adm-field">
+        <label>Selo do topo (pill)</label>
+        <input type="text" id="fSelo" placeholder="Hospedado pela Lumina">
+      </div>
+      <div class="adm-field">
+        <label>Título</label>
+        <input type="text" id="fTitulo" placeholder="SEU TÍTULO AQUI">
+        <div class="adm-hint">Use uma quebra de linha (Enter) para controlar onde o título quebra — a segunda parte fica destacada na sua cor de tema.</div>
+      </div>
+      <div class="adm-field">
+        <label>Descrição (abaixo do título)</label>
+        <textarea id="fDescricao" rows="3"></textarea>
+      </div>
+      <div class="adm-field">
+        <label>Link de download / botão principal</label>
+        <input type="text" id="fDownload" placeholder="https://...">
+        <div class="adm-hint">Deixe em branco se sua página não tiver um botão de download.</div>
+      </div>
+    </div>
+
+    <!-- DESTAQUES -->
+    <div class="bz-section">
+      <h3>Cards de <span>destaque</span></h3>
+      <div id="featuresList"></div>
+      <button class="btn-ghost" onclick="adicionarFeature()" style="margin-top:6px">+ Adicionar card</button>
+    </div>
+
+    <!-- GALERIA -->
+    <div class="bz-section">
+      <h3>Galeria <span>de imagens</span></h3>
+      <div class="upload-box" onclick="document.getElementById('fSsFile').click()">
+        <input type="file" id="fSsFile" accept="image/*" multiple onchange="adicionarScreenshots(event)">
+        🖼️ Clique para enviar uma ou mais imagens
+      </div>
+      <div class="ss-list" id="ssList"></div>
+    </div>
+
+    <div class="sticky-bar">
+      <button class="btn-primary" onclick="salvarConfig()">Salvar alterações</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+/* ════════════════════════════
+   CONFIG SUPABASE (service role — mesmo padrão do restante dos admins do site)
+════════════════════════════ */
+const supabaseClient = supabase.createClient(
+  "https://tqsalhscgkepttbczyjq.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxc2FsaHNjZ2tlcHR0YmN6eWpxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3OTQ5NTIwNSwiZXhwIjoyMDk1MDcxMjA1fQ.1qvrbIaOyAUED9OmsOqJuSP_HvGKzUMOaA82CPZQp1I",
+  { auth: { persistSession: false } }
+);
+
+let tenantAtual = null;
+let screenshotsAtuais = [];
+let featuresAtuais = [];
+
+function toast(texto, cor){
+  const t = document.getElementById("toast");
+  t.textContent = texto;
+  t.style.borderColor = cor || "var(--border)";
+  t.style.display = "block";
+  setTimeout(()=> t.style.display = "none", 3000);
+}
+
+/* ════════════════════════════
+   LOGIN DO CLIENTE
+════════════════════════════ */
+async function fazerLogin(){
+  const email = document.getElementById("loginEmail").value.trim().toLowerCase();
+  const senha = document.getElementById("loginSenha").value;
+  const err = document.getElementById("loginErr");
+
+  const { data: conta, error } = await supabaseClient
+    .from("hospedagem_contas")
+    .select("*")
+    .eq("email", email)
+    .maybeSingle();
+
+  if (error || !conta || conta.senha !== senha){
+    err.textContent = "E-mail ou senha inválidos.";
+    err.classList.add("show");
+    return;
+  }
+
+  err.classList.remove("show");
+  sessionStorage.setItem("hospedagem_tenant", conta.tenant_id);
+  sessionStorage.setItem("hospedagem_email", email);
+  document.getElementById("loginOverlay").style.display = "none";
+  await validarAssinaturaEcarregar(conta.tenant_id, email);
+}
+
+(function verificarSessao(){
+  const tenant = sessionStorage.getItem("hospedagem_tenant");
+  const email = sessionStorage.getItem("hospedagem_email");
+  if (tenant && email){
+    document.getElementById("loginOverlay").style.display = "none";
+    document.addEventListener("DOMContentLoaded", () => validarAssinaturaEcarregar(tenant, email));
+  }
+})();
+
+/* ════════════════════════════
+   VALIDA SE A ASSINATURA ESTÁ ATIVA
+   (usa a tabela "pedidos" já existente no site: produto = 'Hospedagem')
+════════════════════════════ */
+async function validarAssinaturaEcarregar(tenant, email){
+  const { data: pedidosAtivos, error } = await supabaseClient
+    .from("pedidos")
+    .select("*")
+    .eq("email", email)
+    .eq("produto", "Hospedagem")
+    .eq("acesso_liberado", true)
+    .order("data_fim", { ascending: false })
+    .limit(1);
+
+  const agora = new Date();
+  const pedido = pedidosAtivos && pedidosAtivos[0];
+  const ativo = pedido && pedido.data_fim && new Date(pedido.data_fim) > agora;
+
+  if (error || !ativo){
+    document.getElementById("bzConteudo").style.display = "none";
+    document.getElementById("telaBloqueado").style.display = "block";
+    if (pedido && pedido.data_fim && new Date(pedido.data_fim) <= agora){
+      document.getElementById("motivoBloqueio").textContent = "Sua assinatura venceu em " + new Date(pedido.data_fim).toLocaleDateString("pt-BR") + ". Renove o pagamento para reativar seu painel e sua página.";
+    }
+    return;
+  }
+
+  tenantAtual = tenant;
+  document.getElementById("telaBloqueado").style.display = "none";
+  document.getElementById("bzConteudo").style.display = "block";
+  document.getElementById("tenantInfo").textContent = "ID do site: " + tenant;
+  document.getElementById("linkSitePublico").href = "hospedagem-site.html?tenant=" + encodeURIComponent(tenant);
+
+  const dataFim = new Date(pedido.data_fim);
+  document.getElementById("dataFimTexto").textContent = dataFim.toLocaleDateString("pt-BR");
+  const diasRestantes = Math.ceil((dataFim - agora) / (1000*60*60*24));
+  const diasEl = document.getElementById("diasRestantes");
+  diasEl.textContent = diasRestantes + (diasRestantes === 1 ? " dia restante" : " dias restantes");
+  diasEl.className = "plano-dias " + (diasRestantes <= 5 ? "aviso" : "ok");
+
+  await carregarSite(tenant);
+}
+
+/* ════════════════════════════
+   CARREGAR / PREENCHER
+════════════════════════════ */
+function featuresPadrao(){ return []; }
+
+async function carregarSite(tenant){
+  const msg = document.getElementById("bzMsg");
+  msg.className = "loading";
+  msg.textContent = "⏳ Carregando sua página...";
+
+  const { data, error } = await supabaseClient
+    .from("hospedagem_sites")
+    .select("*")
+    .eq("tenant_id", tenant)
+    .maybeSingle();
+
+  if (error){
+    msg.className = "err";
+    msg.textContent = "⚠️ Não foi possível carregar sua página (" + error.message + ").";
+    preencherForm(null);
+    return;
+  }
+
+  msg.style.display = "none";
+  preencherForm(data);
+}
+
+function preencherForm(site){
+  document.getElementById("fNomeSite").value = site?.nome_site || "Meu Site";
+  document.getElementById("fCapaUrl").value = site?.capa_url || "";
+  const capaImg = document.getElementById("capaPreviewImg");
+  if (site?.capa_url){ capaImg.src = site.capa_url; capaImg.style.display = "block"; }
+  else { capaImg.style.display = "none"; capaImg.src = ""; }
+
+  document.getElementById("fCorTema").value = site?.cor_tema || "#1a6bff";
+  document.getElementById("fSelo").value = site?.selo || "Hospedado pela Lumina";
+  document.getElementById("fTitulo").value = site?.titulo || "SEU TÍTULO\nAQUI";
+  document.getElementById("fDescricao").value = site?.descricao || "Edite esta página pelo seu painel administrativo.";
+  document.getElementById("fDownload").value = site?.link_download || "";
+
+  screenshotsAtuais = site?.screenshots ? [...site.screenshots] : [];
+  renderScreenshots();
+
+  featuresAtuais = site?.features ? JSON.parse(JSON.stringify(site.features)) : featuresPadrao();
+  renderFeatures();
+}
+
+/* Upload de capa */
+async function preverCapa(e){
+  const file = e.target.files[0];
+  if (!file) return;
+  const preview = document.getElementById("capaPreviewImg");
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = "block";
+
+  toast("Enviando capa...");
+  const ext = file.name.split(".").pop();
+  const path = `hospedagem/${tenantAtual}/capa_${Date.now()}.${ext}`;
+  const { error } = await supabaseClient.storage.from("vlgus-midia").upload(path, file, { upsert:true, contentType:file.type });
+  if (error){ toast("Erro no upload da capa: " + error.message, "#ef4444"); return; }
+  const { data } = supabaseClient.storage.from("vlgus-midia").getPublicUrl(path);
+  document.getElementById("fCapaUrl").value = data.publicUrl;
+  toast("Capa enviada!", "#22c55e");
+}
+
+/* Upload de screenshots */
+async function adicionarScreenshots(e){
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
+  toast(`Enviando ${files.length} imagem(ns)...`);
+  for (const file of files){
+    const ext = file.name.split(".").pop();
+    const path = `hospedagem/${tenantAtual}/galeria/${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`;
+    const { error } = await supabaseClient.storage.from("vlgus-midia").upload(path, file, { upsert:true, contentType:file.type });
+    if (error){ toast("Erro: " + error.message, "#ef4444"); continue; }
+    const { data } = supabaseClient.storage.from("vlgus-midia").getPublicUrl(path);
+    screenshotsAtuais.push(data.publicUrl);
+  }
+  renderScreenshots();
+  toast("Imagens enviadas!", "#22c55e");
+  e.target.value = "";
+}
+function renderScreenshots(){
+  const list = document.getElementById("ssList");
+  list.innerHTML = screenshotsAtuais.map((url,i)=>`
+    <div class="ss-thumb">
+      <img src="${url}">
+      <button onclick="removerScreenshot(${i})">✕</button>
+    </div>
+  `).join("");
+}
+function removerScreenshot(i){
+  screenshotsAtuais.splice(i,1);
+  renderScreenshots();
+}
+
+/* Features */
+function renderFeatures(){
+  const wrap = document.getElementById("featuresList");
+  if (!featuresAtuais.length){
+    wrap.innerHTML = `<p class="adm-hint" style="margin-bottom:6px">Nenhum card adicionado ainda.</p>`;
+    return;
+  }
+  wrap.innerHTML = featuresAtuais.map((f,i)=>`
+    <div class="feat-row">
+      <input type="text" value="${(f.icone||'').replace(/"/g,'&quot;')}" placeholder="⭐" oninput="featuresAtuais[${i}].icone=this.value">
+      <input type="text" value="${(f.titulo||'').replace(/"/g,'&quot;')}" placeholder="Título do card" oninput="featuresAtuais[${i}].titulo=this.value" style="padding:9px 12px">
+      <button class="feat-del" onclick="removerFeature(${i})" title="Remover">✕</button>
+      <textarea placeholder="Descrição" oninput="featuresAtuais[${i}].desc=this.value">${(f.desc||'')}</textarea>
+    </div>
+  `).join("");
+}
+function adicionarFeature(){
+  featuresAtuais.push({ icone:"⭐", titulo:"", desc:"" });
+  renderFeatures();
+}
+function removerFeature(i){
+  featuresAtuais.splice(i,1);
+  renderFeatures();
+}
+
+/* ════════════════════════════
+   SALVAR
+════════════════════════════ */
+async function salvarConfig(){
+  const msg = document.getElementById("bzMsg");
+
+  const payload = {
+    tenant_id: tenantAtual,
+    nome_site: document.getElementById("fNomeSite").value.trim() || "Meu Site",
+    capa_url: document.getElementById("fCapaUrl").value || null,
+    cor_tema: document.getElementById("fCorTema").value,
+    selo: document.getElementById("fSelo").value.trim(),
+    titulo: document.getElementById("fTitulo").value,
+    descricao: document.getElementById("fDescricao").value.trim(),
+    link_download: document.getElementById("fDownload").value.trim() || null,
+    screenshots: screenshotsAtuais,
+    features: featuresAtuais,
+    atualizado_em: new Date().toISOString()
+  };
+
+  msg.className = "loading";
+  msg.textContent = "⏳ Salvando...";
+
+  const { error } = await supabaseClient
+    .from("hospedagem_sites")
+    .upsert(payload, { onConflict: "tenant_id" });
+
+  if (error){
+    msg.className = "err";
+    msg.textContent = "Erro ao salvar: " + error.message;
+    return;
+  }
+
+  msg.className = "ok";
+  msg.textContent = "✅ Alterações salvas! Sua página pública já reflete o novo conteúdo.";
+  toast("Salvo com sucesso!", "#22c55e");
+}
+</script>
+</body>
+</html>
