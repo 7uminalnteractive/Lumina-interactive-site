@@ -1,0 +1,2561 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin | Lumina Interactive</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* ── LOGIN ── */
+.admin-login-overlay {
+  position:fixed;inset:0;z-index:9999;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;padding:24px;
+}
+.admin-login-box {
+  background:var(--bg2);border:1px solid var(--border);border-radius:24px;
+  padding:48px 40px;width:100%;max-width:420px;
+  box-shadow:0 0 80px rgba(26,107,255,.12);
+}
+.admin-login-box h2{font-family:var(--font-hero);font-size:32px;letter-spacing:1px;margin-bottom:6px;text-align:center}
+.admin-login-box p{color:var(--muted);font-size:14px;margin-bottom:28px;text-align:center}
+.adm-field{margin-bottom:14px}
+.adm-field label{display:block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.adm-field input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:13px 16px;color:var(--text);font-family:var(--font-body);font-size:14px;outline:none;transition:border-color .2s;box-sizing:border-box}
+.adm-field input:focus{border-color:rgba(26,107,255,.5)}
+.btn-err{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#fca5a5;border-radius:10px;padding:11px 14px;font-size:13px;margin-bottom:14px;display:none}
+.btn-err.show{display:block}
+.btn-adm-login{width:100%;padding:15px;background:var(--blue);color:#fff;border:none;border-radius:12px;font-family:var(--font-body);font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;transition:background .2s,transform .15s;box-shadow:0 0 24px rgba(26,107,255,.35)}
+.btn-adm-login:hover{background:#1558d6;transform:translateY(-1px)}
+
+/* ── TABS ── */
+.tab-bar{display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:40px;overflow-x:auto}
+.tab-btn{background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);font-family:var(--font-body);font-size:13px;font-weight:600;padding:12px 18px;cursor:pointer;margin-bottom:-1px;transition:color .15s,border-color .15s;white-space:nowrap}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--blue);border-bottom-color:var(--blue)}
+
+/* ── DASH CARDS ── */
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:40px}
+.dash-card{background:var(--bg3);border:1px solid var(--border);border-radius:18px;padding:22px 20px;cursor:pointer;transition:border-color .2s,transform .15s,box-shadow .2s}
+.dash-card:hover{transform:translateY(-2px)}
+.dash-card.blue{border-color:rgba(26,107,255,.2)}.dash-card.green{border-color:rgba(34,197,94,.2)}.dash-card.yellow{border-color:rgba(251,191,36,.2)}.dash-card.red{border-color:rgba(239,68,68,.2)}.dash-card.purple{border-color:rgba(167,139,250,.2)}.dash-card.teal{border-color:rgba(20,184,166,.2)}
+.dash-card:hover.blue{border-color:rgba(26,107,255,.5);box-shadow:0 8px 30px rgba(26,107,255,.12)}.dash-card:hover.green{border-color:rgba(34,197,94,.5);box-shadow:0 8px 30px rgba(34,197,94,.12)}.dash-card:hover.yellow{border-color:rgba(251,191,36,.5);box-shadow:0 8px 30px rgba(251,191,36,.12)}.dash-card:hover.red{border-color:rgba(239,68,68,.5);box-shadow:0 8px 30px rgba(239,68,68,.12)}.dash-card:hover.purple{border-color:rgba(167,139,250,.5);box-shadow:0 8px 30px rgba(167,139,250,.12)}
+.dash-card-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.dash-card-value{font-family:var(--font-hero);font-size:44px;line-height:1;letter-spacing:1px}
+.dash-card-sub{font-size:11px;color:var(--muted);margin-top:6px}
+.dash-card.blue .dash-card-value{color:var(--blue)}.dash-card.green .dash-card-value{color:#22c55e}.dash-card.yellow .dash-card-value{color:#fbbf24}.dash-card.red .dash-card-value{color:#ef4444}.dash-card.purple .dash-card-value{color:#a78bfa}.dash-card.teal .dash-card-value{color:#14b8a6}
+
+/* ── SEARCH BAR ── */
+.search-bar{display:flex;align-items:center;gap:12px;background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:12px 18px;margin-bottom:20px;transition:border-color .2s}
+.search-bar:focus-within{border-color:rgba(26,107,255,.5)}
+.search-bar svg{flex-shrink:0;fill:var(--muted)}
+.search-bar input{background:none;border:none;outline:none;color:var(--text);font-family:var(--font-body);font-size:14px;width:100%}
+.search-bar input::placeholder{color:var(--muted)}
+
+/* ── FILTROS ── */
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.filter-btn{background:var(--bg3);border:1px solid var(--border);color:var(--muted);font-family:var(--font-body);font-size:12px;font-weight:600;padding:6px 14px;border-radius:999px;cursor:pointer;transition:all .15s}
+.filter-btn:hover,.filter-btn.active{background:var(--blue-dim);border-color:rgba(26,107,255,.4);color:#6aabff}
+.filter-btn.f-green.active{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.4);color:#22c55e}
+.filter-btn.f-yellow.active{background:rgba(251,191,36,.12);border-color:rgba(251,191,36,.4);color:#fbbf24}
+.filter-btn.f-red.active{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.4);color:#ef4444}
+
+/* ── ACTION BUTTONS ── */
+.admin-actions-bar{display:flex;gap:5px;flex-wrap:wrap}
+.btn-action{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;border:none;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font-body);transition:opacity .15s,transform .1s;white-space:nowrap}
+.btn-action:hover{opacity:.85;transform:translateY(-1px)}
+.btn-approve{background:#22c55e;color:#000}.btn-renew{background:#3b82f6;color:#fff}.btn-cancel{background:#f59e0b;color:#000}.btn-delete{background:#ef4444;color:#fff}.btn-ban{background:#7c3aed;color:#fff}.btn-view{background:var(--bg3);border:1px solid var(--border)!important;color:var(--text)}
+
+/* ── STATUS BADGES ── */
+.status-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap}
+.status-aprovado{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#86efac}
+.status-pendente{background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3);color:#fde047}
+.status-cancelado{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#fca5a5}
+.status-ativo{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#86efac}
+.status-ativa{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#86efac}
+.status-inativo{background:rgba(100,116,139,.12);border:1px solid rgba(100,116,139,.3);color:#94a3b8}
+
+/* ── COMPROVANTE ── */
+.comp-thumb{display:inline-block;cursor:pointer;border-radius:8px;overflow:hidden;border:1px solid var(--border);transition:border-color .15s}
+.comp-thumb:hover{border-color:rgba(26,107,255,.4)}
+.comp-thumb img{width:52px;height:40px;object-fit:cover;display:block}
+
+/* ── LIGHTBOX ── */
+.comp-lightbox{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.comp-lightbox img{max-width:90vw;max-height:86vh;border-radius:14px;box-shadow:0 24px 80px rgba(0,0,0,.8)}
+.comp-lightbox-close{position:absolute;top:20px;right:24px;background:rgba(255,255,255,.1);border:none;color:#fff;font-size:22px;width:44px;height:44px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:24px;right:24px;z-index:7000;background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:13px 20px;font-size:14px;min-width:220px;box-shadow:0 8px 32px rgba(0,0,0,.5);transform:translateY(80px);opacity:0;transition:transform .3s,opacity .3s;pointer-events:none}
+#toast.show{transform:translateY(0);opacity:1}
+#toast.ok{border-color:rgba(34,197,94,.4);color:#86efac}
+#toast.err{border-color:rgba(239,68,68,.4);color:#fca5a5}
+
+/* ── USER TABLE ── */
+.user-senha-cell{font-family:monospace;font-size:12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:4px 10px;color:#a78bfa;cursor:pointer;user-select:all;white-space:nowrap}
+.handle-cell{font-family:monospace;font-size:13px;font-weight:700;color:#6aabff}
+.adm-badge-nav{display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:8px 14px;font-size:13px;color:var(--muted)}
+.adm-badge-nav strong{color:var(--text)}
+.nome-clicavel{cursor:pointer;font-weight:600;color:var(--text);transition:color .15s}
+.nome-clicavel:hover{color:#6aabff;text-decoration:underline}
+
+/* ── MODAL PERFIL ── */
+.user-modal-overlay{position:fixed;inset:0;z-index:6000;background:rgba(4,7,15,.88);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s}
+.user-modal-overlay.show{opacity:1;pointer-events:all}
+.user-modal{background:var(--bg2);border:1px solid var(--border);border-radius:24px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:0 0 80px rgba(26,107,255,.15);transform:translateY(20px);transition:transform .25s}
+.user-modal-overlay.show .user-modal{transform:translateY(0)}
+.user-modal-head{background:linear-gradient(135deg,var(--bg3),var(--bg2));border-bottom:1px solid var(--border);padding:28px 28px 22px;position:relative;display:flex;align-items:flex-start;gap:16px}
+.user-modal-avatar{width:64px;height:64px;border-radius:50%;background:var(--blue-dim);border:2px solid rgba(26,107,255,.35);display:flex;align-items:center;justify-content:center;font-family:var(--font-hero);font-size:28px;color:var(--blue);flex-shrink:0}
+.user-modal-title{font-family:var(--font-hero);font-size:26px;letter-spacing:1px;line-height:1.1;margin-bottom:4px}
+.user-modal-handle{font-family:monospace;font-size:13px;color:#6aabff;margin-bottom:10px}
+.user-modal-close{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--muted);width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:color .15s,border-color .15s}
+.user-modal-close:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
+.user-modal-body{padding:22px 28px 28px}
+.um-section-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;margin-top:20px}
+.um-section-label:first-child{margin-top:0}
+.um-rows{display:grid;gap:8px}
+.um-row{display:flex;align-items:center;gap:12px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:11px 14px}
+.um-row-icon{flex-shrink:0;opacity:.7}
+.um-row-label{font-size:10px;color:var(--muted);margin-bottom:2px}
+.um-row-val{font-size:13px;color:var(--text);font-weight:500;word-break:break-all}
+.um-row-val.blue{color:#6aabff}
+.um-row-val.mono{font-family:monospace;color:#a78bfa;cursor:pointer}
+.um-row-val.mono:hover{opacity:.8}
+.um-pedido-item{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.um-pedido-item:last-child{margin-bottom:0}
+.um-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px;padding-top:18px;border-top:1px solid var(--border)}
+
+/* ── TICKET CARDS ── */
+.ticket-card{background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:14px}
+.ticket-card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.ticket-assunto{font-weight:700;font-size:14px}
+.ticket-meta{font-size:12px;color:var(--muted);margin-bottom:8px}
+.ticket-mensagem{font-size:13px;color:#94a3b8;margin-bottom:10px}
+.ticket-resposta{background:var(--bg2);border-left:3px solid var(--blue);border-radius:8px;padding:12px;margin-top:10px}
+.ticket-resposta-label{font-size:11px;font-weight:700;color:#6aabff;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px}
+.ticket-reply-area{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.ticket-reply-area textarea{flex:1;min-width:200px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;resize:vertical;min-height:60px;transition:border-color .2s}
+.ticket-reply-area textarea:focus{border-color:rgba(26,107,255,.5)}
+.ticket-reply-actions{display:flex;flex-direction:column;gap:6px}
+
+/* ── MENSAGENS (DMs) ── */
+.dm-admin-layout{display:grid;grid-template-columns:340px 1fr;gap:18px;align-items:start}
+.dm-admin-list{background:var(--bg3);border:1px solid var(--border);border-radius:18px;max-height:680px;overflow-y:auto}
+.dm-admin-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
+.dm-admin-item:last-child{border-bottom:none}
+.dm-admin-item:hover{background:rgba(255,255,255,.03)}
+.dm-admin-item.active{background:var(--blue-dim)}
+.dm-admin-avatars{position:relative;width:46px;height:32px;flex-shrink:0}
+.dm-admin-avatar{width:30px;height:30px;border-radius:50%;background:var(--bg2);border:2px solid var(--bg3);position:absolute;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#6aabff;object-fit:cover;overflow:hidden}
+.dm-admin-avatar img{width:100%;height:100%;object-fit:cover}
+.dm-admin-avatar.a{top:0;left:0;z-index:2}
+.dm-admin-avatar.b{top:0;left:16px;z-index:1}
+.dm-admin-item-info{flex:1;min-width:0}
+.dm-admin-item-names{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dm-admin-item-preview{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.dm-admin-item-time{font-size:10.5px;color:#475569;flex-shrink:0;white-space:nowrap}
+.dm-admin-thread{background:var(--bg3);border:1px solid var(--border);border-radius:18px;min-height:680px;max-height:680px;display:flex;flex-direction:column}
+.dm-admin-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:var(--muted);font-size:13.5px;opacity:.7}
+.dm-admin-thread-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.dm-admin-thread-title{font-family:var(--font-hero);font-size:18px;letter-spacing:1px}
+.dm-admin-thread-sub{font-size:11.5px;color:var(--muted)}
+.dm-admin-msgs{flex:1;overflow-y:auto;padding:18px 20px;display:flex;flex-direction:column;gap:12px}
+.dm-admin-msg{display:flex;gap:10px;max-width:78%}
+.dm-admin-msg.right{align-self:flex-end;flex-direction:row-reverse}
+.dm-admin-bubble{background:var(--bg2);border-radius:14px;padding:9px 14px}
+.dm-admin-msg.right .dm-admin-bubble{background:var(--blue)}
+.dm-admin-msg.right .dm-admin-name,.dm-admin-msg.right .dm-admin-text{color:#fff}
+.dm-admin-name{font-size:11px;font-weight:700;color:#6aabff}
+.dm-admin-text{font-size:13.5px;color:#dbe4f5;line-height:1.45;margin-top:1px;word-break:break-word}
+.dm-admin-mini-avatar{width:28px;height:28px;border-radius:50%;flex-shrink:0;object-fit:cover;background:var(--bg2)}
+@media(max-width:900px){.dm-admin-layout{grid-template-columns:1fr}.dm-admin-thread{display:none}.dm-admin-thread.open{display:flex;position:fixed;inset:70px 0 0 0;z-index:500;border-radius:0;max-height:none}}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div class="admin-login-overlay" id="adminLoginOverlay">
+  <div class="admin-login-box">
+    <div style="width:48px;height:48px;background:var(--blue-dim);border:1px solid rgba(26,107,255,.25);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="#6aabff"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+    </div>
+    <h2>Acesso Restrito</h2>
+    <p>Painel Administrativo — Lumina Interactive™</p>
+    <div class="btn-err" id="loginErr">E-mail ou senha incorretos.</div>
+    <div class="adm-field"><label>E-mail</label><input type="email" id="adminEmail" placeholder="admin@email.com" autocomplete="email"></div>
+    <div class="adm-field"><label>Senha</label><input type="password" id="adminSenha" placeholder="••••••" autocomplete="current-password"></div>
+    <button class="btn-adm-login" onclick="verificarSenha()">Entrar no painel</button>
+  </div>
+</div>
+
+<!-- ══ PAINEL ══ -->
+<div id="adminPanel" style="display:none">
+
+<nav class="navbar">
+  <div class="logo"><img src="logo.png" alt="Lumina Interactive" style="height:36px;width:auto;display:block"></div>
+  <div style="display:flex;align-items:center;gap:10px;margin-left:auto">
+    <div class="adm-badge-nav">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="#6aabff"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+      <strong id="admNome">Admin</strong>
+    </div>
+    <button onclick="logoutAdmin()" class="btn secondary" style="padding:8px 14px;font-size:12px">Sair</button>
+  </div>
+</nav>
+
+<div class="page-wrap">
+<div class="container" style="padding-top:40px;padding-bottom:80px">
+
+  <!-- ABAS -->
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tabDashBtn"      onclick="mudarAba('Dash')">📊 Dashboard</button>
+    <button class="tab-btn"        id="tabPedidosBtn"   onclick="mudarAba('Pedidos')">📋 Pedidos</button>
+    <button class="tab-btn"        id="tabAtivosBtn"    onclick="mudarAba('Ativos')">✅ Ativos</button>
+    <button class="tab-btn"        id="tabUsuariosBtn"  onclick="mudarAba('Usuarios')">👥 Usuários</button>
+    <button class="tab-btn"        id="tabSuporteBtn"   onclick="mudarAba('Suporte')">🎧 Suporte</button>
+    <button class="tab-btn"        id="tabAssinanteBtn" onclick="mudarAba('Assinante')">➕ Criar Assinante</button>
+    <button class="tab-btn"        id="tabNoticiasBtn"  onclick="mudarAba('Noticias')">📰 Notícias</button>
+    <button class="tab-btn"        id="tabMensagensBtn" onclick="mudarAba('Mensagens')">💬 Mensagens</button>
+    <button class="tab-btn"        id="tabVerificadoBtn" onclick="mudarAba('Verificado')">⭐ Lumina Verified+</button>
+    <button class="tab-btn"        id="tabEquipeBtn"    onclick="mudarAba('Equipe')">🧑‍💻 Equipe</button>
+    <button class="tab-btn"        id="tabHospedagemBtn" onclick="mudarAba('Hospedagem')">🌐 Hospedagem</button>
+  </div>
+
+  <!-- ══ DASHBOARD ══ -->
+  <div id="tabDash">
+    <div class="page-hero" style="padding:0 0 28px">
+      <div class="page-hero-label">Visão Geral</div>
+      <h1>Dashboard</h1>
+      <p>Resumo em tempo real dos pedidos e assinaturas.</p>
+    </div>
+    <div class="dash-grid">
+      <div class="dash-card blue"   onclick="mudarAba('Pedidos')"><div class="dash-card-label">Total de pedidos</div><div class="dash-card-value" id="dTotal">—</div><div class="dash-card-sub">ver todos →</div></div>
+      <div class="dash-card green"  onclick="mudarAba('Ativos')"><div class="dash-card-label">Assinantes ativos</div><div class="dash-card-value" id="dAtivos">—</div><div class="dash-card-sub">ver ativos →</div></div>
+      <div class="dash-card yellow" onclick="mudarAba('Pedidos');setTimeout(()=>aplicarFiltro('pendente'),80)"><div class="dash-card-label">Pendentes</div><div class="dash-card-value" id="dPendentes">—</div><div class="dash-card-sub">aguardando aprovação →</div></div>
+      <div class="dash-card red"    onclick="mudarAba('Pedidos');setTimeout(()=>aplicarFiltro('cancelada'),80)"><div class="dash-card-label">Cancelados</div><div class="dash-card-value" id="dCancelados">—</div><div class="dash-card-sub">ver cancelados →</div></div>
+      <div class="dash-card purple" onclick="mudarAba('Ativos')"><div class="dash-card-label">Expirando em 7d</div><div class="dash-card-value" id="dExpirando">—</div><div class="dash-card-sub">precisam renovar →</div></div>
+      <div class="dash-card teal"   onclick="mudarAba('Usuarios')"><div class="dash-card-label">Usuários cadastrados</div><div class="dash-card-value" id="dUsuarios">—</div><div class="dash-card-sub">ver usuários →</div></div>
+    </div>
+    <div style="font-family:var(--font-hero);font-size:24px;letter-spacing:1px;margin-bottom:16px">Pedidos recentes</div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>ID</th><th>Cliente</th><th>Produto</th><th>Status</th><th>Validade</th></tr></thead>
+        <tbody id="dash-recentes-tbody"><tr><td colspan="5" style="color:var(--muted);text-align:center;padding:30px">Carregando...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ PEDIDOS ══ -->
+  <div id="tabPedidos" style="display:none">
+    <div class="page-hero" style="padding:0 0 28px">
+      <div class="page-hero-label">Painel</div><h1>Pedidos</h1>
+      <p>Gerencie todos os pedidos, assinaturas e comprovantes.</p>
+    </div>
+    <div class="search-bar">
+      <svg width="16" height="16" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <input type="text" id="searchPedidos" placeholder="Pesquisar por nome, e-mail, produto, WhatsApp..." oninput="filtrarPedidos()">
+    </div>
+    <div class="filter-row">
+      <button class="filter-btn active"   id="f-todos"       onclick="aplicarFiltro('todos')">Todos</button>
+      <button class="filter-btn f-yellow" id="f-pendente"    onclick="aplicarFiltro('pendente')">Pendentes</button>
+      <button class="filter-btn f-yellow" id="f-aguardando"  onclick="aplicarFiltro('aguardando_pagamento')">Aguardando</button>
+      <button class="filter-btn f-green"  id="f-ativa"       onclick="aplicarFiltro('ativa')">Aprovados</button>
+      <button class="filter-btn f-red"    id="f-cancelada"   onclick="aplicarFiltro('cancelada')">Cancelados</button>
+    </div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>ID</th><th>Cliente</th><th>Produto</th><th>Valor</th><th>Status</th><th>Comprovante</th><th>WhatsApp</th><th>Validade</th><th>Ações</th></tr></thead>
+        <tbody id="pedidos-admin"><tr><td colspan="9" style="color:var(--muted);text-align:center;padding:40px">Carregando...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ ATIVOS ══ -->
+  <div id="tabAtivos" style="display:none">
+    <div class="page-hero" style="padding:0 0 28px">
+      <div class="page-hero-label">Assinantes</div><h1>Ativos</h1>
+      <p>Todos os assinantes com acesso ativo no momento.</p>
+    </div>
+    <div class="search-bar">
+      <svg width="16" height="16" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <input type="text" id="searchAtivos" placeholder="Pesquisar por nome, e-mail ou produto..." oninput="filtrarAtivos()">
+    </div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>ID</th><th>Cliente</th><th>Produto</th><th>Válido até</th><th>Dias restantes</th><th>Ações</th></tr></thead>
+        <tbody id="ativos-tbody"><tr><td colspan="6" style="color:var(--muted);text-align:center;padding:40px">Carregando...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ USUÁRIOS ══ -->
+  <div id="tabUsuarios" style="display:none">
+    <div class="page-hero" style="padding:0 0 28px">
+      <div class="page-hero-label">Cadastros</div><h1>Usuários</h1>
+      <p>Clique no nome para ver o perfil completo.</p>
+    </div>
+    <div class="search-bar">
+      <svg width="16" height="16" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <input type="text" id="searchUsuarios" placeholder="Pesquisar por nome, e-mail, @handle ou telefone..." oninput="filtrarUsuarios()">
+    </div>
+    <div class="filter-row">
+      <button class="filter-btn active"  id="fu-todos"      onclick="aplicarFiltroUser('todos')">Todos</button>
+      <button class="filter-btn f-green" id="fu-assinante"  onclick="aplicarFiltroUser('assinante')">Assinantes</button>
+      <button class="filter-btn"         id="fu-free"       onclick="aplicarFiltroUser('free')">Não assinantes</button>
+    </div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>@Handle</th><th>Nome</th><th>E-mail</th><th>Telefone</th><th>Assinante?</th><th>Cadastro</th><th>Ações</th></tr></thead>
+        <tbody id="usuarios-tbody"><tr><td colspan="7" style="color:var(--muted);text-align:center;padding:40px">Carregando...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ SUPORTE ══ -->
+  <div id="tabSuporte" style="display:none">
+    <div class="page-hero" style="padding:0 0 28px">
+      <div class="page-hero-label">Atendimento</div><h1>Suporte</h1>
+      <p>Gerencie e responda os chamados dos usuários.</p>
+    </div>
+    <div class="filter-row">
+      <button class="filter-btn active"  id="sf-todos"        onclick="filtrarTickets('todos')">Todos</button>
+      <button class="filter-btn f-yellow" id="sf-aberto"      onclick="filtrarTickets('aberto')">Abertos</button>
+      <button class="filter-btn"          id="sf-respondido"  onclick="filtrarTickets('respondido')">Respondidos</button>
+      <button class="filter-btn f-green"  id="sf-resolvido"   onclick="filtrarTickets('resolvido')">Resolvidos</button>
+    </div>
+    <div id="ticketsList"><div style="color:var(--muted);text-align:center;padding:40px">Carregando...</div></div>
+  </div>
+
+  <!-- ══ CRIAR ASSINANTE ══ -->
+  <div id="tabAssinante" style="display:none">
+    <div class="page-hero" style="padding:0 0 28px">
+      <div class="page-hero-label">Painel</div><h1>Criar Assinante</h1>
+      <p>Adicione um assinante manualmente com 30 dias de acesso imediato.</p>
+    </div>
+    <div style="max-width:480px">
+      <div id="msgAssinanteErro"    style="display:none;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#fca5a5;padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:16px"></div>
+      <div id="msgAssinanteSucesso" style="display:none;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#86efac;padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:16px"></div>
+      <div class="field"><label>E-mail do assinante</label><input type="email" id="emailAssinante" placeholder="cliente@email.com"></div>
+      <div class="field">
+        <label>Produto</label>
+        <select id="produtoAssinante" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:13px 16px;color:var(--text);font-family:var(--font-body);font-size:14px;outline:none">
+          <option value="Lumina Plus">Lumina Plus</option>
+          <option value="LPFL PRO">LPFL PRO</option>
+          <option value="LPFL Normal">LPFL Normal</option>
+          <option value="Brazukas Patch">Brazukas Patch</option>
+        </select>
+      </div>
+      <button class="btn primary" style="width:100%" onclick="criarAssinante()">Criar assinante — 30 dias</button>
+    </div>
+  </div>
+
+
+  <!-- ══ NOTÍCIAS ══ -->
+  <div id="tabNoticias" style="display:none">
+    <div class="page-hero" style="padding:0 0 28px">
+      <div class="page-hero-label">Destaque</div>
+      <h1>Notícias</h1>
+      <p>Crie notícias que aparecem como destaque na página inicial.</p>
+    </div>
+
+    <!-- Formulário criar notícia -->
+    <div style="background:#0c1528;border:1px solid rgba(26,107,255,0.2);border-radius:20px;padding:28px;margin-bottom:32px">
+      <div style="font-family:var(--font-hero);font-size:20px;letter-spacing:1px;margin-bottom:20px">Nova notícia</div>
+      <div class="adm-field" style="margin-bottom:14px">
+        <label style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">Título</label>
+        <input type="text" id="noticiasTitulo" placeholder="Ex: Novo patch disponível!" style="width:100%;background:#04070f;border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px 14px;color:#fff;font-size:14px;outline:none;box-sizing:border-box">
+      </div>
+      <div class="adm-field" style="margin-bottom:20px">
+        <label style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">Texto / Descrição</label>
+        <textarea id="noticiasDesc" placeholder="Descreva a notícia em poucas linhas..." rows="4" style="width:100%;background:#04070f;border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px 14px;color:#fff;font-size:14px;outline:none;resize:vertical;box-sizing:border-box;font-family:inherit"></textarea>
+      </div>
+
+      <!-- Imagem de fundo opcional -->
+      <div style="background:rgba(26,107,255,0.06);border:1px solid rgba(26,107,255,0.15);border-radius:14px;padding:16px 18px;margin-bottom:14px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#6aabff;margin-bottom:14px">🖼️ Imagem de fundo (opcional)</div>
+        <!-- Área de upload -->
+        <label id="imgUploadLabel" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:2px dashed rgba(26,107,255,0.3);border-radius:12px;padding:24px;cursor:pointer;transition:border-color .2s;min-height:100px" onmouseover="this.style.borderColor='rgba(26,107,255,0.6)'" onmouseout="this.style.borderColor='rgba(26,107,255,0.3)'">
+          <div id="imgUploadIcon" style="font-size:28px">📁</div>
+          <div id="imgUploadText" style="font-size:13px;color:var(--muted);text-align:center">Clique para selecionar imagem<br><span style="font-size:11px">JPG, PNG, WEBP — bucket: capas_noticias</span></div>
+          <input type="file" id="noticiasImgFile" accept="image/*" style="display:none">
+        </label>
+        <!-- Preview -->
+        <div id="imgPreviewBox" style="display:none;margin-top:12px;border-radius:10px;overflow:hidden;height:140px;border:1px solid rgba(255,255,255,0.1);position:relative">
+          <img id="imgPreview" style="width:100%;height:100%;object-fit:cover" src="" alt="preview">
+          <button onclick="limparImagem()" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">✕</button>
+        </div>
+        <div id="imgUploadStatus" style="font-size:11px;color:var(--muted);margin-top:8px;display:none"></div>
+      </div>
+
+      <!-- Botão opcional -->
+      <div style="background:rgba(26,107,255,0.06);border:1px solid rgba(26,107,255,0.15);border-radius:14px;padding:16px 18px;margin-bottom:20px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#6aabff;margin-bottom:14px">🔗 Botão de ação (opcional)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div>
+            <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">Nome do botão</label>
+            <input type="text" id="noticiasBtnNome" placeholder="Ex: Ver patch" style="width:100%;background:#04070f;border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:11px 14px;color:#fff;font-size:14px;outline:none;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">URL / Link</label>
+            <input type="text" id="noticiasBtnUrl" placeholder="Ex: patches.html" style="width:100%;background:#04070f;border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:11px 14px;color:#fff;font-size:14px;outline:none;box-sizing:border-box">
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:8px">Se preenchido, aparece como botão de destaque na notícia do site.</div>
+      </div>
+
+      <button onclick="criarNoticia()" class="btn primary" style="min-width:180px">Publicar notícia</button>
+      <span id="noticiaMsg" style="margin-left:14px;font-size:13px;display:none"></span>
+    </div>
+
+    <!-- Lista de notícias -->
+    <div style="font-family:var(--font-hero);font-size:20px;letter-spacing:1px;margin-bottom:16px">Publicadas</div>
+    <div id="noticiasLista" style="display:flex;flex-direction:column;gap:12px">
+      <div style="color:var(--muted);font-size:13px;padding:20px 0">Carregando...</div>
+    </div>
+  </div>
+
+  <!-- ══ MENSAGENS (DMs da Comunidade) ══ -->
+  <div id="tabMensagens" style="display:none">
+    <div class="page-hero" style="padding:0 0 28px">
+      <div class="page-hero-label">Comunidade</div><h1>Mensagens privadas</h1>
+      <p>Visualize as conversas diretas entre usuários da Comunidade.</p>
+    </div>
+    <div class="search-bar">
+      <svg width="16" height="16" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <input type="text" id="searchConversas" placeholder="Pesquisar por nome ou @ID de qualquer participante..." oninput="filtrarConversasAdmin()">
+    </div>
+    <div class="dm-admin-layout">
+      <div class="dm-admin-list" id="conversasAdminList">
+        <div style="color:var(--muted);text-align:center;padding:40px">Carregando...</div>
+      </div>
+      <div class="dm-admin-thread" id="conversaAdminThread">
+        <div class="dm-admin-empty">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H8l-4 4V5a1 1 0 0 1 1-1z"/></svg>
+          <div>Selecione uma conversa para ver as mensagens</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ LUMINA VERIFIED+ (pagos e solicitados) ══ -->
+  <div id="tabVerificado" style="display:none">
+    <div class="page-hero" style="padding:0 0 28px">
+      <div class="page-hero-label">Comunidade</div><h1>Lumina Verified+</h1>
+      <p>Acompanhe quem comprou o selo dourado e quem solicitou verificação manual.</p>
+    </div>
+
+    <div class="filter-row">
+      <button class="filter-btn active" id="vf-pagos"       onclick="trocarSubAbaVerificado('pagos')">💳 Pagos</button>
+      <button class="filter-btn"        id="vf-solicitados" onclick="trocarSubAbaVerificado('solicitados')">📨 Solicitados</button>
+    </div>
+
+    <!-- PAGOS -->
+    <div id="verifSubPagos">
+      <div class="search-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" id="searchVerifPagos" placeholder="Pesquisar por nome ou e-mail..." oninput="renderVerifPagos()">
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>ID</th><th>Cliente</th><th>Valor</th><th>Status</th><th>Comprovante</th><th>Data</th><th>Ações</th></tr></thead>
+          <tbody id="verif-pagos-admin"><tr><td colspan="7" style="color:var(--muted);text-align:center;padding:40px">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SOLICITADOS -->
+    <div id="verifSubSolicitados" style="display:none">
+      <div class="search-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" id="searchVerifSolic" placeholder="Pesquisar por nome ou e-mail..." oninput="renderVerifSolicitados()">
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>ID</th><th>Nome completo</th><th>Email</th><th>Canal</th><th>Print</th><th>Status</th><th>Data</th><th>Ações</th></tr></thead>
+          <tbody id="verif-solic-admin"><tr><td colspan="8" style="color:var(--muted);text-align:center;padding:40px">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ EQUIPE (painel administrativo) ══ -->
+  <div id="tabEquipe" style="display:none">
+    <div class="page-hero" style="padding:0 0 28px">
+      <div class="page-hero-label">Interno</div><h1>Gestão de Equipe</h1>
+      <p>Cadastre serviços, gerencie integrantes e funções, e aprove entregas.</p>
+    </div>
+
+    <div class="filter-row">
+      <button class="filter-btn active" id="eqsub-EqDash"      onclick="mudarSubAbaEquipe('EqDash')">📊 Dashboard</button>
+      <button class="filter-btn"        id="eqsub-EqServicos"  onclick="mudarSubAbaEquipe('EqServicos')">🧩 Serviços</button>
+      <button class="filter-btn"        id="eqsub-EqIntegrantes" onclick="mudarSubAbaEquipe('EqIntegrantes')">👥 Integrantes</button>
+      <button class="filter-btn"        id="eqsub-EqFuncoes"   onclick="mudarSubAbaEquipe('EqFuncoes')">🏷️ Funções</button>
+      <button class="filter-btn"        id="eqsub-EqEntregas"  onclick="mudarSubAbaEquipe('EqEntregas')">📦 Entregas</button>
+      <button class="filter-btn"        id="eqsub-EqAdmins"    onclick="mudarSubAbaEquipe('EqAdmins')">🔑 Administradores</button>
+    </div>
+
+    <!-- ── DASHBOARD DA EQUIPE ── -->
+    <div id="eqTabEqDash">
+      <div class="dash-grid">
+        <div class="dash-card blue"><div class="dash-card-label">Integrantes</div><div class="dash-card-value" id="eqdInt">—</div></div>
+        <div class="dash-card yellow"><div class="dash-card-label">Em andamento</div><div class="dash-card-value" id="eqdAndamento">—</div></div>
+        <div class="dash-card green"><div class="dash-card-label">Concluídos</div><div class="dash-card-value" id="eqdConcluidos">—</div></div>
+        <div class="dash-card red"><div class="dash-card-label">Atrasados / Recusados</div><div class="dash-card-value" id="eqdAtrasados">—</div></div>
+        <div class="dash-card red"><div class="dash-card-label">Demitidos</div><div class="dash-card-value" id="eqdDemitidos">—</div></div>
+        <div class="dash-card purple"><div class="dash-card-label">Moral média</div><div class="dash-card-value" id="eqdMoralMedia">—</div></div>
+      </div>
+      <div style="font-family:var(--font-hero);font-size:22px;letter-spacing:1px;margin-bottom:16px">Aguardando aprovação</div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Serviço</th><th>Integrante</th><th>Função</th><th>Entregue em</th><th>Ações</th></tr></thead>
+          <tbody id="eqdash-aguardando-tbody"><tr><td colspan="5" style="color:var(--muted);text-align:center;padding:40px">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── SERVIÇOS (cadastro + lista) ── -->
+    <div id="eqTabEqServicos" style="display:none">
+      <div class="card" style="margin-bottom:28px">
+        <h3>Cadastrar novo serviço</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="field"><label>Nome do serviço</label><input type="text" id="svcNome" placeholder="Ex: Face de personagem principal"></div>
+          <div class="field"><label>Categoria</label><input type="text" id="svcCategoria" placeholder="Ex: Facemaking"></div>
+        </div>
+        <div class="field"><label>Descrição</label><textarea id="svcDescricao" rows="3" placeholder="Detalhes do serviço..."></textarea></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+          <div class="field"><label>Área responsável</label><select id="svcFuncao"><option value="">Carregando...</option></select></div>
+          <div class="field"><label>Prioridade</label>
+            <select id="svcPrioridade">
+              <option value="baixa">Baixa</option>
+              <option value="media" selected>Média</option>
+              <option value="alta">Alta</option>
+              <option value="urgente">Urgente</option>
+            </select>
+          </div>
+          <div class="field"><label>Prazo (dias)</label><input type="number" id="svcPrazo" min="1" value="3"></div>
+        </div>
+        <div class="field">
+          <label>Arquivos do projeto (links do Google Drive)</label>
+          <textarea id="svcArquivos" rows="3" placeholder="Cole um link por linha. Ex:&#10;Texturas | https://drive.google.com/...&#10;Referências | https://drive.google.com/..."></textarea>
+          <div style="font-size:11.5px;color:var(--muted);margin-top:6px">⚠️ Lembre-se de deixar o link do Drive com acesso aberto ("Qualquer pessoa com o link"), senão o integrante não conseguirá abrir os arquivos.</div>
+        </div>
+        <button class="btn primary" onclick="publicarServico()" id="btnPublicarServico">Publicar serviço</button>
+        <div id="svcPublicarMsg" style="font-size:12.5px;margin-top:10px;display:none"></div>
+      </div>
+
+      <div class="filter-row">
+        <button class="filter-btn active" data-svcf="todos" onclick="filtrarServicosAdmin('todos')">Todos</button>
+        <button class="filter-btn" data-svcf="disponivel" onclick="filtrarServicosAdmin('disponivel')">Disponíveis</button>
+        <button class="filter-btn" data-svcf="em_andamento" onclick="filtrarServicosAdmin('em_andamento')">Em andamento</button>
+        <button class="filter-btn" data-svcf="aguardando_aprovacao" onclick="filtrarServicosAdmin('aguardando_aprovacao')">Aguardando aprovação</button>
+        <button class="filter-btn" data-svcf="aprovado" onclick="filtrarServicosAdmin('aprovado')">Aprovados</button>
+        <button class="filter-btn" data-svcf="recusado" onclick="filtrarServicosAdmin('recusado')">Recusados/Atrasados</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Serviço</th><th>Função</th><th>Prioridade</th><th>Status</th><th>Integrante</th><th>Prazo final</th><th>Ações</th></tr></thead>
+          <tbody id="eq-servicos-admin-tbody"><tr><td colspan="7" style="color:var(--muted);text-align:center;padding:40px">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── INTEGRANTES ── -->
+    <div id="eqTabEqIntegrantes" style="display:none">
+      <div class="card" style="margin-bottom:28px">
+        <h3 id="intFormTitulo">Adicionar integrante</h3>
+        <input type="hidden" id="intEditandoId" value="">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="field"><label>Nome completo</label><input type="text" id="intNome" placeholder="Nome do integrante"></div>
+          <div class="field"><label>Função</label><select id="intFuncao"><option value="">Carregando...</option></select></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="field"><label>Usuário (login)</label><input type="text" id="intUsuario" placeholder="usuario.login"></div>
+          <div class="field"><label>Senha</label><input type="text" id="intSenha" placeholder="senha de acesso"></div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn primary" onclick="salvarIntegrante()" id="btnSalvarIntegrante">Adicionar integrante</button>
+          <button class="btn secondary" onclick="cancelarEdicaoIntegrante()" id="btnCancelarEdicaoInt" style="display:none">Cancelar edição</button>
+        </div>
+        <div id="intFormMsg" style="font-size:12.5px;margin-top:10px;display:none"></div>
+      </div>
+
+      <div class="search-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" id="searchIntegrantes" placeholder="Pesquisar integrante..." oninput="renderIntegrantesAdmin()">
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Nome</th><th>Usuário</th><th>Senha</th><th>Função</th><th>Moral</th><th>Status</th><th>Concluídos</th><th>Ações</th></tr></thead>
+          <tbody id="eq-integrantes-admin-tbody"><tr><td colspan="8" style="color:var(--muted);text-align:center;padding:40px">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── FUNÇÕES ── -->
+    <div id="eqTabEqFuncoes" style="display:none">
+      <div class="card" style="margin-bottom:28px;max-width:480px">
+        <h3>Nova função / área</h3>
+        <div class="field"><label>Nome da função</label><input type="text" id="funcNome" placeholder="Ex: Programador"></div>
+        <div class="field"><label>Cor de identificação</label><input type="color" id="funcCor" value="#1a6bff" style="width:100%;height:44px;padding:4px;cursor:pointer"></div>
+        <button class="btn primary" onclick="criarFuncao()">Criar função</button>
+        <div id="funcFormMsg" style="font-size:12.5px;margin-top:10px;display:none"></div>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Função</th><th>Cor</th><th>Integrantes</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="eq-funcoes-admin-tbody"><tr><td colspan="5" style="color:var(--muted);text-align:center;padding:40px">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── ENTREGAS (aprovar / solicitar alterações / reprovar) ── -->
+    <div id="eqTabEqEntregas" style="display:none">
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Serviço</th><th>Integrante</th><th>Função</th><th>Entregue em</th><th>Arquivos</th><th>Ações</th></tr></thead>
+          <tbody id="eq-entregas-admin-tbody"><tr><td colspan="6" style="color:var(--muted);text-align:center;padding:40px">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── ADMINISTRADORES (Supabase Auth) ── -->
+    <div id="eqTabEqAdmins" style="display:none">
+      <div class="card" style="margin-bottom:28px;max-width:480px">
+        <h3>Novo administrador</h3>
+        <div class="field"><label>Nome</label><input type="text" id="admNovoNome" placeholder="Nome completo"></div>
+        <div class="field"><label>E-mail</label><input type="email" id="admNovoEmail" placeholder="email@exemplo.com"></div>
+        <div class="field"><label>Senha</label><input type="text" id="admNovoSenha" placeholder="Senha de acesso"></div>
+        <button class="btn primary" onclick="criarAdminNovo()" id="btnCriarAdmin">Criar administrador</button>
+        <div id="admNovoMsg" style="font-size:12.5px;margin-top:10px;display:none"></div>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Nome</th><th>E-mail</th><th>Criado em</th><th>Ações</th></tr></thead>
+          <tbody id="eq-admins-tbody"><tr><td colspan="4" style="color:var(--muted);text-align:center;padding:40px">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ HOSPEDAGEM ══ -->
+  <div id="tabHospedagem" style="display:none">
+    <div class="page-hero" style="padding:0 0 28px">
+      <div class="page-hero-label">Assinaturas</div><h1>Hospedagem</h1>
+      <p>Pedidos, contas de acesso e provisionamento das páginas de hospedagem (R$ 8,50/mês).</p>
+    </div>
+
+    <div class="dashboard-grid" style="margin-bottom:32px">
+      <div class="dash-card blue"><div class="dash-card-label">Assinantes ativos</div><div class="dash-card-value" id="hospDAtivos">—</div><div class="dash-card-sub">com página no ar</div></div>
+      <div class="dash-card yellow"><div class="dash-card-label">Aguardando aprovação</div><div class="dash-card-value" id="hospDPendentes">—</div><div class="dash-card-sub">pedidos com comprovante</div></div>
+      <div class="dash-card purple"><div class="dash-card-label">Expirando em 7d</div><div class="dash-card-value" id="hospDExpirando">—</div><div class="dash-card-sub">precisam renovar</div></div>
+      <div class="dash-card teal"><div class="dash-card-label">Sem conta criada</div><div class="dash-card-value" id="hospDSemConta">—</div><div class="dash-card-sub">aprovados, faltando provisionar</div></div>
+    </div>
+
+    <div class="filter-row">
+      <button class="filter-btn active" id="hosp-tab-pedidos" onclick="trocarSubAbaHospedagem('pedidos')">📋 Pedidos</button>
+      <button class="filter-btn" id="hosp-tab-contas" onclick="trocarSubAbaHospedagem('contas')">🔑 Contas &amp; Sites</button>
+      <button class="filter-btn" id="hosp-tab-provisionar" onclick="trocarSubAbaHospedagem('provisionar')">➕ Provisionar acesso</button>
+    </div>
+
+    <!-- SUB-ABA: PEDIDOS -->
+    <div id="hospSubPedidos">
+      <div class="search-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" id="searchHospPedidos" placeholder="Pesquisar por nome ou e-mail..." oninput="renderHospPedidos()">
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>ID</th><th>Cliente</th><th>E-mail</th><th>Status</th><th>Comprovante</th><th>Vence em</th><th>Ações</th></tr></thead>
+          <tbody id="hosp-pedidos-admin"><tr><td colspan="7" style="color:var(--muted);text-align:center;padding:40px">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SUB-ABA: CONTAS & SITES -->
+    <div id="hospSubContas" style="display:none">
+      <div class="search-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" id="searchHospContas" placeholder="Pesquisar por tenant, nome ou e-mail..." oninput="renderHospContas()">
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Tenant (URL)</th><th>Cliente</th><th>E-mail</th><th>Criado em</th><th>Ações</th></tr></thead>
+          <tbody id="hosp-contas-admin"><tr><td colspan="5" style="color:var(--muted);text-align:center;padding:40px">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SUB-ABA: PROVISIONAR -->
+    <div id="hospSubProvisionar" style="display:none">
+      <div style="background:var(--bg2,#0c1528);border:1px solid var(--border,rgba(255,255,255,.08));border-radius:20px;padding:28px;max-width:640px">
+        <h3 style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.5px;margin-bottom:6px">Criar acesso de cliente</h3>
+        <p style="color:var(--muted,#94a3b8);font-size:13px;margin-bottom:22px">Use depois de aprovar um pedido de Hospedagem na aba "Pedidos". Isso cria o login do painel do cliente e a página pública dele.</p>
+
+        <div class="field" style="margin-bottom:14px">
+          <label>Identificador do site (tenant_id) — sem espaços, ex: joaogames</label>
+          <input type="text" id="hospFTenant" style="width:100%">
+        </div>
+        <div class="field" style="margin-bottom:14px">
+          <label>E-mail do cliente (o mesmo do pedido)</label>
+          <input type="email" id="hospFEmail" style="width:100%">
+        </div>
+        <div class="field" style="margin-bottom:14px">
+          <label>Senha de acesso ao painel dele</label>
+          <input type="text" id="hospFSenha" style="width:100%">
+        </div>
+        <div class="field" style="margin-bottom:20px">
+          <label>Nome do cliente</label>
+          <input type="text" id="hospFNome" style="width:100%">
+        </div>
+        <button class="btn-action btn-approve" onclick="hospCriarConta()">✅ Criar acesso</button>
+        <div id="hospProvisionarMsg" style="font-size:13px;margin-top:14px;display:none;padding:11px 14px;border-radius:10px"></div>
+
+        <p style="font-size:12px;color:var(--muted,#94a3b8);margin-top:20px;line-height:1.6">
+          Depois de criar, envie ao cliente:<br>
+          • Painel: <code>hospedagem-admin.html</code> (login com o e-mail e senha acima)<br>
+          • Página pública: <code>hospedagem-site.html?tenant=SEU_TENANT_ID</code>
+        </p>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<footer class="footer">
+  <div class="footer-logo"><img src="logo.png" alt="Lumina Interactive" style="height:28px;width:auto;opacity:0.85"></div>
+  <div class="footer-copy">© 2026 Lumina Interactive™.</div>
+</footer>
+</div><!-- /adminPanel -->
+
+<!-- ══ MODAL PERFIL USUÁRIO ══ -->
+<div class="user-modal-overlay" id="userModalOverlay" onclick="fecharModal(event)">
+  <div class="user-modal" id="userModal">
+    <div class="user-modal-head">
+      <div class="user-modal-avatar" id="muAvatar">
+      <img id="muAvatarImg" src="" alt="" style="display:none;width:100%;height:100%;border-radius:50%;object-fit:cover">
+      <span id="muAvatarInitial" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%">?</span>
+    </div>
+      <div style="flex:1;min-width:0">
+        <div class="user-modal-title" id="muNome">—</div>
+        <div class="user-modal-handle" id="muHandle">@—</div>
+        <div id="muBadge"></div>
+      </div>
+      <button class="user-modal-close" onclick="fecharModal()">✕</button>
+    </div>
+    <div class="user-modal-body">
+
+      <div class="um-section-label">Informações pessoais</div>
+      <div class="um-rows">
+        <div class="um-row" style="cursor:pointer" onclick="copiarValor('muEmail',this)" title="Clique para copiar">
+          <svg class="um-row-icon" width="14" height="14" viewBox="0 0 24 24" fill="#6aabff"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+          <div style="flex:1"><div class="um-row-label">E-mail (clique para copiar)</div><div class="um-row-val blue" id="muEmail">—</div></div>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--muted)"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+        </div>
+        <div class="um-row" style="cursor:pointer" onclick="copiarValor('muHandleVal',this)" title="Clique para copiar">
+          <svg class="um-row-icon" width="14" height="14" viewBox="0 0 24 24" fill="#6aabff"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+          <div style="flex:1"><div class="um-row-label">@ Handle (clique para copiar)</div><div class="um-row-val blue" id="muHandleVal" style="font-family:monospace">—</div></div>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--muted)"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+        </div>
+        <div class="um-row" style="cursor:pointer" onclick="copiarValor('muTelefone',this)" title="Clique para copiar">
+          <svg class="um-row-icon" width="14" height="14" viewBox="0 0 24 24" fill="#6aabff"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+          <div style="flex:1"><div class="um-row-label">Telefone / WhatsApp (clique para copiar)</div><div class="um-row-val" id="muTelefone">—</div></div>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--muted)"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+        </div>
+        <div class="um-row">
+          <svg class="um-row-icon" width="14" height="14" viewBox="0 0 24 24" fill="#6aabff"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+          <div><div class="um-row-label">Cadastrado em</div><div class="um-row-val" id="muData">—</div></div>
+        </div>
+        <div class="um-row" id="muSenhaRow" style="cursor:pointer" onclick="copiarValor('muSenhaVal', this)">
+          <svg class="um-row-icon" width="14" height="14" viewBox="0 0 24 24" fill="#a78bfa"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+          <div style="flex:1"><div class="um-row-label">Senha (clique para copiar)</div><div class="um-row-val mono" id="muSenhaVal">—</div></div>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--muted)"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+        </div>
+      </div>
+
+      <div class="um-section-label">Assinatura</div>
+      <div id="muAssinatura" class="um-rows"></div>
+
+      <div class="um-section-label">Histórico de pedidos</div>
+      <div id="muPedidos"></div>
+
+      <div class="um-actions" id="muActions"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="comp-lightbox" id="compLightbox" style="display:none" onclick="fecharLightbox()">
+  <button class="comp-lightbox-close" onclick="fecharLightbox()">✕</button>
+  <img id="compLightboxImg" src="" alt="Comprovante">
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="app.js"></script>
+<script>
+// Neutraliza as funções do app.js que conflitam com o admin
+function carregarProdutos() {}
+function iniciarCheckout() {}
+// IMPORTANTE: app.js já declarou "const supabaseClient" com a chave pública.
+// Reatribuir supabaseClient aqui NÃO sobrescreve esse const (são bindings
+// diferentes em escopos de <script> distintos) — por isso usamos um nome
+// próprio (adminClient) para o client com service_role, e todo o código
+// abaixo foi ajustado para usar adminClient em vez de supabaseClient.
+window.adminClient = supabase.createClient(
+  "https://tqsalhscgkepttbczyjq.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxc2FsaHNjZ2tlcHR0YmN6eWpxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3OTQ5NTIwNSwiZXhwIjoyMDk1MDcxMjA1fQ.1qvrbIaOyAUED9OmsOqJuSP_HvGKzUMOaA82CPZQp1I",
+  { auth: { persistSession: false, storageKey: "lumina-admin-service" } }
+);
+const adminClient = window.adminClient;
+// Client separado, com a chave pública, usado exclusivamente para autenticação
+// real de administradores via Supabase Auth (login com sessão persistida)
+window.supaAuth = supabase.createClient(
+  "https://tqsalhscgkepttbczyjq.supabase.co",
+  "sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK",
+  { auth: { storageKey: "lumina-equipe-auth" } }
+);
+// carregarPedidosAdmin será redefinida abaixo — o app.js já rodou a versão antiga, sem efeito
+/* ════════════════════════════
+   AUTENTICAÇÃO DE ADMIN (Supabase Auth)
+════════════════════════════ */
+let adminAtualSessao = null; // { id, email, nome }
+
+let todosPedidos  = [];
+let todosUsuarios = [];
+let todosTickets  = [];
+let filtroAtual   = "todos";
+let filtroUser    = "todos";
+let filtroTicket  = "todos";
+let todasConversasAdmin = [];
+let conversaAdminAtivaId = null;
+let buscaConversasAdmin = "";
+
+/* ── LOGIN ── */
+async function verificarSenha() {
+  const email = document.getElementById("adminEmail").value.trim().toLowerCase();
+  const senha = document.getElementById("adminSenha").value;
+  const btn = document.querySelector(".btn-adm-login");
+  const errBox = document.getElementById("loginErr");
+  errBox.classList.remove("show");
+
+  if (!email || !senha) {
+    errBox.textContent = "Preencha e-mail e senha.";
+    errBox.classList.add("show");
+    return;
+  }
+
+  if (btn) { btn.disabled = true; btn.textContent = "Entrando..."; }
+
+  const { data, error } = await supaAuth.auth.signInWithPassword({ email, password: senha });
+
+  if (error || !data.user) {
+    errBox.textContent = "E-mail ou senha incorretos.";
+    errBox.classList.add("show");
+    if (btn) { btn.disabled = false; btn.textContent = "Entrar"; }
+    return;
+  }
+
+  // Confirma que esse usuário autenticado é de fato um administrador cadastrado
+  const { data: perfil, error: perfilErr } = await adminClient
+    .from("equipe_admins")
+    .select("*")
+    .eq("id", data.user.id)
+    .maybeSingle();
+
+  if (perfilErr || !perfil) {
+    errBox.textContent = "Este usuário não tem permissão de administrador.";
+    errBox.classList.add("show");
+    await supaAuth.auth.signOut();
+    if (btn) { btn.disabled = false; btn.textContent = "Entrar"; }
+    return;
+  }
+
+  adminAtualSessao = { id: perfil.id, email: perfil.email, nome: perfil.nome };
+  if (btn) { btn.disabled = false; btn.textContent = "Entrar"; }
+  mostrarPainel(perfil.nome);
+}
+
+function mostrarPainel(nome) {
+  document.getElementById("adminLoginOverlay").style.display = "none";
+  document.getElementById("adminPanel").style.display = "block";
+  document.getElementById("admNome").textContent = nome || "Admin";
+  iniciarAdmin();
+  // Se veio de equipe.html (login de admin lá), abre direto na aba Equipe
+  if (window.location.hash === "#equipe") {
+    mudarAba("Equipe");
+    history.replaceState(null, "", window.location.pathname);
+  }
+}
+
+document.getElementById("adminSenha").addEventListener("keydown", e => { if(e.key==="Enter") verificarSenha(); });
+document.getElementById("adminEmail").addEventListener("keydown", e => { if(e.key==="Enter") verificarSenha(); });
+
+// Verifica sessão real do Supabase Auth após tudo carregar (sessão persiste entre recarregamentos)
+window.addEventListener("load", async () => {
+  const { data } = await supaAuth.auth.getSession();
+  if (data.session && data.session.user) {
+    const { data: perfil } = await adminClient
+      .from("equipe_admins")
+      .select("*")
+      .eq("id", data.session.user.id)
+      .maybeSingle();
+    if (perfil) {
+      adminAtualSessao = { id: perfil.id, email: perfil.email, nome: perfil.nome };
+      mostrarPainel(perfil.nome);
+    } else {
+      await supaAuth.auth.signOut();
+    }
+  }
+});
+
+function logoutAdmin() {
+  supaAuth.auth.signOut();
+  adminAtualSessao = null;
+  location.reload();
+}
+
+/* ── ABAS ── */
+const ABAS = ["Dash","Pedidos","Ativos","Usuarios","Suporte","Assinante","Noticias","Mensagens","Verificado","Equipe","Hospedagem"];
+function mudarAba(aba) {
+  ABAS.forEach(a => {
+    document.getElementById("tab"+a).style.display = a === aba ? "block" : "none";
+    document.getElementById("tab"+a+"Btn").classList.toggle("active", a === aba);
+  });
+  if (aba === "Usuarios")   carregarUsuarios();
+  if (aba === "Suporte")    carregarTickets();
+  if (aba === "Noticias")   carregarNoticias();
+  if (aba === "Mensagens")  carregarConversasAdmin();
+  if (aba === "Verificado") carregarVerificadoAdmin();
+  if (aba === "Equipe")     mudarSubAbaEquipe("EqDash");
+  if (aba === "Hospedagem") carregarHospedagemAdmin();
+}
+
+/* ── INIT ── */
+async function iniciarAdmin() {
+  await carregarPedidosAdmin();
+  await carregarDashboard();
+}
+
+/* ── DASHBOARD ── */
+async function carregarDashboard() {
+  const agora = new Date();
+  const em7   = new Date(); em7.setDate(em7.getDate()+7);
+  const pedidosDash = todosPedidos.filter(p => p.produto !== "Lumina Verified+" && p.produto !== "Hospedagem");
+  const ativos     = pedidosDash.filter(p => (p.status==="ativa"||p.status==="aprovado") && (!p.data_fim || new Date(p.data_fim) > agora));
+  const pendentes  = pedidosDash.filter(p => ["pendente","aguardando_pagamento"].includes(p.status));
+  const cancelados = pedidosDash.filter(p => ["cancelada","cancelado"].includes(p.status));
+  const expirando  = ativos.filter(p => p.data_fim && new Date(p.data_fim) <= em7);
+  document.getElementById("dTotal").textContent      = pedidosDash.length;
+  document.getElementById("dAtivos").textContent     = ativos.length;
+  document.getElementById("dPendentes").textContent  = pendentes.length;
+  document.getElementById("dCancelados").textContent = cancelados.length;
+  document.getElementById("dExpirando").textContent  = expirando.length;
+  try {
+    const { count } = await adminClient.from("perfis").select("*",{count:"exact",head:true});
+    document.getElementById("dUsuarios").textContent = count ?? "—";
+  } catch(e) { document.getElementById("dUsuarios").textContent = "—"; }
+  const recentes = pedidosDash.slice(0,6);
+  const tbody = document.getElementById("dash-recentes-tbody");
+  tbody.innerHTML = recentes.length ? recentes.map(p => {
+    const sc = (p.status==="ativa"||p.status==="aprovado") ? "status-aprovado" : (p.status==="cancelada"||p.status==="cancelado") ? "status-cancelado" : "status-pendente";
+    return `<tr>
+      <td style="font-family:monospace;font-size:12px;color:#6aabff">#${p.id}</td>
+      <td><span class="nome-clicavel" onclick="abrirModal('${(p.email||"").replace(/'/g,"\\'")}')">${p.nome_cliente||"—"}</span><div style="font-size:12px;color:#6aabff">${p.email||""}</div></td>
+      <td>${p.produto||"—"}</td>
+      <td><span class="status-badge ${sc}">${p.status||"pendente"}</span></td>
+      <td style="font-size:13px;color:var(--muted)">${p.data_fim ? new Date(p.data_fim).toLocaleDateString("pt-BR") : "—"}</td>
+    </tr>`;
+  }).join("") : `<tr><td colspan="5" style="color:var(--muted);text-align:center;padding:30px">Nenhum pedido.</td></tr>`;
+}
+
+/* ── PEDIDOS ── */
+async function carregarPedidosAdmin() {
+  const { data, error } = await adminClient.from("pedidos").select("*").order("id",{ascending:false});
+  if (!error && data) todosPedidos = data;
+  renderPedidos();
+  renderAtivos();
+}
+function aplicarFiltro(status) {
+  filtroAtual = status;
+  document.querySelectorAll("#tabPedidos .filter-row .filter-btn").forEach(b => b.classList.remove("active"));
+  const map = {todos:"f-todos",pendente:"f-pendente",aguardando_pagamento:"f-aguardando",ativa:"f-ativa",cancelada:"f-cancelada"};
+  document.getElementById(map[status]||"f-todos")?.classList.add("active");
+  renderPedidos();
+}
+function filtrarPedidos() { renderPedidos(); }
+function renderPedidos() {
+  const tabela = document.getElementById("pedidos-admin");
+  const busca  = (document.getElementById("searchPedidos")?.value||"").toLowerCase();
+  let lista    = todosPedidos.filter(p => p.produto !== "Lumina Verified+" && p.produto !== "Hospedagem");
+  lista        = filtroAtual === "todos" ? lista : lista.filter(p => p.status === filtroAtual);
+  if (busca) lista = lista.filter(p =>
+    (p.nome_cliente||"").toLowerCase().includes(busca)||(p.email||"").toLowerCase().includes(busca)||
+    (p.produto||"").toLowerCase().includes(busca)||(p.whatsapp||"").includes(busca)
+  );
+  if (!lista.length) { tabela.innerHTML = `<tr><td colspan="9" style="color:var(--muted);text-align:center;padding:40px">Nenhum pedido encontrado.</td></tr>`; return; }
+  tabela.innerHTML = lista.map(p => {
+    const sc  = (p.status==="ativa"||p.status==="aprovado") ? "status-aprovado" : (p.status==="cancelada"||p.status==="cancelado") ? "status-cancelado" : "status-pendente";
+    const fim = p.data_fim ? `<div style="font-size:11px;color:var(--muted);margin-top:4px">Até ${new Date(p.data_fim).toLocaleDateString("pt-BR")}</div>` : "";
+    const comp= p.comprovante_url ? `<span class="comp-thumb" onclick="abrirLightbox('${p.comprovante_url}')"><img src="${p.comprovante_url}" alt="Comprovante"></span>` : `<span style="color:var(--muted);font-size:12px">—</span>`;
+    const wp  = p.whatsapp ? `<a href="https://wa.me/55${(p.whatsapp||"").replace(/\D/g,"")}" target="_blank" style="color:#25d366;text-decoration:none">📱 ${p.whatsapp}</a>` : "—";
+    const emailEsc = (p.email||"").replace(/'/g,"\\'");
+    return `<tr>
+      <td style="font-family:monospace;font-size:12px;color:#6aabff">#${p.id}</td>
+      <td><span class="nome-clicavel" onclick="abrirModal('${emailEsc}')">${p.nome_cliente||"—"}</span><div style="font-size:12px;color:#6aabff">${p.email||""}</div></td>
+      <td>${p.produto||"—"}</td>
+      <td style="font-family:var(--font-hero);font-size:16px;color:var(--blue)">${Number(p.valor||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</td>
+      <td><span class="status-badge ${sc}">${p.status||"pendente"}</span>${fim}</td>
+      <td>${comp}</td>
+      <td style="font-size:13px">${wp}</td>
+      <td style="font-size:12px;color:var(--muted)">${p.data_fim ? new Date(p.data_fim).toLocaleDateString("pt-BR") : "—"}</td>
+      <td>
+        <div class="admin-actions-bar">
+          <button class="btn-action btn-view"    onclick="abrirModal('${emailEsc}')">👤 Perfil</button>
+          <button class="btn-action btn-approve" onclick="aprovarPedido(${p.id})">✅ Aprovar</button>
+          <button class="btn-action btn-renew"   onclick="renovarPedido(${p.id})">🔄 Renovar</button>
+          <button class="btn-action btn-cancel"  onclick="cancelarPedido(${p.id})">⛔ Cancelar</button>
+          <button class="btn-action btn-delete"  onclick="excluirPedido(${p.id})">🗑️</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join("");
+}
+
+/* ── ATIVOS ── */
+function filtrarAtivos() { renderAtivos(); }
+function renderAtivos() {
+  const tbody = document.getElementById("ativos-tbody");
+  if (!tbody) return;
+  const busca = (document.getElementById("searchAtivos")?.value||"").toLowerCase();
+  const agora = new Date();
+  let lista = todosPedidos.filter(p => {
+    if (p.produto === "Lumina Verified+" || p.produto === "Hospedagem") return false;
+    const fim = p.data_fim ? new Date(p.data_fim) : (p.validade_ate ? new Date(p.validade_ate) : null);
+    return (p.status==="ativa"||p.status==="aprovado") && (!fim || fim > agora);
+  });
+  if (busca) lista = lista.filter(p =>
+    (p.nome_cliente||"").toLowerCase().includes(busca)||(p.email||"").toLowerCase().includes(busca)||(p.produto||"").toLowerCase().includes(busca)
+  );
+  if (!lista.length) { tbody.innerHTML = `<tr><td colspan="6" style="color:var(--muted);text-align:center;padding:40px">Nenhum assinante ativo.</td></tr>`; return; }
+  tbody.innerHTML = lista.map(p => {
+    const fim  = p.data_fim ? new Date(p.data_fim) : (p.validade_ate ? new Date(p.validade_ate) : null);
+    const dias = fim ? Math.max(0, Math.ceil((fim - agora)/86400000)) : "—";
+    const cor  = typeof dias==="number" ? (dias<=3?"#ef4444":dias<=7?"#fbbf24":"#22c55e") : "var(--muted)";
+    const emailEsc = (p.email||"").replace(/'/g,"\\'");
+    return `<tr>
+      <td style="font-family:monospace;font-size:12px;color:#6aabff">#${p.id}</td>
+      <td><span class="nome-clicavel" onclick="abrirModal('${emailEsc}')">${p.nome_cliente||"—"}</span><div style="font-size:12px;color:#6aabff">${p.email||""}</div></td>
+      <td>${p.produto||"—"}</td>
+      <td style="font-size:13px;color:var(--muted)">${fim ? fim.toLocaleDateString("pt-BR") : "—"}</td>
+      <td><span style="font-family:var(--font-hero);font-size:22px;color:${cor}">${dias}</span>${typeof dias==="number"&&dias<=7?`<div style="font-size:11px;color:${cor}">⚠️ Em breve</div>`:""}</td>
+      <td>
+        <div class="admin-actions-bar">
+          <button class="btn-action btn-view"   onclick="abrirModal('${emailEsc}')">👤 Perfil</button>
+          <button class="btn-action btn-renew"  onclick="renovarPedido(${p.id})">🔄 Renovar</button>
+          <button class="btn-action btn-cancel" onclick="cancelarPedido(${p.id})">⛔ Cancelar</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join("");
+}
+
+/* ── USUÁRIOS ── */
+async function carregarUsuarios() {
+  const tbody = document.getElementById("usuarios-tbody");
+  tbody.innerHTML = `<tr><td colspan="7" style="color:var(--muted);text-align:center;padding:40px">Carregando...</td></tr>`;
+  const { data, error } = await adminClient.from("perfis").select("*").order("criado_em",{ascending:false});
+  if (error) { tbody.innerHTML = `<tr><td colspan="7" style="color:#ef4444;text-align:center;padding:20px">Erro: ${error.message}</td></tr>`; return; }
+  todosUsuarios = data || [];
+  document.getElementById("dUsuarios").textContent = todosUsuarios.length;
+  renderUsuarios();
+}
+function filtrarUsuarios() { renderUsuarios(); }
+function aplicarFiltroUser(f) {
+  filtroUser = f;
+  document.querySelectorAll("#tabUsuarios .filter-row .filter-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById({todos:"fu-todos",assinante:"fu-assinante",free:"fu-free"}[f])?.classList.add("active");
+  renderUsuarios();
+}
+function renderUsuarios() {
+  const tbody = document.getElementById("usuarios-tbody");
+  const busca = (document.getElementById("searchUsuarios")?.value||"").toLowerCase();
+  const agora = new Date();
+  const emailsAtivos = new Set(
+    todosPedidos.filter(p => (p.status==="ativa"||p.status==="aprovado") && p.acesso_liberado && (!p.data_fim||new Date(p.data_fim)>agora)).map(p=>(p.email||"").toLowerCase())
+  );
+  let lista = todosUsuarios;
+  if (filtroUser==="assinante") lista = lista.filter(u => emailsAtivos.has((u.email||"").toLowerCase()));
+  if (filtroUser==="free")      lista = lista.filter(u => !emailsAtivos.has((u.email||"").toLowerCase()));
+  if (busca) lista = lista.filter(u =>
+    (u.nome||"").toLowerCase().includes(busca)||(u.email||"").toLowerCase().includes(busca)||
+    (u.id_online||"").toLowerCase().includes(busca)||(u.telefone||"").includes(busca)
+  );
+  if (!lista.length) { tbody.innerHTML = `<tr><td colspan="7" style="color:var(--muted);text-align:center;padding:40px">Nenhum usuário encontrado.</td></tr>`; return; }
+  tbody.innerHTML = lista.map(u => {
+    const isAtivo = emailsAtivos.has((u.email||"").toLowerCase());
+    const badge   = isAtivo ? `<span class="status-badge status-aprovado">✅ Assinante</span>` : `<span class="status-badge status-inativo">Free</span>`;
+    const emailEsc = (u.email||"").replace(/'/g,"\\'");
+    return `<tr>
+      <td class="handle-cell">@${u.id_online||"—"}</td>
+      <td><span class="nome-clicavel" onclick="abrirModal('${emailEsc}')">${u.nome||"—"}</span></td>
+      <td style="font-size:13px;color:#6aabff">${u.email||"—"}</td>
+      <td style="font-size:13px">${u.telefone||"—"}</td>
+      <td>${badge}</td>
+      <td style="font-size:12px;color:var(--muted)">${u.criado_em ? new Date(u.criado_em).toLocaleDateString("pt-BR") : "—"}</td>
+      <td>
+        <div class="admin-actions-bar">
+          <button class="btn-action btn-view" onclick="abrirModal('${emailEsc}')">👤 Perfil</button>
+          ${isAtivo
+            ? `<button class="btn-action btn-cancel" onclick="cancelarPorEmail('${emailEsc}')">⛔ Revogar</button>`
+            : `<button class="btn-action btn-approve" onclick="criarAssinanteEmail('${emailEsc}')">✅ Dar acesso</button>`}
+        </div>
+      </td>
+    </tr>`;
+  }).join("");
+}
+
+/* ── MODAL PERFIL ── */
+async function abrirModal(email) {
+  if (!email) return;
+
+  // Busca perfil direto do banco para dados sempre atualizados
+  const { data: perfilFresh } = await adminClient
+    .from("perfis")
+    .select("*")
+    .eq("email", email)
+    .maybeSingle();
+  const u = perfilFresh || todosUsuarios.find(x => (x.email||"").toLowerCase() === email.toLowerCase());
+
+  const agora = new Date();
+  const peds  = todosPedidos.filter(p => (p.email||"").toLowerCase() === email.toLowerCase());
+  const emailsAtivos = new Set(
+    todosPedidos.filter(p => (p.status==="ativa"||p.status==="aprovado") && p.acesso_liberado && (!p.data_fim||new Date(p.data_fim)>agora)).map(p=>(p.email||"").toLowerCase())
+  );
+  const isAtivo  = emailsAtivos.has(email.toLowerCase());
+  const pedAtivo = peds.find(p => (p.status==="ativa"||p.status==="aprovado") && (!p.data_fim||new Date(p.data_fim)>agora));
+  const pedRef   = peds[0] || {};
+
+  const nomeReal  = u?.nome     || pedRef.nome_cliente || "—";
+  const foneReal  = u?.telefone || pedRef.whatsapp     || "—";
+  const fotoUrl   = u?.foto_url || null;
+  const handleVal = u?.id_online || u?.handle || "";
+
+  document.getElementById("muBadge").innerHTML = isAtivo
+    ? `<span class="status-badge status-aprovado">✅ Assinante ativo</span>`
+    : `<span class="status-badge status-inativo">Free</span>`;
+
+  const imgEl = document.getElementById("muAvatarImg");
+  const iniEl = document.getElementById("muAvatarInitial");
+  const inicial = (nomeReal !== "—" ? nomeReal : email).charAt(0).toUpperCase();
+  if (fotoUrl) {
+    imgEl.src = fotoUrl; imgEl.style.display = "block"; iniEl.style.display = "none";
+  } else {
+    imgEl.style.display = "none"; iniEl.style.display = ""; iniEl.textContent = inicial;
+  }
+
+  document.getElementById("muNome").textContent = nomeReal;
+  document.getElementById("muHandle").textContent = handleVal ? "@"+handleVal : email;
+  const muHandleEl = document.getElementById("muHandleVal");
+  muHandleEl.textContent = handleVal ? "@"+handleVal : "—";
+  muHandleEl.dataset.val = handleVal ? "@"+handleVal : "";
+
+  const muEmailEl = document.getElementById("muEmail");
+  muEmailEl.textContent = email; muEmailEl.dataset.val = email;
+
+  const foneEl = document.getElementById("muTelefone");
+  foneEl.textContent = foneReal; foneEl.dataset.val = foneReal;
+
+  let dataCad = u?.criado_em;
+  if (!dataCad && peds.length) {
+    const oldest = peds.filter(p=>p.criado_em).sort((a,b)=>new Date(a.criado_em)-new Date(b.criado_em))[0];
+    dataCad = oldest?.criado_em;
+  }
+  document.getElementById("muData").textContent = dataCad ? new Date(dataCad).toLocaleDateString("pt-BR") : "—";
+
+  const senhaVal = u?.senha_hash || u?.senha || "—";
+  document.getElementById("muSenhaVal").textContent = senhaVal;
+  document.getElementById("muSenhaVal").dataset.val = senhaVal;
+
+  const assEl = document.getElementById("muAssinatura");
+  if (pedAtivo) {
+    const fim  = pedAtivo.data_fim ? new Date(pedAtivo.data_fim) : null;
+    const dias = fim ? Math.max(0, Math.ceil((fim-agora)/86400000)) : null;
+    const cor  = dias !== null ? (dias<=3?"#ef4444":dias<=7?"#fbbf24":"#22c55e") : "var(--muted)";
+    assEl.innerHTML = `
+      <div class="um-row">
+        <svg class="um-row-icon" width="14" height="14" viewBox="0 0 24 24" fill="#22c55e"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        <div><div class="um-row-label">Produto ativo</div><div class="um-row-val">${pedAtivo.produto||"—"}</div></div>
+      </div>
+      <div class="um-row">
+        <svg class="um-row-icon" width="14" height="14" viewBox="0 0 24 24" fill="${cor}"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+        <div><div class="um-row-label">Válido até</div><div class="um-row-val" style="color:${cor}">${fim ? fim.toLocaleDateString("pt-BR") : "—"} ${dias!==null?"("+dias+" dias)":""}</div></div>
+      </div>`;
+  } else {
+    assEl.innerHTML = `<div class="um-row"><div style="color:var(--muted);font-size:13px">Sem assinatura ativa.</div></div>`;
+  }
+
+  const pedsEl = document.getElementById("muPedidos");
+  if (!peds.length) {
+    pedsEl.innerHTML = `<div style="color:var(--muted);font-size:13px;padding:8px 0">Nenhum pedido encontrado.</div>`;
+  } else {
+    const emailEsc2 = email.replace(/'/g,"\\'");
+    pedsEl.innerHTML = peds.map(p => {
+      const sc = (p.status==="ativa"||p.status==="aprovado") ? "status-aprovado" : (p.status==="cancelada"||p.status==="cancelado") ? "status-cancelado" : "status-pendente";
+      const compBtn = p.comprovante_url
+        ? `<button class="btn-action btn-view" onclick="abrirLightbox('${p.comprovante_url}')">🧾 Ver comprovante</button>`
+        : "";
+      return `<div class="um-pedido-item" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="display:flex;align-items:center;justify-content:space-between;width:100%;gap:10px;flex-wrap:wrap">
+          <div>
+            <div style="font-weight:600;font-size:13px">${p.produto||"—"}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">#${p.id} · R$ ${Number(p.valor||0).toFixed(2).replace(".",",")} · ${p.data_fim ? "Até "+new Date(p.data_fim).toLocaleDateString("pt-BR") : "Sem validade"}</div>
+          </div>
+          <span class="status-badge ${sc}">${p.status||"pendente"}</span>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          ${compBtn}
+          <button class="btn-action btn-delete" onclick="excluirPedidoModal(${p.id},'${emailEsc2}')">🗑️ Excluir pedido</button>
+        </div>
+      </div>`;
+    }).join("");
+    if (peds.length > 1) {
+      pedsEl.innerHTML += `<button class="btn-action btn-delete" style="width:100%;margin-top:4px;justify-content:center;padding:10px" onclick="excluirTodoHistorico('${emailEsc2}')">🗑️ Excluir TODO o histórico (${peds.length} pedidos)</button>`;
+    }
+  }
+
+  const emailEsc = email.replace(/'/g,"\\'");
+  let btns = isAtivo
+    ? `<button class="btn-action btn-cancel" onclick="cancelarPorEmail('${emailEsc}');fecharModal()">⛔ Revogar acesso</button>`
+    : `<button class="btn-action btn-approve" onclick="criarAssinanteEmail('${emailEsc}');fecharModal()">✅ Dar 30d de acesso</button>`;
+  if (pedAtivo) btns += `<button class="btn-action btn-renew" onclick="renovarPedido(${pedAtivo.id});fecharModal()">🔄 Renovar 30d</button>`;
+  if (u?.id) btns += `<button class="btn-action btn-ban" onclick="fecharModal();excluirUsuario('${u.id}','${(u.nome||email).replace(/'/g,"\\'")}')">🗑️ Excluir</button>`;
+  btns += `<button class="btn-action btn-view" onclick="fecharModal()">Fechar</button>`;
+  document.getElementById("muActions").innerHTML = btns;
+
+  document.getElementById("userModalOverlay").classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+function fecharModal(e) {
+  if (e && e.target !== document.getElementById("userModalOverlay")) return;
+  document.getElementById("userModalOverlay").classList.remove("show");
+  document.body.style.overflow = "";
+}
+document.addEventListener("keydown", e => { if(e.key==="Escape") fecharModal(); });
+
+function copiarValor(elId, rowEl) {
+  const val = document.getElementById(elId)?.dataset.val || document.getElementById(elId)?.textContent || "";
+  navigator.clipboard.writeText(val).then(() => {
+    const orig = document.getElementById(elId).textContent;
+    document.getElementById(elId).textContent = "✅ Copiado!";
+    setTimeout(() => { document.getElementById(elId).textContent = orig; }, 1500);
+  });
+}
+
+/* ── SUPORTE / TICKETS ── */
+async function carregarTickets() {
+  const lista = document.getElementById("ticketsList");
+  lista.innerHTML = `<div style="color:var(--muted);text-align:center;padding:40px">Carregando...</div>`;
+  const { data, error } = await adminClient.from("tickets").select("*").order("criado_em",{ascending:false});
+  if (error) { lista.innerHTML = `<div style="color:#ef4444;text-align:center;padding:20px">Erro: ${error.message}</div>`; return; }
+  todosTickets = data || [];
+  renderTickets();
+}
+function filtrarTickets(status) {
+  filtroTicket = status;
+  document.querySelectorAll("#tabSuporte .filter-row .filter-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById({todos:"sf-todos",aberto:"sf-aberto",respondido:"sf-respondido",resolvido:"sf-resolvido"}[status])?.classList.add("active");
+  renderTickets();
+}
+function renderTickets() {
+  const lista = document.getElementById("ticketsList");
+  let dados = filtroTicket === "todos" ? todosTickets : todosTickets.filter(t => t.status === filtroTicket);
+  if (!dados.length) { lista.innerHTML = `<div style="color:var(--muted);text-align:center;padding:40px">Nenhum ticket.</div>`; return; }
+  lista.innerHTML = dados.map(t => {
+    const cor = t.status==="resolvido" ? "#22c55e" : t.status==="respondido" ? "#6aabff" : "#fbbf24";
+    const bg  = t.status==="resolvido" ? "rgba(34,197,94,.12)" : t.status==="respondido" ? "rgba(26,107,255,.12)" : "rgba(251,191,36,.12)";
+    const bd  = t.status==="resolvido" ? "rgba(34,197,94,.3)"  : t.status==="respondido" ? "rgba(26,107,255,.3)"  : "rgba(251,191,36,.3)";
+    const data = new Date(t.criado_em);
+    const ds   = data.toLocaleDateString("pt-BR")+" às "+data.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+    return `<div class="ticket-card">
+      <div class="ticket-card-header">
+        <div>
+          <div class="ticket-assunto">${t.assunto||"Sem assunto"}</div>
+          <div class="ticket-meta">De: <strong>${t.nome||"—"}</strong> &lt;${t.email||"—"}&gt; · ${ds}</div>
+        </div>
+        <span style="background:${bg};color:${cor};border:1px solid ${bd};padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap">${t.status||"aberto"}</span>
+      </div>
+      <div class="ticket-mensagem">${t.mensagem||""}</div>
+      ${t.resposta?`<div class="ticket-resposta"><div class="ticket-resposta-label">Resposta</div><div style="font-size:13px">${t.resposta}</div></div>`:""}
+      <div class="ticket-reply-area">
+        <textarea id="resp-${t.id}" placeholder="Digite sua resposta...">${t.resposta||""}</textarea>
+        <div class="ticket-reply-actions">
+          <button class="btn-action btn-approve" onclick="responderTicket(${t.id})">✉️ Responder</button>
+          <button class="btn-action btn-renew"   onclick="mudarStatusTicket(${t.id},'respondido')">💬 Respondido</button>
+          <button class="btn-action btn-approve" onclick="mudarStatusTicket(${t.id},'resolvido')">✅ Resolvido</button>
+          <button class="btn-action btn-delete"  onclick="excluirTicket(${t.id})">🗑️</button>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+async function responderTicket(id) {
+  const r = document.getElementById(`resp-${id}`)?.value.trim();
+  if (!r) { toast("Digite uma resposta.", "err"); return; }
+  const { error } = await adminClient.from("tickets").update({resposta:r,status:"respondido"}).eq("id",id);
+  if (error) { toast("Erro: "+error.message,"err"); return; }
+  toast("✉️ Resposta enviada!","ok"); await carregarTickets();
+}
+async function mudarStatusTicket(id, status) {
+  const { error } = await adminClient.from("tickets").update({status}).eq("id",id);
+  if (error) { toast("Erro: "+error.message,"err"); return; }
+  toast(`Status alterado para "${status}"`,"ok"); await carregarTickets();
+}
+async function excluirTicket(id) {
+  if (!confirm(`Excluir ticket #${id}?`)) return;
+  const { error } = await adminClient.from("tickets").delete().eq("id",id);
+  if (error) { toast("Erro: "+error.message,"err"); return; }
+  toast(`🗑️ Ticket #${id} excluído`,"ok"); await carregarTickets();
+}
+
+/* ── MENSAGENS PRIVADAS (DMs da Comunidade) ── */
+async function carregarConversasAdmin() {
+  const lista = document.getElementById("conversasAdminList");
+  lista.innerHTML = `<div style="color:var(--muted);text-align:center;padding:40px">Carregando...</div>`;
+
+  const { data: conversas, error } = await adminClient
+    .from("comunidade_conversas").select("*").order("ultima_msg_em", { ascending: false, nullsFirst: false });
+
+  if (error) { lista.innerHTML = `<div style="color:#ef4444;text-align:center;padding:20px">Erro: ${error.message}</div>`; return; }
+  if (!conversas || !conversas.length) { lista.innerHTML = `<div style="color:var(--muted);text-align:center;padding:40px">Nenhuma conversa ainda.</div>`; return; }
+
+  // junta com perfis dos dois lados de cada conversa
+  const ids = [...new Set(conversas.flatMap(c => [c.usuario_a, c.usuario_b]))];
+  const { data: perfis } = await adminClient.from("perfis").select("id, nome, id_online, foto_url").in("id", ids);
+  const perfilPorId = {};
+  (perfis || []).forEach(p => perfilPorId[p.id] = p);
+
+  todasConversasAdmin = conversas.map(c => ({
+    ...c,
+    perfilA: perfilPorId[c.usuario_a] || { nome: "Usuário removido" },
+    perfilB: perfilPorId[c.usuario_b] || { nome: "Usuário removido" }
+  }));
+
+  renderConversasAdmin();
+}
+
+function filtrarConversasAdmin() {
+  buscaConversasAdmin = document.getElementById("searchConversas").value.trim().toLowerCase();
+  renderConversasAdmin();
+}
+
+function renderConversasAdmin() {
+  const lista = document.getElementById("conversasAdminList");
+  const termo = buscaConversasAdmin;
+
+  const dados = !termo ? todasConversasAdmin : todasConversasAdmin.filter(c => {
+    const alvo = [c.perfilA.nome, c.perfilA.id_online, c.perfilB.nome, c.perfilB.id_online]
+      .filter(Boolean).join(" ").toLowerCase();
+    return alvo.includes(termo);
+  });
+
+  if (!dados.length) { lista.innerHTML = `<div style="color:var(--muted);text-align:center;padding:40px">Nenhuma conversa encontrada.</div>`; return; }
+
+  lista.innerHTML = dados.map(c => {
+    const ativo = c.id === conversaAdminAtivaId;
+    const avA = c.perfilA.foto_url ? `<img src="${c.perfilA.foto_url}">` : (c.perfilA.nome || "?")[0].toUpperCase();
+    const avB = c.perfilB.foto_url ? `<img src="${c.perfilB.foto_url}">` : (c.perfilB.nome || "?")[0].toUpperCase();
+    const nomes = `${c.perfilA.nome || "—"} & ${c.perfilB.nome || "—"}`;
+    const preview = c.ultima_msg_texto ? escHtmlAdmin(c.ultima_msg_texto) : "Sem mensagens ainda";
+    const tempo = c.ultima_msg_em ? tempoRelativoAdmin(c.ultima_msg_em) : "";
+    return `<div class="dm-admin-item ${ativo?"active":""}" onclick="abrirConversaAdmin(${c.id})">
+      <div class="dm-admin-avatars">
+        <div class="dm-admin-avatar a">${avA}</div>
+        <div class="dm-admin-avatar b">${avB}</div>
+      </div>
+      <div class="dm-admin-item-info">
+        <div class="dm-admin-item-names">${nomes}</div>
+        <div class="dm-admin-item-preview">${preview}</div>
+      </div>
+      <div class="dm-admin-item-time">${tempo}</div>
+    </div>`;
+  }).join("");
+}
+
+async function abrirConversaAdmin(conversaId) {
+  conversaAdminAtivaId = conversaId;
+  renderConversasAdmin();
+
+  const c = todasConversasAdmin.find(x => x.id === conversaId);
+  const thread = document.getElementById("conversaAdminThread");
+  thread.classList.add("open");
+  thread.innerHTML = `
+    <div class="dm-admin-thread-head">
+      <button class="btn-action btn-view" style="display:none" id="dmAdminBack" onclick="fecharConversaAdminMobile()">← Voltar</button>
+      <div>
+        <div class="dm-admin-thread-title">${c.perfilA.nome || "—"} &amp; ${c.perfilB.nome || "—"}</div>
+        <div class="dm-admin-thread-sub">${c.perfilA.id_online ? "@"+c.perfilA.id_online : c.perfilA.nome} · ${c.perfilB.id_online ? "@"+c.perfilB.id_online : c.perfilB.nome}</div>
+      </div>
+    </div>
+    <div class="dm-admin-msgs" id="dmAdminMsgs"><div style="color:var(--muted);text-align:center;padding:30px">Carregando mensagens...</div></div>
+  `;
+  if (window.innerWidth <= 900) document.getElementById("dmAdminBack").style.display = "inline-flex";
+
+  const { data: mensagens, error } = await adminClient
+    .from("comunidade_mensagens_dm").select("*").eq("conversa_id", conversaId).order("criado_em", { ascending: true });
+
+  const msgsEl = document.getElementById("dmAdminMsgs");
+  if (error) { msgsEl.innerHTML = `<div style="color:#ef4444;text-align:center;padding:20px">Erro: ${error.message}</div>`; return; }
+  if (!mensagens || !mensagens.length) { msgsEl.innerHTML = `<div style="color:var(--muted);text-align:center;padding:30px">Sem mensagens nesta conversa.</div>`; return; }
+
+  msgsEl.innerHTML = mensagens.map(m => {
+    const autor = m.autor_id === c.usuario_a ? c.perfilA : c.perfilB;
+    const direita = m.autor_id === c.usuario_b; // só pra alternar visualmente os dois lados
+    const av = autor.foto_url ? `<img class="dm-admin-mini-avatar" src="${autor.foto_url}">` : `<div class="dm-admin-mini-avatar" style="display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#6aabff">${(autor.nome||"?")[0].toUpperCase()}</div>`;
+    return `<div class="dm-admin-msg ${direita?"right":""}">
+      ${av}
+      <div class="dm-admin-bubble">
+        <div class="dm-admin-name">${escHtmlAdmin(autor.nome || "—")}</div>
+        <div class="dm-admin-text">${escHtmlAdmin(m.texto)}</div>
+      </div>
+    </div>`;
+  }).join("");
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+}
+
+function fecharConversaAdminMobile() {
+  document.getElementById("conversaAdminThread").classList.remove("open");
+}
+
+function escHtmlAdmin(str) {
+  const div = document.createElement("div");
+  div.textContent = str || "";
+  return div.innerHTML;
+}
+
+function tempoRelativoAdmin(dataIso) {
+  const diff = (Date.now() - new Date(dataIso).getTime()) / 1000;
+  if (diff < 60) return "agora";
+  if (diff < 3600) return Math.floor(diff/60)+"min";
+  if (diff < 86400) return Math.floor(diff/3600)+"h";
+  if (diff < 604800) return Math.floor(diff/86400)+"d";
+  return new Date(dataIso).toLocaleDateString("pt-BR");
+}
+
+/* ── LUMINA VERIFIED+ (pagos via pedidos + solicitados via comunidade_verificacoes) ── */
+let todosVerifPagos = [];
+let todosVerifSolic = [];
+
+function trocarSubAbaVerificado(sub) {
+  document.getElementById("vf-pagos").classList.toggle("active", sub === "pagos");
+  document.getElementById("vf-solicitados").classList.toggle("active", sub === "solicitados");
+  document.getElementById("verifSubPagos").style.display       = sub === "pagos" ? "block" : "none";
+  document.getElementById("verifSubSolicitados").style.display = sub === "solicitados" ? "block" : "none";
+}
+
+async function carregarVerificadoAdmin() {
+  const { data: pagos } = await adminClient.from("pedidos").select("*").eq("produto","Lumina Verified+").order("id",{ascending:false});
+  todosVerifPagos = pagos || [];
+  renderVerifPagos();
+
+  const { data: solic } = await adminClient.from("comunidade_verificacoes").select("*").order("id",{ascending:false});
+  todosVerifSolic = solic || [];
+  renderVerifSolicitados();
+}
+
+function renderVerifPagos() {
+  const tabela = document.getElementById("verif-pagos-admin");
+  const busca  = (document.getElementById("searchVerifPagos")?.value||"").toLowerCase();
+  let lista = todosVerifPagos;
+  if (busca) lista = lista.filter(p => (p.nome_cliente||"").toLowerCase().includes(busca) || (p.email||"").toLowerCase().includes(busca));
+
+  if (!lista.length) { tabela.innerHTML = `<tr><td colspan="7" style="color:var(--muted);text-align:center;padding:40px">Nenhum pagamento de Verified+ ainda.</td></tr>`; return; }
+
+  tabela.innerHTML = lista.map(p => {
+    const sc = (p.status==="ativa"||p.status==="aprovado") ? "status-aprovado" : (p.status==="cancelada"||p.status==="cancelado") ? "status-cancelado" : "status-pendente";
+    const comp = p.comprovante_url ? `<span class="comp-thumb" onclick="abrirLightbox('${p.comprovante_url}')"><img src="${p.comprovante_url}" alt="Comprovante"></span>` : `<span style="color:var(--muted);font-size:12px">—</span>`;
+    const data = p.data_pagamento ? new Date(p.data_pagamento).toLocaleDateString("pt-BR") : (p.id ? "—" : "—");
+    const emailEsc = (p.email||"").replace(/'/g,"\\'");
+    return `<tr>
+      <td style="font-family:monospace;font-size:12px;color:#f0b429">#${p.id}</td>
+      <td><span class="nome-clicavel" onclick="abrirModal('${emailEsc}')">${escHtmlAdmin(p.nome_cliente||"—")}</span><div style="font-size:12px;color:#6aabff">${escHtmlAdmin(p.email||"")}</div></td>
+      <td style="font-family:var(--font-hero);font-size:16px;color:#f0b429">${Number(p.valor||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</td>
+      <td><span class="status-badge ${sc}">${p.status||"pendente"}</span></td>
+      <td>${comp}</td>
+      <td style="font-size:12px;color:var(--muted)">${data}</td>
+      <td>
+        <div class="admin-actions-bar">
+          <button class="btn-action btn-approve" onclick="aprovarVerifPago(${p.id})">✅ Conceder selo</button>
+          <button class="btn-action btn-cancel"  onclick="cancelarVerifPago(${p.id})">⛔ Cancelar</button>
+          <button class="btn-action btn-delete"  onclick="excluirVerifPago(${p.id})">🗑️</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join("");
+}
+
+function renderVerifSolicitados() {
+  const tabela = document.getElementById("verif-solic-admin");
+  const busca  = (document.getElementById("searchVerifSolic")?.value||"").toLowerCase();
+  let lista = todosVerifSolic;
+  if (busca) lista = lista.filter(s => (s.nome_completo||"").toLowerCase().includes(busca) || (s.email||"").toLowerCase().includes(busca));
+
+  if (!lista.length) { tabela.innerHTML = `<tr><td colspan="8" style="color:var(--muted);text-align:center;padding:40px">Nenhuma solicitação ainda.</td></tr>`; return; }
+
+  tabela.innerHTML = lista.map(s => {
+    const sc = s.status==="aprovado" ? "status-aprovado" : s.status==="recusado" ? "status-cancelado" : "status-pendente";
+    const print = s.print_url ? `<span class="comp-thumb" onclick="abrirLightbox('${s.print_url}')"><img src="${s.print_url}" alt="Print"></span>` : `<span style="color:var(--muted);font-size:12px">—</span>`;
+    const emailEsc = (s.email||"").replace(/'/g,"\\'");
+    return `<tr>
+      <td style="font-family:monospace;font-size:12px;color:#f0b429">#${s.id}</td>
+      <td><span class="nome-clicavel" onclick="abrirModal('${emailEsc}')">${escHtmlAdmin(s.nome_completo||"—")}</span></td>
+      <td style="font-size:12px;color:#6aabff">${escHtmlAdmin(s.email||"")}</td>
+      <td><a href="${s.link_canal}" target="_blank" style="color:#6aabff;font-size:12px">${escHtmlAdmin(s.link_canal||"—")}</a></td>
+      <td>${print}</td>
+      <td><span class="status-badge ${sc}">${s.status||"pendente"}</span></td>
+      <td style="font-size:12px;color:var(--muted)">${tempoRelativoAdmin(s.criado_em)}</td>
+      <td>
+        <div class="admin-actions-bar">
+          <button class="btn-action btn-approve" onclick="aprovarVerifSolicitacao(${s.id})">✅ Aprovar</button>
+          <button class="btn-action btn-cancel"  onclick="recusarVerifSolicitacao(${s.id})">⛔ Recusar</button>
+          <button class="btn-action btn-delete"  onclick="excluirVerifSolicitacao(${s.id})">🗑️</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join("");
+}
+
+/* concede o selo dourado a um usuário, identificando-o pelo e-mail (perfis.email) */
+async function concederSeloDouradoPorEmail(email) {
+  if (!email) return;
+  const { error } = await adminClient.from("perfis").update({ verificado: "dourado" }).eq("email", email);
+  if (error) toast("Selo não pôde ser aplicado automaticamente: "+error.message, "err");
+}
+
+async function aprovarVerifPago(id) {
+  const p = todosVerifPagos.find(x=>x.id===id); if (!p) return;
+  const { error } = await adminClient.from("pedidos").update({ status:"aprovado", acesso_liberado:true, data_pagamento:new Date().toISOString() }).eq("id",id);
+  if (error) { toast("Erro: "+error.message,"err"); return; }
+  await concederSeloDouradoPorEmail(p.email);
+  toast(`✅ Selo dourado concedido — pedido #${id}`,"ok");
+  await carregarVerificadoAdmin();
+}
+async function cancelarVerifPago(id) {
+  if (!confirm(`Cancelar pagamento #${id}?`)) return;
+  const { error } = await adminClient.from("pedidos").update({ status:"cancelada", acesso_liberado:false }).eq("id",id);
+  if (error) { toast("Erro: "+error.message,"err"); return; }
+  toast(`⛔ Pagamento #${id} cancelado`,"ok"); await carregarVerificadoAdmin();
+}
+async function excluirVerifPago(id) {
+  if (!confirm(`Excluir pagamento #${id}? Irreversível.`)) return;
+  const { error } = await adminClient.from("pedidos").delete().eq("id",id);
+  if (error) { toast("Erro: "+error.message,"err"); return; }
+  toast(`🗑️ Pagamento #${id} excluído`,"ok"); await carregarVerificadoAdmin();
+}
+
+async function aprovarVerifSolicitacao(id) {
+  const s = todosVerifSolic.find(x=>x.id===id); if (!s) return;
+  const { error } = await adminClient.from("comunidade_verificacoes").update({ status:"aprovado" }).eq("id",id);
+  if (error) { toast("Erro: "+error.message,"err"); return; }
+  await concederSeloDouradoPorEmail(s.email);
+  toast(`✅ Selo dourado concedido — solicitação #${id}`,"ok");
+  await carregarVerificadoAdmin();
+}
+async function recusarVerifSolicitacao(id) {
+  if (!confirm(`Recusar solicitação #${id}?`)) return;
+  const { error } = await adminClient.from("comunidade_verificacoes").update({ status:"recusado" }).eq("id",id);
+  if (error) { toast("Erro: "+error.message,"err"); return; }
+  toast(`⛔ Solicitação #${id} recusada`,"ok"); await carregarVerificadoAdmin();
+}
+async function excluirVerifSolicitacao(id) {
+  if (!confirm(`Excluir solicitação #${id}? Irreversível.`)) return;
+  const { error } = await adminClient.from("comunidade_verificacoes").delete().eq("id",id);
+  if (error) { toast("Erro: "+error.message,"err"); return; }
+  toast(`🗑️ Solicitação #${id} excluída`,"ok"); await carregarVerificadoAdmin();
+}
+
+/* ── AÇÕES PEDIDOS ── */
+async function aprovarPedido(id) {
+  const p = todosPedidos.find(x=>x.id===id); if (!p) return;
+  const { data:dl } = await adminClient.from("downloads_padrao").select("download_url").eq("produto",p.produto).eq("ativo",true).maybeSingle();
+  const hoje=new Date(); const fim=new Date(); fim.setDate(fim.getDate()+30);
+  const { error } = await adminClient.from("pedidos").update({status:"ativa",acesso_liberado:true,download_url:dl?.download_url||null,data_pagamento:hoje.toISOString(),data_fim:fim.toISOString()}).eq("id",id);
+  if (error) { toast("Erro: "+error.message,"err"); return; }
+  toast(`✅ Pedido #${id} aprovado — 30 dias`,"ok"); await carregarPedidosAdmin();
+}
+async function renovarPedido(id) {
+  const p = todosPedidos.find(x=>x.id===id);
+  const base = p?.data_fim && new Date(p.data_fim) > new Date() ? new Date(p.data_fim) : new Date();
+  const fim  = new Date(base); fim.setDate(fim.getDate()+30);
+  const { error } = await adminClient.from("pedidos").update({status:"ativa",acesso_liberado:true,data_fim:fim.toISOString()}).eq("id",id);
+  if (error) { toast("Erro: "+error.message,"err"); return; }
+  toast(`🔄 Renovado até ${fim.toLocaleDateString("pt-BR")}`,"ok"); await carregarPedidosAdmin();
+}
+async function cancelarPedido(id) {
+  if (!confirm(`Cancelar pedido #${id}?`)) return;
+  const { error } = await adminClient.from("pedidos").update({status:"cancelada",acesso_liberado:false}).eq("id",id);
+  if (error) { toast("Erro: "+error.message,"err"); return; }
+  toast(`⛔ Pedido #${id} cancelado`,"ok"); await carregarPedidosAdmin();
+}
+async function excluirPedido(id) {
+  if (!confirm(`Excluir pedido #${id}? Irreversível.`)) return;
+  const { error } = await adminClient.from("pedidos").delete().eq("id",id);
+  if (error) { toast("Erro: "+error.message,"err"); return; }
+  toast(`🗑️ Pedido #${id} excluído`,"ok"); await carregarPedidosAdmin();
+}
+async function cancelarPorEmail(email) {
+  if (!confirm(`Revogar acesso de ${email}?`)) return;
+  const { error } = await adminClient.from("pedidos").update({status:"cancelada",acesso_liberado:false}).eq("email",email);
+  if (error) { toast("Erro: "+error.message,"err"); return; }
+  toast(`⛔ Acesso de ${email} revogado`,"ok"); await carregarPedidosAdmin(); renderUsuarios();
+}
+async function criarAssinanteEmail(email) {
+  const hoje=new Date(); const fim=new Date(); fim.setDate(fim.getDate()+30);
+  // Tenta buscar nome real: primeiro em perfis, depois em pedidos existentes
+  const { data: perfil } = await adminClient.from("perfis").select("nome").eq("email", email).maybeSingle();
+  let nomeReal = perfil?.nome || null;
+  if (!nomeReal) {
+    const pedExistente = todosPedidos.find(p => (p.email||"").toLowerCase() === email.toLowerCase() && p.nome_cliente && p.nome_cliente !== email);
+    nomeReal = pedExistente?.nome_cliente || email;
+  }
+  const { error } = await adminClient.from("pedidos").insert([{
+    email, nome_cliente: nomeReal, produto:"Lumina Plus", valor:0,
+    status:"ativa", metodo_pagamento:"manual",
+    acesso_liberado:true, data_pagamento:hoje.toISOString(), data_fim:fim.toISOString()
+  }]);
+  if (error) { toast("Erro: "+error.message,"err"); return; }
+  toast(`✅ Acesso dado para ${nomeReal}`,"ok"); await carregarPedidosAdmin(); renderUsuarios();
+}
+async function excluirUsuario(id, nome) {
+  if (!confirm(`Excluir usuário "${nome}"? Irreversível.`)) return;
+  const { error } = await adminClient.from("perfis").delete().eq("id",id);
+  if (error) { toast("Erro: "+error.message,"err"); return; }
+  toast(`🗑️ Usuário excluído`,"ok"); await carregarUsuarios();
+}
+
+/* ── CRIAR ASSINANTE (aba) ── */
+async function criarAssinante() {
+  const email   = document.getElementById("emailAssinante").value.trim();
+  const produto = document.getElementById("produtoAssinante").value;
+  const errEl   = document.getElementById("msgAssinanteErro");
+  const okEl    = document.getElementById("msgAssinanteSucesso");
+  errEl.style.display = okEl.style.display = "none";
+  if (!email) { errEl.textContent="Digite um e-mail."; errEl.style.display="block"; return; }
+  const hoje=new Date(); const fim=new Date(); fim.setDate(fim.getDate()+30);
+  // Busca nome real na tabela perfis
+  const { data: perfil } = await adminClient.from("perfis").select("nome").eq("email", email).maybeSingle();
+  const nomeReal = perfil?.nome || email;
+  const { error } = await adminClient.from("pedidos").insert([{
+    email, nome_cliente: nomeReal, produto, valor:0,
+    status:"ativa", metodo_pagamento:"manual",
+    acesso_liberado:true, data_pagamento:hoje.toISOString(), data_fim:fim.toISOString()
+  }]);
+  if (error) { errEl.textContent="Erro: "+error.message; errEl.style.display="block"; return; }
+  okEl.textContent=`✅ ${nomeReal} criado! Acesso até ${fim.toLocaleDateString("pt-BR")}.`; okEl.style.display="block";
+  document.getElementById("emailAssinante").value = "";
+  await carregarPedidosAdmin();
+}
+
+async function excluirPedidoModal(id, email) {
+  if (!confirm(`Excluir pedido #${id}? Irreversível.`)) return;
+  const { error } = await adminClient.from("pedidos").delete().eq("id", id);
+  if (error) { toast("Erro: "+error.message, "err"); return; }
+  toast(`🗑️ Pedido #${id} excluído`, "ok");
+  await carregarPedidosAdmin();
+  abrirModal(email);
+}
+
+async function excluirTodoHistorico(email) {
+  if (!confirm(`Excluir TODO o histórico de pedidos de ${email}?\n\nEsta ação é irreversível.`)) return;
+  const { error } = await adminClient.from("pedidos").delete().eq("email", email);
+  if (error) { toast("Erro: "+error.message, "err"); return; }
+  toast(`🗑️ Histórico de ${email} excluído`, "ok");
+  await carregarPedidosAdmin();
+  abrirModal(email);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   ABA EQUIPE — gestão de serviços, integrantes, funções e entregas
+   ════════════════════════════════════════════════════════════════ */
+let eqFuncoesAdminCache = {};
+let eqServicosAdminCache = [];
+let eqIntegrantesAdminCache = [];
+let eqFiltroServicoAtual = "todos";
+
+function mudarSubAbaEquipe(sub) {
+  ["EqDash", "EqServicos", "EqIntegrantes", "EqFuncoes", "EqEntregas", "EqAdmins"].forEach((s) => {
+    document.getElementById("eqTab" + s).style.display = s === sub ? "block" : "none";
+    document.getElementById("eqsub-" + s).classList.toggle("active", s === sub);
+  });
+  if (sub === "EqDash")        carregarEquipeDashboard();
+  if (sub === "EqServicos")    { carregarFuncoesParaSelects(); carregarServicosAdmin(); }
+  if (sub === "EqIntegrantes") { carregarFuncoesParaSelects(); carregarIntegrantesAdmin(); }
+  if (sub === "EqFuncoes")     carregarFuncoesAdmin();
+  if (sub === "EqEntregas")    carregarEntregasAdmin();
+  if (sub === "EqAdmins")      carregarAdminsLista();
+}
+
+/* ── FUNÇÕES (cache global usada nos selects) ── */
+async function carregarFuncoesParaSelects() {
+  const { data } = await adminClient.from("equipe_funcoes").select("*").eq("ativo", true).order("nome");
+  eqFuncoesAdminCache = {};
+  (data || []).forEach((f) => { eqFuncoesAdminCache[f.id] = f; });
+  const opts = (data || []).map((f) => `<option value="${f.id}">${f.nome}</option>`).join("");
+  const selSvc = document.getElementById("svcFuncao");
+  const selInt = document.getElementById("intFuncao");
+  if (selSvc) selSvc.innerHTML = opts || `<option value="">Nenhuma função cadastrada</option>`;
+  if (selInt) selInt.innerHTML = opts || `<option value="">Nenhuma função cadastrada</option>`;
+}
+
+/* ── DASHBOARD DA EQUIPE ── */
+async function carregarEquipeDashboard() {
+  await adminClient.rpc("equipe_checar_prazos_vencidos");
+
+  const { data: integrantes } = await adminClient.from("equipe_integrantes").select("*");
+  const { data: servicos } = await adminClient.from("equipe_servicos").select("*, equipe_integrantes(nome), equipe_funcoes(nome)");
+
+  const ints = integrantes || [];
+  const svcs = servicos || [];
+
+  const ativos = ints.filter((i) => i.status === "ativo");
+  const demitidos = ints.filter((i) => i.status === "demitido");
+  const moralMedia = ativos.length ? Math.round(ativos.reduce((s, i) => s + i.moral, 0) / ativos.length) : 0;
+
+  document.getElementById("eqdInt").textContent = ints.length;
+  document.getElementById("eqdAndamento").textContent = svcs.filter((s) => s.status === "em_andamento").length;
+  document.getElementById("eqdConcluidos").textContent = svcs.filter((s) => s.status === "aprovado").length;
+  document.getElementById("eqdAtrasados").textContent = svcs.filter((s) => ["recusado", "atrasado"].includes(s.status)).length;
+  document.getElementById("eqdDemitidos").textContent = demitidos.length;
+  document.getElementById("eqdMoralMedia").textContent = moralMedia + "%";
+
+  const aguardando = svcs.filter((s) => s.status === "aguardando_aprovacao");
+  const tbody = document.getElementById("eqdash-aguardando-tbody");
+  tbody.innerHTML = aguardando.length ? aguardando.map((s) => `
+    <tr>
+      <td>${escapeHtmlEq(s.nome)}</td>
+      <td>${escapeHtmlEq(s.equipe_integrantes ? s.equipe_integrantes.nome : "—")}</td>
+      <td>${escapeHtmlEq(s.equipe_funcoes ? s.equipe_funcoes.nome : "—")}</td>
+      <td>${formatarDataEq(s.data_entrega)}</td>
+      <td class="admin-actions-bar">
+        <button class="btn-action btn-approve" onclick="aprovarEntregaAdmin(${s.id})">✔ Aprovar</button>
+        <button class="btn-action btn-cancel" onclick="solicitarAlteracoesAdmin(${s.id})">✎ Alterações</button>
+        <button class="btn-action btn-delete" onclick="reprovarEntregaAdmin(${s.id})">✕ Reprovar</button>
+      </td>
+    </tr>`).join("") : `<tr><td colspan="5" style="color:var(--muted);text-align:center;padding:30px">Nenhuma entrega aguardando aprovação.</td></tr>`;
+}
+
+/* ── CADASTRO DE SERVIÇOS ── */
+async function publicarServico() {
+  const nome = document.getElementById("svcNome").value.trim();
+  const descricao = document.getElementById("svcDescricao").value.trim();
+  const categoria = document.getElementById("svcCategoria").value.trim();
+  const funcaoId = document.getElementById("svcFuncao").value;
+  const prioridade = document.getElementById("svcPrioridade").value;
+  const prazoDias = parseInt(document.getElementById("svcPrazo").value, 10) || 3;
+  const arquivosInput = document.getElementById("svcArquivos");
+  const msg = document.getElementById("svcPublicarMsg");
+  const btn = document.getElementById("btnPublicarServico");
+
+  if (!nome || !funcaoId) {
+    msg.textContent = "Preencha ao menos o nome e a área responsável.";
+    msg.style.color = "#fca5a5";
+    msg.style.display = "block";
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Publicando...";
+  msg.style.display = "none";
+
+  try {
+    const arquivosUrls = parseLinksDrive(arquivosInput.value);
+
+    const { error } = await adminClient.from("equipe_servicos").insert([{
+      nome, descricao, categoria,
+      funcao_id: parseInt(funcaoId, 10),
+      prioridade, prazo_dias: prazoDias,
+      arquivos_urls: arquivosUrls,
+      status: "disponivel",
+    }]);
+    if (error) throw error;
+
+    toast("Serviço publicado com sucesso!", "ok");
+    document.getElementById("svcNome").value = "";
+    document.getElementById("svcDescricao").value = "";
+    document.getElementById("svcCategoria").value = "";
+    document.getElementById("svcPrazo").value = "3";
+    arquivosInput.value = "";
+    carregarServicosAdmin();
+  } catch (err) {
+    msg.textContent = "Erro ao publicar: " + (err.message || "tente novamente.");
+    msg.style.color = "#fca5a5";
+    msg.style.display = "block";
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Publicar serviço";
+  }
+}
+
+async function carregarServicosAdmin() {
+  const tbody = document.getElementById("eq-servicos-admin-tbody");
+  tbody.innerHTML = `<tr><td colspan="7" style="color:var(--muted);text-align:center;padding:40px">Carregando...</td></tr>`;
+
+  const { data, error } = await adminClient
+    .from("equipe_servicos")
+    .select("*, equipe_integrantes(nome), equipe_funcoes(nome)")
+    .order("criado_em", { ascending: false });
+
+  if (error) { tbody.innerHTML = `<tr><td colspan="7" style="color:#fca5a5;text-align:center;padding:40px">Erro ao carregar.</td></tr>`; return; }
+
+  eqServicosAdminCache = data || [];
+  renderServicosAdmin();
+}
+
+function filtrarServicosAdmin(f) {
+  eqFiltroServicoAtual = f;
+  document.querySelectorAll("[data-svcf]").forEach((b) => b.classList.toggle("active", b.dataset.svcf === f));
+  renderServicosAdmin();
+}
+
+function renderServicosAdmin() {
+  const tbody = document.getElementById("eq-servicos-admin-tbody");
+  let lista = eqServicosAdminCache;
+  if (eqFiltroServicoAtual === "recusado") {
+    lista = lista.filter((s) => ["recusado", "atrasado"].includes(s.status));
+  } else if (eqFiltroServicoAtual !== "todos") {
+    lista = lista.filter((s) => s.status === eqFiltroServicoAtual);
+  }
+
+  tbody.innerHTML = lista.length ? lista.map((s) => `
+    <tr>
+      <td>${escapeHtmlEq(s.nome)}</td>
+      <td>${escapeHtmlEq(s.equipe_funcoes ? s.equipe_funcoes.nome : "—")}</td>
+      <td><span class="status-badge status-pendente">${labelPrioridadeEq(s.prioridade)}</span></td>
+      <td><span class="status-badge ${statusBadgeClassEq(s.status)}">${labelStatusEq(s.status)}</span></td>
+      <td>${escapeHtmlEq(s.equipe_integrantes ? s.equipe_integrantes.nome : "—")}</td>
+      <td>${s.prazo_final ? formatarDataEq(s.prazo_final) : "—"}</td>
+      <td class="admin-actions-bar">
+        <button class="btn-action btn-delete" onclick="excluirServicoAdmin(${s.id})">🗑 Excluir</button>
+      </td>
+    </tr>`).join("") : `<tr><td colspan="7" style="color:var(--muted);text-align:center;padding:40px">Nenhum serviço encontrado.</td></tr>`;
+}
+
+async function excluirServicoAdmin(id) {
+  if (!confirm("Excluir este serviço? Esta ação é irreversível.")) return;
+  const { error } = await adminClient.from("equipe_servicos").delete().eq("id", id);
+  if (error) { toast("Erro: " + error.message, "err"); return; }
+  toast("Serviço excluído.", "ok");
+  carregarServicosAdmin();
+}
+
+/* ── INTEGRANTES ── */
+async function carregarIntegrantesAdmin() {
+  const tbody = document.getElementById("eq-integrantes-admin-tbody");
+  tbody.innerHTML = `<tr><td colspan="8" style="color:var(--muted);text-align:center;padding:40px">Carregando...</td></tr>`;
+
+  const { data, error } = await adminClient
+    .from("equipe_integrantes")
+    .select("*, equipe_funcoes(nome)")
+    .order("nome");
+
+  if (error) { tbody.innerHTML = `<tr><td colspan="8" style="color:#fca5a5;text-align:center;padding:40px">Erro ao carregar.</td></tr>`; return; }
+
+  eqIntegrantesAdminCache = data || [];
+  renderIntegrantesAdmin();
+}
+
+function renderIntegrantesAdmin() {
+  const termo = (document.getElementById("searchIntegrantes")?.value || "").toLowerCase();
+  const tbody = document.getElementById("eq-integrantes-admin-tbody");
+  const lista = eqIntegrantesAdminCache.filter((i) =>
+    i.nome.toLowerCase().includes(termo) || i.usuario.toLowerCase().includes(termo));
+
+  tbody.innerHTML = lista.length ? lista.map((i) => `
+    <tr>
+      <td class="nome-clicavel" onclick="editarIntegrante(${i.id})">${escapeHtmlEq(i.nome)}</td>
+      <td class="handle-cell">${escapeHtmlEq(i.usuario)}</td>
+      <td><span class="user-senha-cell" onclick="navigator.clipboard.writeText('${escapeHtmlEq(i.senha)}');toast('Senha copiada!','ok')">${escapeHtmlEq(i.senha)}</span></td>
+      <td>${escapeHtmlEq(i.equipe_funcoes ? i.equipe_funcoes.nome : "—")}</td>
+      <td><span style="color:${i.moral >= 70 ? '#22c55e' : i.moral >= 30 ? '#fbbf24' : '#ef4444'};font-weight:700">${i.moral}%</span></td>
+      <td><span class="status-badge status-${i.status === 'ativo' ? 'ativo' : 'cancelado'}">${i.status === 'ativo' ? 'Ativo' : 'Demitido'}</span></td>
+      <td>${i.total_concluidos}</td>
+      <td class="admin-actions-bar">
+        <button class="btn-action btn-view" onclick="editarIntegrante(${i.id})">✎ Editar</button>
+        <button class="btn-action btn-renew" onclick="redefinirMoralAdmin(${i.id})">🔄 Moral</button>
+        ${i.status === "demitido" ? `<button class="btn-action btn-approve" onclick="reativarIntegranteAdmin(${i.id})">↩ Reativar</button>` : ""}
+        <button class="btn-action btn-delete" onclick="removerIntegranteAdmin(${i.id})">🗑 Remover</button>
+      </td>
+    </tr>`).join("") : `<tr><td colspan="8" style="color:var(--muted);text-align:center;padding:40px">Nenhum integrante encontrado.</td></tr>`;
+}
+
+async function salvarIntegrante() {
+  const nome = document.getElementById("intNome").value.trim();
+  const usuario = document.getElementById("intUsuario").value.trim();
+  const senha = document.getElementById("intSenha").value.trim();
+  const funcaoId = document.getElementById("intFuncao").value;
+  const editandoId = document.getElementById("intEditandoId").value;
+  const msg = document.getElementById("intFormMsg");
+  const btn = document.getElementById("btnSalvarIntegrante");
+
+  if (!nome || !usuario || !senha || !funcaoId) {
+    msg.textContent = "Preencha todos os campos.";
+    msg.style.color = "#fca5a5";
+    msg.style.display = "block";
+    return;
+  }
+
+  btn.disabled = true;
+  const payload = { nome, usuario, senha, funcao_id: parseInt(funcaoId, 10) };
+
+  try {
+    let error;
+    if (editandoId) {
+      ({ error } = await adminClient.from("equipe_integrantes").update(payload).eq("id", editandoId));
+    } else {
+      ({ error } = await adminClient.from("equipe_integrantes").insert([{ ...payload, moral: 100, status: "ativo" }]));
+    }
+    if (error) throw error;
+
+    toast(editandoId ? "Integrante atualizado!" : "Integrante adicionado!", "ok");
+    cancelarEdicaoIntegrante();
+    carregarIntegrantesAdmin();
+  } catch (err) {
+    msg.textContent = "Erro: " + (err.message || "tente novamente.") + (err.message?.includes("duplicate") ? " (usuário já existe)" : "");
+    msg.style.color = "#fca5a5";
+    msg.style.display = "block";
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function editarIntegrante(id) {
+  const i = eqIntegrantesAdminCache.find((x) => x.id === id);
+  if (!i) return;
+  document.getElementById("intEditandoId").value = i.id;
+  document.getElementById("intNome").value = i.nome;
+  document.getElementById("intUsuario").value = i.usuario;
+  document.getElementById("intSenha").value = i.senha;
+  document.getElementById("intFuncao").value = i.funcao_id;
+  document.getElementById("intFormTitulo").textContent = "Editando: " + i.nome;
+  document.getElementById("btnSalvarIntegrante").textContent = "Salvar alterações";
+  document.getElementById("btnCancelarEdicaoInt").style.display = "inline-flex";
+  document.getElementById("intFormMsg").style.display = "none";
+  document.getElementById("intNome").scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function cancelarEdicaoIntegrante() {
+  document.getElementById("intEditandoId").value = "";
+  document.getElementById("intNome").value = "";
+  document.getElementById("intUsuario").value = "";
+  document.getElementById("intSenha").value = "";
+  document.getElementById("intFormTitulo").textContent = "Adicionar integrante";
+  document.getElementById("btnSalvarIntegrante").textContent = "Adicionar integrante";
+  document.getElementById("btnCancelarEdicaoInt").style.display = "none";
+}
+
+async function redefinirMoralAdmin(id) {
+  if (!confirm("Redefinir a moral deste integrante para 100% e reativar o acesso?")) return;
+  const { error } = await adminClient.rpc("equipe_redefinir_moral", { p_integrante_id: id });
+  if (error) { toast("Erro: " + error.message, "err"); return; }
+  toast("Moral redefinida para 100%.", "ok");
+  carregarIntegrantesAdmin();
+}
+
+async function reativarIntegranteAdmin(id) {
+  const { error } = await adminClient.rpc("equipe_redefinir_moral", { p_integrante_id: id });
+  if (error) { toast("Erro: " + error.message, "err"); return; }
+  toast("Integrante reativado!", "ok");
+  carregarIntegrantesAdmin();
+}
+
+async function removerIntegranteAdmin(id) {
+  if (!confirm("Remover este integrante permanentemente? Esta ação é irreversível.")) return;
+  const { error } = await adminClient.from("equipe_integrantes").delete().eq("id", id);
+  if (error) { toast("Erro: " + error.message, "err"); return; }
+  toast("Integrante removido.", "ok");
+  carregarIntegrantesAdmin();
+}
+
+/* ── FUNÇÕES / CARGOS ── */
+async function criarFuncao() {
+  const nome = document.getElementById("funcNome").value.trim();
+  const cor = document.getElementById("funcCor").value;
+  const msg = document.getElementById("funcFormMsg");
+
+  if (!nome) {
+    msg.textContent = "Digite o nome da função.";
+    msg.style.color = "#fca5a5";
+    msg.style.display = "block";
+    return;
+  }
+
+  const { error } = await adminClient.from("equipe_funcoes").insert([{ nome, cor }]);
+  if (error) {
+    msg.textContent = "Erro: " + (error.message.includes("duplicate") ? "essa função já existe." : error.message);
+    msg.style.color = "#fca5a5";
+    msg.style.display = "block";
+    return;
+  }
+
+  toast("Função criada!", "ok");
+  document.getElementById("funcNome").value = "";
+  msg.style.display = "none";
+  carregarFuncoesAdmin();
+}
+
+async function carregarFuncoesAdmin() {
+  const tbody = document.getElementById("eq-funcoes-admin-tbody");
+  tbody.innerHTML = `<tr><td colspan="5" style="color:var(--muted);text-align:center;padding:40px">Carregando...</td></tr>`;
+
+  const { data: funcoes, error } = await adminClient.from("equipe_funcoes").select("*").order("nome");
+  if (error) { tbody.innerHTML = `<tr><td colspan="5" style="color:#fca5a5;text-align:center;padding:40px">Erro ao carregar.</td></tr>`; return; }
+
+  const { data: integrantes } = await adminClient.from("equipe_integrantes").select("funcao_id");
+  const contagem = {};
+  (integrantes || []).forEach((i) => { contagem[i.funcao_id] = (contagem[i.funcao_id] || 0) + 1; });
+
+  tbody.innerHTML = (funcoes || []).length ? funcoes.map((f) => `
+    <tr>
+      <td>${escapeHtmlEq(f.nome)}</td>
+      <td><span style="display:inline-block;width:20px;height:20px;border-radius:6px;background:${f.cor};vertical-align:middle;border:1px solid var(--border)"></span></td>
+      <td>${contagem[f.id] || 0}</td>
+      <td><span class="status-badge status-${f.ativo ? 'ativo' : 'cancelado'}">${f.ativo ? 'Ativa' : 'Inativa'}</span></td>
+      <td class="admin-actions-bar">
+        <button class="btn-action ${f.ativo ? 'btn-cancel' : 'btn-approve'}" onclick="alternarFuncaoAdmin(${f.id}, ${!f.ativo})">${f.ativo ? '⏸ Desativar' : '▶ Ativar'}</button>
+      </td>
+    </tr>`).join("") : `<tr><td colspan="5" style="color:var(--muted);text-align:center;padding:40px">Nenhuma função cadastrada.</td></tr>`;
+}
+
+async function alternarFuncaoAdmin(id, novoAtivo) {
+  const { error } = await adminClient.from("equipe_funcoes").update({ ativo: novoAtivo }).eq("id", id);
+  if (error) { toast("Erro: " + error.message, "err"); return; }
+  toast(novoAtivo ? "Função ativada." : "Função desativada.", "ok");
+  carregarFuncoesAdmin();
+}
+
+/* ── ENTREGAS (aprovar / alterações / reprovar) ── */
+async function carregarEntregasAdmin() {
+  const tbody = document.getElementById("eq-entregas-admin-tbody");
+  tbody.innerHTML = `<tr><td colspan="6" style="color:var(--muted);text-align:center;padding:40px">Carregando...</td></tr>`;
+
+  const { data, error } = await adminClient
+    .from("equipe_servicos")
+    .select("*, equipe_integrantes(nome), equipe_funcoes(nome)")
+    .eq("status", "aguardando_aprovacao")
+    .order("data_entrega", { ascending: true });
+
+  if (error) { tbody.innerHTML = `<tr><td colspan="6" style="color:#fca5a5;text-align:center;padding:40px">Erro ao carregar.</td></tr>`; return; }
+
+  tbody.innerHTML = (data || []).length ? data.map((s) => {
+    const arquivos = Array.isArray(s.entrega_urls) ? s.entrega_urls : [];
+    return `
+    <tr>
+      <td>${escapeHtmlEq(s.nome)}</td>
+      <td>${escapeHtmlEq(s.equipe_integrantes ? s.equipe_integrantes.nome : "—")}</td>
+      <td>${escapeHtmlEq(s.equipe_funcoes ? s.equipe_funcoes.nome : "—")}</td>
+      <td>${formatarDataEq(s.data_entrega)}</td>
+      <td>${arquivos.map((a) => `<a href="${a.url}" target="_blank" rel="noopener" style="color:#6aabff;font-size:12px;display:block">📎 ${escapeHtmlEq(a.nome)}</a>`).join("") || "—"}</td>
+      <td class="admin-actions-bar">
+        <button class="btn-action btn-approve" onclick="aprovarEntregaAdmin(${s.id})">✔ Aprovar</button>
+        <button class="btn-action btn-cancel" onclick="solicitarAlteracoesAdmin(${s.id})">✎ Alterações</button>
+        <button class="btn-action btn-delete" onclick="reprovarEntregaAdmin(${s.id})">✕ Reprovar</button>
+      </td>
+    </tr>`;
+  }).join("") : `<tr><td colspan="6" style="color:var(--muted);text-align:center;padding:40px">Nenhuma entrega aguardando aprovação.</td></tr>`;
+}
+
+async function aprovarEntregaAdmin(id) {
+  const { error } = await adminClient.rpc("equipe_aprovar_entrega", { p_servico_id: id });
+  if (error) { toast("Erro: " + error.message, "err"); return; }
+  toast("Entrega aprovada!", "ok");
+  carregarEntregasAdmin();
+  carregarServicosAdmin();
+  carregarEquipeDashboard();
+}
+
+async function solicitarAlteracoesAdmin(id) {
+  const obs = prompt("Descreva o que precisa ser alterado:");
+  if (obs === null) return;
+  const { error } = await adminClient.from("equipe_servicos")
+    .update({ status: "alteracoes_solicitadas", observacao_admin: obs })
+    .eq("id", id);
+  if (error) { toast("Erro: " + error.message, "err"); return; }
+  toast("Alterações solicitadas ao integrante.", "ok");
+  carregarEntregasAdmin();
+  carregarServicosAdmin();
+}
+
+async function reprovarEntregaAdmin(id) {
+  const obs = prompt("Motivo da reprovação (opcional):") || "";
+  if (!confirm("Reprovar esta entrega?")) return;
+  const { error } = await adminClient.from("equipe_servicos")
+    .update({ status: "reprovado", observacao_admin: obs })
+    .eq("id", id);
+  if (error) { toast("Erro: " + error.message, "err"); return; }
+  toast("Entrega reprovada.", "ok");
+  carregarEntregasAdmin();
+  carregarServicosAdmin();
+  carregarEquipeDashboard();
+}
+
+/* ── ADMINISTRADORES (Supabase Auth) ── */
+async function carregarAdminsLista() {
+  const tbody = document.getElementById("eq-admins-tbody");
+  tbody.innerHTML = `<tr><td colspan="4" style="color:var(--muted);text-align:center;padding:40px">Carregando...</td></tr>`;
+
+  const { data, error } = await adminClient.from("equipe_admins").select("*").order("criado_em");
+  if (error) { tbody.innerHTML = `<tr><td colspan="4" style="color:#fca5a5;text-align:center;padding:40px">Erro ao carregar.</td></tr>`; return; }
+
+  tbody.innerHTML = (data || []).length ? data.map((a) => `
+    <tr>
+      <td>${escapeHtmlEq(a.nome)}</td>
+      <td>${escapeHtmlEq(a.email)}</td>
+      <td>${formatarDataEq(a.criado_em)}</td>
+      <td class="admin-actions-bar">
+        ${adminAtualSessao && adminAtualSessao.id === a.id
+          ? `<span style="color:var(--muted);font-size:11px">Você</span>`
+          : `<button class="btn-action btn-delete" onclick="removerAdminAdmin('${a.id}')">🗑 Remover</button>`}
+      </td>
+    </tr>`).join("") : `<tr><td colspan="4" style="color:var(--muted);text-align:center;padding:40px">Nenhum administrador cadastrado.</td></tr>`;
+}
+
+async function criarAdminNovo() {
+  const nome = document.getElementById("admNovoNome").value.trim();
+  const email = document.getElementById("admNovoEmail").value.trim().toLowerCase();
+  const senha = document.getElementById("admNovoSenha").value;
+  const msg = document.getElementById("admNovoMsg");
+  const btn = document.getElementById("btnCriarAdmin");
+
+  if (!nome || !email || !senha) {
+    msg.textContent = "Preencha todos os campos.";
+    msg.style.color = "#fca5a5";
+    msg.style.display = "block";
+    return;
+  }
+  if (senha.length < 6) {
+    msg.textContent = "A senha precisa ter ao menos 6 caracteres.";
+    msg.style.color = "#fca5a5";
+    msg.style.display = "block";
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Criando...";
+  msg.style.display = "none";
+
+  const { error } = await adminClient.rpc("equipe_criar_admin", {
+    p_email: email, p_senha: senha, p_nome: nome,
+  });
+
+  if (error) {
+    msg.textContent = "Erro: " + error.message + (error.details ? " | " + error.details : "") + (error.hint ? " | dica: " + error.hint : "");
+    msg.style.color = "#fca5a5";
+    msg.style.display = "block";
+  } else {
+    toast("Administrador criado com sucesso!", "ok");
+    document.getElementById("admNovoNome").value = "";
+    document.getElementById("admNovoEmail").value = "";
+    document.getElementById("admNovoSenha").value = "";
+    carregarAdminsLista();
+  }
+  btn.disabled = false;
+  btn.textContent = "Criar administrador";
+}
+
+async function removerAdminAdmin(userId) {
+  if (!confirm("Remover este administrador? Ele perderá acesso imediatamente.")) return;
+  const { error } = await adminClient.rpc("equipe_remover_admin", { p_user_id: userId });
+  if (error) { toast("Erro: " + error.message, "err"); return; }
+  toast("Administrador removido.", "ok");
+  carregarAdminsLista();
+}
+
+/* ── HELPERS EQUIPE ── */
+/* Converte o textarea de links do Drive em [{nome, url}].
+   Aceita "Nome | link" por linha, ou só o link (usa "Arquivo N" como nome). */
+function parseLinksDrive(texto) {
+  if (!texto || !texto.trim()) return [];
+  return texto.split("\n").map(l => l.trim()).filter(Boolean).map((linha, i) => {
+    const partes = linha.split("|").map(p => p.trim());
+    if (partes.length >= 2) return { nome: partes[0], url: partes[1] };
+    return { nome: "Arquivo " + (i + 1), url: partes[0] };
+  }).filter(a => a.url);
+}
+
+function escapeHtmlEq(str) {
+  if (!str && str !== 0) return "";
+  return String(str).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function formatarDataEq(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  return d.toLocaleDateString("pt-BR") + " " + d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+}
+function labelPrioridadeEq(p) {
+  return { baixa: "Baixa", media: "Média", alta: "Alta", urgente: "🔥 Urgente" }[p] || p;
+}
+function labelStatusEq(s) {
+  return {
+    disponivel: "Disponível", em_andamento: "Em andamento", aguardando_aprovacao: "Aguardando aprovação",
+    aprovado: "Aprovado", alteracoes_solicitadas: "Alterações solicitadas", reprovado: "Reprovado",
+    recusado: "Recusado", atrasado: "Atrasado", cancelado: "Cancelado",
+  }[s] || s;
+}
+function statusBadgeClassEq(s) {
+  if (["aprovado"].includes(s)) return "status-aprovado";
+  if (["disponivel", "em_andamento", "aguardando_aprovacao"].includes(s)) return "status-pendente";
+  return "status-cancelado";
+}
+
+/* ── LIGHTBOX ── */
+function abrirLightbox(url) {
+  document.getElementById("compLightboxImg").src = url;
+  document.getElementById("compLightbox").style.display = "flex";
+}
+function fecharLightbox() { document.getElementById("compLightbox").style.display = "none"; }
+
+/* ── NOTÍCIAS ── */
+async function criarNoticia() {
+  const titulo   = document.getElementById("noticiasTitulo").value.trim();
+  const desc     = document.getElementById("noticiasDesc").value.trim();
+  const btnNome  = document.getElementById("noticiasBtnNome").value.trim();
+  const btnUrl   = document.getElementById("noticiasBtnUrl").value.trim();
+  const imgFile  = document.getElementById("noticiasImgFile").files[0];
+  const msg      = document.getElementById("noticiaMsg");
+
+  if (!titulo || !desc) {
+    msg.textContent = "⚠️ Preencha título e descrição.";
+    msg.style.color = "#ef4444"; msg.style.display = "inline";
+    setTimeout(() => msg.style.display = "none", 3000); return;
+  }
+
+  msg.textContent = "⏳ Publicando...";
+  msg.style.color = "#fbbf24"; msg.style.display = "inline";
+
+  // Upload da imagem para o Storage (bucket: capas_noticias)
+  let imgUrl = null;
+  if (imgFile) {
+    const ext = imgFile.name.split(".").pop();
+    const path = `noticia_${Date.now()}.${ext}`;
+    const { data: upData, error: upErr } = await adminClient.storage
+      .from("capas_noticias")
+      .upload(path, imgFile, { upsert: true, contentType: imgFile.type });
+    if (upErr) {
+      msg.textContent = "Erro no upload: " + upErr.message;
+      msg.style.color = "#ef4444";
+      return;
+    }
+    const { data: urlData } = adminClient.storage.from("capas_noticias").getPublicUrl(path);
+    imgUrl = urlData.publicUrl;
+  }
+
+  // Colunas: id (auto), titulo, texto, img_url, btn_nome, btn_url
+  const payload = { titulo, texto: desc };
+  if (imgUrl)  payload.img_url  = imgUrl;
+  if (btnNome) payload.btn_nome = btnNome;
+  if (btnUrl)  payload.btn_url  = btnUrl;
+
+  const { error } = await adminClient.from("noticias").insert([payload]);
+  if (error) {
+    msg.textContent = "Erro: " + error.message;
+    msg.style.color = "#ef4444"; msg.style.display = "inline";
+    return;
+  }
+  msg.textContent = "✅ Publicada!";
+  msg.style.color = "#22c55e"; msg.style.display = "inline";
+  document.getElementById("noticiasTitulo").value = "";
+  document.getElementById("noticiasDesc").value = "";
+  document.getElementById("noticiasBtnNome").value = "";
+  document.getElementById("noticiasBtnUrl").value = "";
+  limparImagem();
+  setTimeout(() => msg.style.display = "none", 3000);
+  carregarNoticias();
+}
+
+async function carregarNoticias() {
+  const lista = document.getElementById("noticiasLista");
+  lista.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:20px 0">Carregando...</div>';
+  // Colunas reais da tabela: id, titulo, texto
+  const { data, error } = await adminClient.from("noticias").select("id, titulo, texto, img_url, btn_nome, btn_url").order("id", { ascending: false });
+  if (error) { lista.innerHTML = '<div style="color:#ef4444;font-size:13px;padding:20px 0">Erro: ' + error.message + '</div>'; return; }
+  if (!data || !data.length) { lista.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:20px 0">Nenhuma notícia publicada.</div>'; return; }
+  lista.innerHTML = data.map(n => `
+    <div style="background:#0c1528;border:1px solid rgba(255,255,255,0.07);border-radius:16px;overflow:hidden;display:flex;align-items:stretch;justify-content:space-between">
+      ${n.img_url ? `<div style="width:90px;flex-shrink:0;background:url('${n.img_url}') center/cover no-repeat"></div>` : ''}
+      <div style="flex:1;padding:16px 18px">
+        <div style="font-weight:700;font-size:15px;color:#fff;margin-bottom:5px">${n.titulo}</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.5;margin-bottom:${n.btn_nome ? 8 : 0}px">${n.texto||''}</div>
+        ${n.btn_nome ? `<div style="display:inline-flex;align-items:center;gap:6px;background:rgba(26,107,255,0.12);border:1px solid rgba(26,107,255,0.3);border-radius:8px;padding:4px 12px;font-size:11px;color:#6aabff">🔗 <strong>${n.btn_nome}</strong> → ${n.btn_url||''}</div>` : ''}
+      </div>
+      <div style="padding:16px 14px;display:flex;align-items:center">
+        <button onclick="deletarNoticia(${n.id})" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#ef4444;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;white-space:nowrap">🗑️ Excluir</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+async function deletarNoticia(id) {
+  if (!confirm("Excluir esta notícia?")) return;
+  await adminClient.from("noticias").delete().eq("id", id);
+  carregarNoticias();
+}
+
+/* ── UPLOAD IMAGEM NOTÍCIA ── */
+document.addEventListener("DOMContentLoaded", () => {
+  const fileInput = document.getElementById("noticiasImgFile");
+  if (!fileInput) return;
+  fileInput.addEventListener("change", () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      document.getElementById("imgPreview").src = e.target.result;
+      document.getElementById("imgPreviewBox").style.display = "block";
+      document.getElementById("imgUploadText").textContent = file.name;
+      document.getElementById("imgUploadIcon").textContent = "✅";
+    };
+    reader.readAsDataURL(file);
+  });
+});
+
+function limparImagem() {
+  const fileInput = document.getElementById("noticiasImgFile");
+  if (fileInput) fileInput.value = "";
+  document.getElementById("imgPreviewBox").style.display = "none";
+  document.getElementById("imgUploadText").innerHTML = "Clique para selecionar imagem<br><span style='font-size:11px'>JPG, PNG, WEBP — bucket: capas_noticias</span>";
+  document.getElementById("imgUploadIcon").textContent = "📁";
+}
+
+/* ── UTILITÁRIOS ── */
+function copiarSenha(senha, el) {
+  navigator.clipboard.writeText(senha).then(() => {
+    const orig = el.textContent; el.textContent = "Copiado!";
+    setTimeout(() => { el.textContent = orig; }, 1500);
+  });
+}
+let _tt;
+function toast(msg, tipo="ok") {
+  const el = document.getElementById("toast");
+  el.textContent = msg; el.className = `show ${tipo}`;
+  clearTimeout(_tt); _tt = setTimeout(() => { el.className = ""; }, 3500);
+}
+
+/* ══════════════════════════════════════════
+   ABA HOSPEDAGEM
+════════════════════════════════════════════ */
+let hospPedidosCache = [];
+let hospContasCache = [];
+
+async function carregarHospedagemAdmin() {
+  await Promise.all([carregarHospPedidos(), carregarHospContas()]);
+  atualizarHospDashboard();
+}
+
+async function carregarHospPedidos() {
+  const { data, error } = await adminClient
+    .from("pedidos")
+    .select("*")
+    .eq("produto", "Hospedagem")
+    .order("id", { ascending: false });
+  if (error) { toast("Erro ao carregar pedidos de hospedagem: " + error.message, "err"); return; }
+  hospPedidosCache = data || [];
+  renderHospPedidos();
+}
+
+async function carregarHospContas() {
+  const { data, error } = await adminClient
+    .from("hospedagem_contas")
+    .select("*")
+    .order("criado_em", { ascending: false });
+  if (error) { toast("Erro ao carregar contas de hospedagem: " + error.message, "err"); return; }
+  hospContasCache = data || [];
+  renderHospContas();
+}
+
+function atualizarHospDashboard() {
+  const agora = new Date();
+  const em7 = new Date(); em7.setDate(em7.getDate() + 7);
+
+  const ativos = hospPedidosCache.filter(p => p.acesso_liberado && p.data_fim && new Date(p.data_fim) > agora);
+  const pendentes = hospPedidosCache.filter(p => p.status === "pendente");
+  const expirando = ativos.filter(p => new Date(p.data_fim) <= em7);
+
+  const emailsComConta = new Set(hospContasCache.map(c => c.email.toLowerCase()));
+  const semConta = ativos.filter(p => !emailsComConta.has((p.email || "").toLowerCase()));
+
+  document.getElementById("hospDAtivos").textContent = ativos.length;
+  document.getElementById("hospDPendentes").textContent = pendentes.length;
+  document.getElementById("hospDExpirando").textContent = expirando.length;
+  document.getElementById("hospDSemConta").textContent = semConta.length;
+}
+
+function trocarSubAbaHospedagem(sub) {
+  ["pedidos", "contas", "provisionar"].forEach(s => {
+    document.getElementById("hospSub" + s.charAt(0).toUpperCase() + s.slice(1)).style.display = s === sub ? "block" : "none";
+    document.getElementById("hosp-tab-" + s).classList.toggle("active", s === sub);
+  });
+}
+
+function renderHospPedidos() {
+  const termo = (document.getElementById("searchHospPedidos")?.value || "").toLowerCase();
+  const lista = hospPedidosCache.filter(p =>
+    (p.nome_cliente || "").toLowerCase().includes(termo) ||
+    (p.email || "").toLowerCase().includes(termo)
+  );
+
+  const tbody = document.getElementById("hosp-pedidos-admin");
+  if (!lista.length) {
+    tbody.innerHTML = `<tr><td colspan="7" style="color:var(--muted);text-align:center;padding:40px">Nenhum pedido de hospedagem encontrado.</td></tr>`;
+    return;
+  }
+
+  const agora = new Date();
+  tbody.innerHTML = lista.map(p => {
+    const ativa = p.acesso_liberado && p.data_fim && new Date(p.data_fim) > agora;
+    const statusLabel = ativa ? "ativa" : (p.status || "—");
+    const statusCor = ativa ? "#22c55e" : (p.status === "pendente" ? "#facc15" : (p.status === "cancelada" ? "#ef4444" : "#94a3b8"));
+    const comprovante = p.comprovante_url
+      ? `<a href="${p.comprovante_url}" target="_blank" style="color:#6aabff">Ver</a>`
+      : "—";
+    const vence = p.data_fim ? new Date(p.data_fim).toLocaleDateString("pt-BR") : "—";
+
+    let acoes = "";
+    if (p.status === "pendente" || p.status === "aguardando_pagamento") {
+      acoes += `<button class="btn-action btn-approve" onclick="aprovarPedido(${p.id}); setTimeout(carregarHospedagemAdmin,400)">✅ Aprovar</button>`;
+    }
+    if (ativa) {
+      acoes += `<button class="btn-action" onclick="renovarPedido(${p.id}); setTimeout(carregarHospedagemAdmin,400)">🔄 Renovar</button>`;
+    }
+    if (p.status !== "cancelada") {
+      acoes += `<button class="btn-action btn-delete" onclick="cancelarPedido(${p.id}); setTimeout(carregarHospedagemAdmin,400)">🚫 Cancelar</button>`;
+    }
+
+    return `<tr>
+      <td>#${p.id}</td>
+      <td>${p.nome_cliente || "—"}</td>
+      <td>${p.email || "—"}</td>
+      <td><span style="color:${statusCor};font-weight:600">${statusLabel}</span></td>
+      <td>${comprovante}</td>
+      <td>${vence}</td>
+      <td style="display:flex;gap:6px;flex-wrap:wrap">${acoes}</td>
+    </tr>`;
+  }).join("");
+}
+
+function renderHospContas() {
+  const termo = (document.getElementById("searchHospContas")?.value || "").toLowerCase();
+  const lista = hospContasCache.filter(c =>
+    (c.tenant_id || "").toLowerCase().includes(termo) ||
+    (c.nome || "").toLowerCase().includes(termo) ||
+    (c.email || "").toLowerCase().includes(termo)
+  );
+
+  const tbody = document.getElementById("hosp-contas-admin");
+  if (!lista.length) {
+    tbody.innerHTML = `<tr><td colspan="5" style="color:var(--muted);text-align:center;padding:40px">Nenhuma conta de hospedagem criada ainda.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = lista.map(c => `
+    <tr>
+      <td><a href="hospedagem-site.html?tenant=${encodeURIComponent(c.tenant_id)}" target="_blank" style="color:#6aabff">${c.tenant_id}</a></td>
+      <td>${c.nome || "—"}</td>
+      <td>${c.email}</td>
+      <td>${c.criado_em ? new Date(c.criado_em).toLocaleDateString("pt-BR") : "—"}</td>
+      <td style="display:flex;gap:6px;flex-wrap:wrap">
+        <a class="btn-action" href="hospedagem-admin.html" target="_blank">🔧 Abrir painel</a>
+        <button class="btn-action btn-delete" onclick="hospExcluirConta('${c.id}')">🗑️ Excluir</button>
+      </td>
+    </tr>
+  `).join("");
+}
+
+async function hospExcluirConta(id) {
+  if (!confirm("Excluir esta conta de hospedagem? O cliente perderá acesso ao painel (a página pública e o histórico do pedido não são apagados).")) return;
+  const { error } = await adminClient.from("hospedagem_contas").delete().eq("id", id);
+  if (error) { toast("Erro: " + error.message, "err"); return; }
+  toast("Conta excluída", "ok");
+  await carregarHospContas();
+  atualizarHospDashboard();
+}
+
+async function hospCriarConta() {
+  const tenant_id = document.getElementById("hospFTenant").value.trim().toLowerCase().replace(/[^a-z0-9-]/g, "");
+  const email = document.getElementById("hospFEmail").value.trim().toLowerCase();
+  const senha = document.getElementById("hospFSenha").value;
+  const nome = document.getElementById("hospFNome").value.trim();
+  const msg = document.getElementById("hospProvisionarMsg");
+
+  if (!tenant_id || !email || !senha) {
+    msg.style.display = "block";
+    msg.style.background = "rgba(239,68,68,.12)"; msg.style.border = "1px solid rgba(239,68,68,.3)"; msg.style.color = "#fca5a5";
+    msg.textContent = "Preencha tenant_id, e-mail e senha.";
+    return;
+  }
+
+  const { error: errConta } = await adminClient.from("hospedagem_contas").insert([{ tenant_id, email, senha, nome }]);
+  if (errConta) {
+    msg.style.display = "block";
+    msg.style.background = "rgba(239,68,68,.12)"; msg.style.border = "1px solid rgba(239,68,68,.3)"; msg.style.color = "#fca5a5";
+    msg.textContent = "Erro ao criar conta: " + errConta.message;
+    return;
+  }
+
+  const { error: errSite } = await adminClient.from("hospedagem_sites").upsert([{ tenant_id }], { onConflict: "tenant_id" });
+  if (errSite) {
+    msg.style.display = "block";
+    msg.style.background = "rgba(239,68,68,.12)"; msg.style.border = "1px solid rgba(239,68,68,.3)"; msg.style.color = "#fca5a5";
+    msg.textContent = "Conta criada, mas houve erro ao preparar a página: " + errSite.message;
+    return;
+  }
+
+  msg.style.display = "block";
+  msg.style.background = "rgba(251,191,36,.12)"; msg.style.border = "1px solid rgba(251,191,36,.3)"; msg.style.color = "#fde68a";
+  msg.textContent = "Conta criada. Enviando e-mail de acesso...";
+
+  let emailEnviado = false;
+  let erroEmail = "";
+  try {
+    const resp = await fetch(
+      "https://tqsalhscgkepttbczyjq.supabase.co/functions/v1/smooth-worker",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": "sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK",
+          "Authorization": "Bearer sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK",
+        },
+        body: JSON.stringify({ email, senha, tenant_id, nome }),
+      }
+    );
+    const resultado = await resp.json();
+    if (resp.ok && resultado.success) {
+      emailEnviado = true;
+    } else {
+      erroEmail = resultado.error || "Erro desconhecido ao enviar e-mail.";
+    }
+  } catch (e) {
+    erroEmail = e instanceof Error ? e.message : String(e);
+  }
+
+  msg.style.display = "block";
+  if (emailEnviado) {
+    msg.style.background = "rgba(34,197,94,.12)"; msg.style.border = "1px solid rgba(34,197,94,.3)"; msg.style.color = "#86efac";
+    msg.textContent = `✅ Conta criada e e-mail enviado para ${email}! Painel: hospedagem-admin.html · Página: hospedagem-site.html?tenant=${tenant_id}`;
+  } else {
+    msg.style.background = "rgba(251,191,36,.12)"; msg.style.border = "1px solid rgba(251,191,36,.3)"; msg.style.color = "#fde68a";
+    msg.textContent = `⚠️ Conta criada, mas o e-mail não foi enviado (${erroEmail}). Repasse manualmente: login ${email}, senha ${senha}, painel hospedagem-admin.html.`;
+  }
+
+  document.getElementById("hospFTenant").value = "";
+  document.getElementById("hospFEmail").value = "";
+  document.getElementById("hospFSenha").value = "";
+  document.getElementById("hospFNome").value = "";
+
+  await carregarHospContas();
+  atualizarHospDashboard();
+  toast(emailEnviado ? "Acesso criado e e-mail enviado!" : "Acesso criado, mas falhou o envio do e-mail", emailEnviado ? "ok" : "err");
+}
+</script>
+</body>
+</html>
