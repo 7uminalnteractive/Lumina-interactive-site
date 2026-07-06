@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trabalhe Conosco | Lumina Interactive</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.tc-wrap{max-width:720px;margin:0 auto;padding:48px 20px 100px}
+.tc-hero{text-align:center;margin-bottom:36px}
+.tc-hero h1{font-family:var(--font-hero,'Bebas Neue',sans-serif);font-size:clamp(32px,7vw,48px);letter-spacing:1px}
+.tc-hero h1 span{color:var(--blue,#1a6bff)}
+.tc-hero p{color:var(--muted,#94a3b8);font-size:14px;max-width:480px;margin:8px auto 0}
+
+.tc-section{background:var(--bg2,#0c1528);border:1px solid var(--border,rgba(255,255,255,.08));border-radius:20px;padding:28px 26px;margin-bottom:20px}
+.tc-section h3{font-family:var(--font-hero,'Bebas Neue',sans-serif);font-size:19px;letter-spacing:.5px;margin-bottom:18px}
+
+.tc-field{margin-bottom:16px}
+.tc-field label{display:block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted,#94a3b8);margin-bottom:7px}
+.tc-field input,.tc-field textarea{width:100%;background:var(--bg3,#111c33);border:1px solid var(--border,rgba(255,255,255,.08));border-radius:12px;padding:12px 14px;color:#fff;font-size:14px;box-sizing:border-box}
+.tc-field textarea{resize:vertical;min-height:70px}
+.tc-field input:read-only{opacity:.7;cursor:not-allowed}
+.tc-hint{font-size:11px;color:var(--muted,#94a3b8);margin-top:6px}
+
+.tc-radio-group{display:flex;flex-direction:column;gap:10px}
+.tc-radio-option{display:flex;align-items:flex-start;gap:12px;background:var(--bg3,#111c33);border:1px solid var(--border,rgba(255,255,255,.08));border-radius:12px;padding:14px 16px;cursor:pointer;transition:border-color .2s}
+.tc-radio-option.selecionado{border-color:rgba(26,107,255,.5);background:rgba(26,107,255,.06)}
+.tc-radio-option input{margin-top:2px;flex-shrink:0}
+.tc-radio-option .label-txt{font-size:14px;color:#fff}
+
+.tc-experiencias{margin-top:16px;display:none}
+.tc-exp-row{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;margin-bottom:10px;align-items:center}
+.tc-exp-row input{margin:0}
+.tc-exp-del{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.35);color:#fca5a5;border-radius:8px;width:38px;height:38px;cursor:pointer}
+@media(max-width:560px){.tc-exp-row{grid-template-columns:1fr}}
+
+.tc-funcoes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.tc-funcoes{grid-template-columns:1fr}}
+.tc-funcao-btn{background:var(--bg3,#111c33);border:1px solid var(--border,rgba(255,255,255,.08));border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:border-color .2s,transform .2s}
+.tc-funcao-btn:hover{transform:translateY(-2px)}
+.tc-funcao-btn.selecionado{border-color:var(--blue,#1a6bff);background:rgba(26,107,255,.1)}
+.tc-funcao-icon{font-size:24px;margin-bottom:8px;display:block}
+.tc-funcao-nome{font-family:var(--font-hero,'Bebas Neue',sans-serif);font-size:17px;letter-spacing:.5px}
+
+.tc-upload-box{border:2px dashed var(--border,rgba(255,255,255,.15));border-radius:14px;padding:20px;text-align:center;cursor:pointer;background:var(--bg3,#111c33)}
+.tc-upload-box input{display:none}
+.tc-print-list{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.tc-print-thumb{position:relative;width:100px;height:70px;border-radius:8px;overflow:hidden;border:1px solid var(--border,rgba(255,255,255,.08))}
+.tc-print-thumb img{width:100%;height:100%;object-fit:cover}
+.tc-print-thumb button{position:absolute;top:2px;right:2px;background:rgba(239,68,68,.9);border:none;color:#fff;width:18px;height:18px;border-radius:50%;font-size:11px;cursor:pointer}
+
+.tc-btn-enviar{width:100%;background:var(--blue,#1a6bff);color:#fff;border:none;border-radius:12px;padding:15px;font-weight:700;font-size:15px;cursor:pointer}
+.tc-btn-enviar:disabled{opacity:.5;cursor:not-allowed}
+
+#tcMsg{font-size:13px;margin-top:14px;padding:11px 14px;border-radius:10px;display:none}
+#tcMsg.ok{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#86efac;display:block}
+#tcMsg.err{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#fca5a5;display:block}
+
+.tc-login-gate{text-align:center;padding:60px 20px}
+.tc-login-gate p{color:var(--muted,#94a3b8);margin-bottom:20px}
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="logo"><img src="logo.png" alt="Lumina Interactive" style="height:36px;width:auto;display:block"></div>
+  <div class="menu"><a href="index.html">Início</a><a href="equipe.html">Equipe</a></div>
+</nav>
+
+<div class="tc-wrap">
+
+  <div class="tc-hero">
+    <h1>TRABALHE <span>CONOSCO</span></h1>
+    <p>Faça parte da equipe Lumina Interactive. Preencha o formulário abaixo para se candidatar.</p>
+  </div>
+
+  <div id="loginGate" class="tc-login-gate" style="display:none">
+    <p>Você precisa estar logado para enviar seu currículo.</p>
+    <a href="login.html?redirect=trabalhe-conosco.html" class="btn primary">Fazer login</a>
+  </div>
+
+  <div id="formConteudo" style="display:none">
+
+    <div class="tc-section">
+      <h3>Dados pessoais</h3>
+      <div class="tc-field">
+        <label>Nome completo</label>
+        <input type="text" id="fNome" placeholder="Seu nome completo">
+      </div>
+      <div class="tc-field">
+        <label>Data de nascimento</label>
+        <input type="date" id="fNascimento">
+      </div>
+      <div class="tc-field">
+        <label>Contato (e-mail)</label>
+        <input type="text" id="fContato" readonly>
+        <div class="tc-hint">Reconhecido automaticamente pela sua conta logada.</div>
+      </div>
+    </div>
+
+    <div class="tc-section">
+      <h3>Experiência com patches</h3>
+      <div class="tc-radio-group">
+        <label class="tc-radio-option" id="optJaTrabalhou">
+          <input type="radio" name="experiencia" value="sim" onchange="alternarExperiencia(true)">
+          <span class="label-txt">⭕ Já trabalhei em patch</span>
+        </label>
+        <label class="tc-radio-option" id="optNuncaTrabalhou">
+          <input type="radio" name="experiencia" value="nao" onchange="alternarExperiencia(false)">
+          <span class="label-txt">⭕ Nunca trabalhei em patches</span>
+        </label>
+      </div>
+
+      <div class="tc-experiencias" id="blocoExperiencias">
+        <div id="listaExperiencias"></div>
+        <button type="button" class="btn secondary" onclick="adicionarExperiencia()" style="margin-top:6px;font-size:13px;padding:10px 16px">+ Adicionar patch</button>
+      </div>
+    </div>
+
+    <div class="tc-section">
+      <h3>Qual função você quer ter na Lumina?</h3>
+      <div class="tc-funcoes" id="funcoesGrid">
+        <div class="tc-funcao-btn" data-funcao="Facemaker" onclick="selecionarFuncao('Facemaker')">
+          <span class="tc-funcao-icon">🧑‍🎨</span><div class="tc-funcao-nome">Facemaker</div>
+        </div>
+        <div class="tc-funcao-btn" data-funcao="Savemaker" onclick="selecionarFuncao('Savemaker')">
+          <span class="tc-funcao-icon">💾</span><div class="tc-funcao-nome">Savemaker</div>
+        </div>
+        <div class="tc-funcao-btn" data-funcao="Isomaker" onclick="selecionarFuncao('Isomaker')">
+          <span class="tc-funcao-icon">💿</span><div class="tc-funcao-nome">Isomaker</div>
+        </div>
+        <div class="tc-funcao-btn" data-funcao="Marketing" onclick="selecionarFuncao('Marketing')">
+          <span class="tc-funcao-icon">📣</span><div class="tc-funcao-nome">Marketing</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tc-section">
+      <h3>Prints do seu trabalho (opcional)</h3>
+      <div class="tc-upload-box" onclick="document.getElementById('fPrints').click()">
+        <input type="file" id="fPrints" accept="image/*" multiple onchange="adicionarPrints(event)">
+        🖼️ Clique para enviar uma ou mais imagens
+      </div>
+      <div class="tc-print-list" id="printList"></div>
+    </div>
+
+    <button class="tc-btn-enviar" id="btnEnviar" onclick="enviarCurriculo()">Enviar candidatura</button>
+    <div id="tcMsg"></div>
+
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-logo"><img src="logo.png" alt="Lumina Interactive" style="height:28px;width:auto;opacity:0.85"></div>
+  <div class="footer-copy">© 2026 Lumina Interactive™. Todos os direitos reservados.</div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+const supabaseClient = supabase.createClient(
+  "https://tqsalhscgkepttbczyjq.supabase.co",
+  "sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK"
+);
+
+let emailAtual = null;
+let funcaoSelecionada = null;
+let experiencias = [];
+let printsAtuais = [];
+
+async function iniciar() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  emailAtual = session?.user?.email || localStorage.getItem("lumina_email");
+
+  if (!emailAtual) {
+    document.getElementById("loginGate").style.display = "block";
+    return;
+  }
+
+  document.getElementById("fContato").value = emailAtual;
+  document.getElementById("formConteudo").style.display = "block";
+}
+
+function alternarExperiencia(temExperiencia) {
+  document.getElementById("optJaTrabalhou").classList.toggle("selecionado", temExperiencia);
+  document.getElementById("optNuncaTrabalhou").classList.toggle("selecionado", !temExperiencia);
+  document.getElementById("blocoExperiencias").style.display = temExperiencia ? "block" : "none";
+  if (temExperiencia && !experiencias.length) adicionarExperiencia();
+}
+
+function adicionarExperiencia() {
+  experiencias.push({ patch: "", funcao: "" });
+  renderExperiencias();
+}
+function removerExperiencia(i) {
+  experiencias.splice(i, 1);
+  renderExperiencias();
+}
+function renderExperiencias() {
+  const wrap = document.getElementById("listaExperiencias");
+  wrap.innerHTML = experiencias.map((e, i) => `
+    <div class="tc-exp-row">
+      <input type="text" placeholder="Nome do patch" value="${(e.patch||'').replace(/"/g,'&quot;')}" oninput="experiencias[${i}].patch=this.value">
+      <input type="text" placeholder="Sua função nele" value="${(e.funcao||'').replace(/"/g,'&quot;')}" oninput="experiencias[${i}].funcao=this.value">
+      <button type="button" class="tc-exp-del" onclick="removerExperiencia(${i})">✕</button>
+    </div>
+  `).join("");
+}
+
+function selecionarFuncao(nome) {
+  funcaoSelecionada = nome;
+  document.querySelectorAll(".tc-funcao-btn").forEach(btn => {
+    btn.classList.toggle("selecionado", btn.dataset.funcao === nome);
+  });
+}
+
+async function adicionarPrints(e) {
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
+  for (const file of files) {
+    const ext = file.name.split(".").pop();
+    const path = `curriculos/${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`;
+    const { error } = await supabaseClient.storage.from("vlgus-midia").upload(path, file, { upsert: true, contentType: file.type });
+    if (error) { alert("Erro ao enviar imagem: " + error.message); continue; }
+    const { data } = supabaseClient.storage.from("vlgus-midia").getPublicUrl(path);
+    printsAtuais.push(data.publicUrl);
+  }
+  renderPrints();
+  e.target.value = "";
+}
+function renderPrints() {
+  document.getElementById("printList").innerHTML = printsAtuais.map((url, i) => `
+    <div class="tc-print-thumb">
+      <img src="${url}">
+      <button onclick="removerPrint(${i})">✕</button>
+    </div>
+  `).join("");
+}
+function removerPrint(i) {
+  printsAtuais.splice(i, 1);
+  renderPrints();
+}
+
+async function enviarCurriculo() {
+  const msg = document.getElementById("tcMsg");
+  const nome = document.getElementById("fNome").value.trim();
+  const nascimento = document.getElementById("fNascimento").value;
+  const jaTrabalhouEl = document.querySelector('input[name="experiencia"]:checked');
+
+  if (!nome || !nascimento || !jaTrabalhouEl || !funcaoSelecionada) {
+    msg.className = "err";
+    msg.textContent = "Preencha nome, data de nascimento, experiência com patches e escolha uma função.";
+    return;
+  }
+
+  const jaTrabalhou = jaTrabalhouEl.value === "sim";
+  if (jaTrabalhou && experiencias.some(e => !e.patch.trim())) {
+    msg.className = "err";
+    msg.textContent = "Preencha o nome de todos os patches adicionados, ou remova as linhas em branco.";
+    return;
+  }
+
+  const btn = document.getElementById("btnEnviar");
+  btn.disabled = true;
+  btn.textContent = "Enviando...";
+
+  const payload = {
+    nome,
+    data_nascimento: nascimento,
+    email: emailAtual,
+    ja_trabalhou_em_patch: jaTrabalhou,
+    experiencias: jaTrabalhou ? experiencias : [],
+    funcao_desejada: funcaoSelecionada,
+    prints: printsAtuais,
+    status: "pendente"
+  };
+
+  const { error } = await supabaseClient.from("curriculos").insert([payload]);
+
+  if (error) {
+    msg.className = "err";
+    msg.textContent = "Erro ao enviar: " + error.message;
+    btn.disabled = false;
+    btn.textContent = "Enviar candidatura";
+    return;
+  }
+
+  msg.className = "ok";
+  msg.textContent = "✅ Candidatura enviada! Nossa equipe vai analisar seu currículo.";
+  btn.textContent = "Enviado ✓";
+}
+
+iniciar();
+</script>
+</body>
+</html>
