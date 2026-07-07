@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LPFL PRO | Lumina Interactive</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* ══════════════════════════════════════════
+   LPFL PRO — tema azul (editável via admin.html)
+   ══════════════════════════════════════════ */
+/* ── HERO DA CAPA (com imagem própria — capa customizável) ── */
+.pro-cover-hero {
+  position: relative;
+  min-height: 92vh;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  padding-top: 70px;
+}
+.pro-cover-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url('lpfl-pro-cover.png');
+  background-size: cover;
+  background-position: center top;
+  filter: brightness(0.45);
+  z-index: 0;
+}
+.pro-cover-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(4,7,15,0.3) 50%,
+    rgba(4,7,15,0.95) 80%,
+    var(--bg) 100%
+  );
+  z-index: 1;
+}
+.pro-cover-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 40px 60px;
+}
+.pro-cover-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--blue-dim);
+  border: 1px solid rgba(26,107,255,0.35);
+  color: #6aabff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 999px;
+  margin-bottom: 20px;
+}
+.pro-cover-pill svg { color: var(--blue); }
+.pro-cover-title {
+  font-family: var(--font-hero);
+  font-size: clamp(60px, 10vw, 120px);
+  line-height: 0.9;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+.pro-cover-title .accent { color: var(--blue); }
+.pro-cover-desc {
+  color: #94a3b8;
+  font-size: 16px;
+  max-width: 520px;
+  line-height: 1.7;
+  margin-bottom: 36px;
+}
+.pro-cover-meta {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+  margin-bottom: 36px;
+}
+.pro-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.pro-meta-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.pro-meta-value {
+  font-family: var(--font-hero);
+  font-size: 22px;
+  letter-spacing: 1px;
+  color: var(--text);
+}
+.pro-meta-value.blue { color: var(--blue); }
+.pro-cover-btns {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.btn.primary.blue-btn {
+  background: var(--blue);
+  border-color: var(--blue);
+  box-shadow: 0 0 0 rgba(26,107,255,0);
+  transition: background .2s, box-shadow .2s, transform .2s;
+}
+.btn.primary.blue-btn:hover {
+  background: #1558d6;
+  box-shadow: 0 8px 30px rgba(26,107,255,.35);
+  transform: translateY(-2px);
+}
+
+/* ── FEATURES GRID ── */
+.pro-features-section {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 80px 40px;
+}
+.pro-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 48px;
+}
+.pro-feature-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px 24px;
+  transition: border-color .2s, transform .2s, box-shadow .2s;
+}
+.pro-feature-card:hover {
+  border-color: rgba(26,107,255,.35);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(26,107,255,.12);
+}
+.pro-feature-icon {
+  font-size: 28px;
+  margin-bottom: 14px;
+  display: block;
+}
+.pro-feature-title {
+  font-family: var(--font-hero);
+  font-size: 20px;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.pro-feature-desc {
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.6;
+}
+
+/* ── SCREENSHOTS GALLERY ── */
+.pro-gallery-section {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 40px 80px;
+}
+.pro-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 48px;
+}
+.pro-gallery-item {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  aspect-ratio: 16/9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color .2s, transform .2s;
+  position: relative;
+}
+.pro-gallery-item:hover {
+  border-color: rgba(26,107,255,.45);
+  transform: scale(1.01);
+}
+.pro-gallery-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+}
+.pro-gallery-placeholder svg { opacity: .4; }
+.pro-gallery-placeholder span { font-size: 12px; letter-spacing: 1px; text-transform: uppercase; }
+.pro-gallery-item img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+.pro-gallery-label {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(transparent, rgba(4,7,15,.85));
+  padding: 20px 14px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+/* ── REQUISITOS ── */
+.pro-req-section {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 40px 80px;
+}
+.pro-req-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 36px;
+}
+.pro-req-item {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.pro-req-icon { font-size: 22px; flex-shrink: 0; }
+.pro-req-text { font-size: 13px; color: #94a3b8; line-height: 1.5; }
+.pro-req-text strong { display: block; color: var(--text); font-size: 14px; margin-bottom: 2px; }
+
+/* ── CTA GRATUITO ── */
+.pro-cta-section {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 40px 100px;
+}
+.pro-cta-card {
+  background: linear-gradient(135deg, var(--bg3), var(--bg2));
+  border: 1px solid rgba(26,107,255,.28);
+  border-radius: 28px;
+  padding: 60px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  flex-wrap: wrap;
+  box-shadow: 0 0 60px rgba(26,107,255,.12);
+  position: relative;
+  overflow: hidden;
+}
+.pro-cta-card::before {
+  content: '';
+  position: absolute;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(26,107,255,.16) 0%, transparent 70%);
+  top: -100px; right: -80px;
+  pointer-events: none;
+}
+.pro-cta-text h2 {
+  font-family: var(--font-hero);
+  font-size: 44px;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+  line-height: 1;
+}
+.pro-cta-text p { color: #94a3b8; font-size: 15px; max-width: 420px; line-height: 1.7; }
+.pro-cta-price {
+  font-family: var(--font-hero);
+  font-size: 56px;
+  color: var(--blue);
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+.pro-cta-price span { font-size: 22px; color: var(--muted); vertical-align: middle; }
+
+@media (max-width: 768px) {
+  .pro-cover-content { padding: 0 20px 48px; }
+  .pro-cover-title { font-size: 56px; }
+  .pro-features-section,
+  .pro-gallery-section,
+  .pro-req-section,
+  .pro-cta-section { padding-left: 20px; padding-right: 20px; }
+  .pro-cta-card { padding: 36px 24px; }
+  .pro-cta-text h2 { font-size: 32px; }
+  .pro-cta-price { font-size: 40px; }
+}
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="logo"><img src="logo.png" alt="Lumina Interactive" style="height:36px;width:auto;display:block"></div>
+  <div class="menu" id="menuDinamico">
+    <a href="index.html">Início</a><a href="patches.html" class="active">Patchs</a>
+    <a href="Comunidade.html">Comunidade</a><a href="plus.html">Lumina Plus</a>
+    <a href="login.html" data-auth-link>Login</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+
+  <!-- ══ HERO ══ -->
+  <section class="pro-cover-hero">
+    <div class="pro-cover-bg" id="capaFundo"></div>
+    <div class="pro-cover-gradient"></div>
+    <div class="pro-cover-content">
+      <div class="pro-cover-pill">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><circle cx="5" cy="5" r="5"/></svg>
+        <span id="txtSelo">Lumina Plus Exclusivo</span>
+      </div>
+      <h1 class="pro-cover-title" id="txtTitulo">
+        LPFL<br><span class="accent">PRO</span>
+      </h1>
+      <p class="pro-cover-desc" id="txtDescricao">
+        A versão definitiva do LPFL — visuais aprimorados, elencos atualizados e conteúdo exclusivo para os assinantes Lumina Plus.
+      </p>
+      <div class="pro-cover-meta">
+        <div class="pro-meta-item">
+          <span class="pro-meta-label">Plataforma</span>
+          <span class="pro-meta-value" id="txtPlataforma">PSP / PPSSPP</span>
+        </div>
+        <div class="pro-meta-item">
+          <span class="pro-meta-label">Versão</span>
+          <span class="pro-meta-value blue" id="txtVersao">PRO 2026</span>
+        </div>
+        <div class="pro-meta-item">
+          <span class="pro-meta-label">Acesso</span>
+          <span class="pro-meta-value">Lumina Plus</span>
+        </div>
+        <div class="pro-meta-item">
+          <span class="pro-meta-label">Tamanho</span>
+          <span class="pro-meta-value" id="txtTamanho">~4 GB</span>
+        </div>
+      </div>
+      <div class="pro-cover-btns" id="heroBtns">
+        <a href="plus.html" class="btn primary blue-btn" style="font-size:15px;padding:15px 34px" id="btnDownload1">⚡ Assinar Lumina Plus</a>
+        <a href="minha-conta.html" class="btn secondary" style="font-size:15px;padding:15px 34px">Já sou assinante →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FEATURES ══ -->
+  <section class="pro-features-section">
+    <div class="section-label reveal" id="txtFeaturesLabel">O que está incluso</div>
+    <h2 class="section-title reveal" id="txtFeaturesTitulo">Experiência <span style="color:var(--blue)">PRO</span></h2>
+    <p class="section-sub reveal" id="txtFeaturesSub">Tudo que o LPFL tem de melhor, elevado ao máximo.</p>
+
+    <div class="pro-features-grid" id="featuresGrid">
+      <div class="pro-feature-card reveal">
+        <span class="pro-feature-icon">🎨</span>
+        <div class="pro-feature-title">Gráficos Aprimorados</div>
+        <p class="pro-feature-desc">Kits, faces e estádios em alta definição, com texturas refeitas do zero para a versão PRO.</p>
+      </div>
+      <div class="pro-feature-card reveal">
+        <span class="pro-feature-icon">⚽</span>
+        <div class="pro-feature-title">Elencos Atualizados</div>
+        <p class="pro-feature-desc">Todos os elencos atualizados para a temporada 2026, incluindo transferências e novos contratos.</p>
+      </div>
+      <div class="pro-feature-card reveal">
+        <span class="pro-feature-icon">🏟️</span>
+        <div class="pro-feature-title">Estádios Exclusivos</div>
+        <p class="pro-feature-desc">Arenas brasileiras recriadas com detalhes únicos — disponíveis apenas na versão PRO.</p>
+      </div>
+      <div class="pro-feature-card reveal">
+        <span class="pro-feature-icon">🎵</span>
+        <div class="pro-feature-title">Soundtrack Original</div>
+        <p class="pro-feature-desc">Trilha sonora exclusiva com músicas brasileiras selecionadas para a experiência LPFL PRO.</p>
+      </div>
+      <div class="pro-feature-card reveal">
+        <span class="pro-feature-icon">🔄</span>
+        <div class="pro-feature-title">Acesso Antecipado</div>
+        <p class="pro-feature-desc">Receba updates e novas versões antes de todo mundo — privilégio exclusivo dos assinantes.</p>
+      </div>
+      <div class="pro-feature-card reveal">
+        <span class="pro-feature-icon">🎧</span>
+        <div class="pro-feature-title">Suporte Prioritário</div>
+        <p class="pro-feature-desc">Atendimento direto com a equipe Lumina, com prioridade para resolver qualquer dúvida ou problema.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SCREENSHOTS ══ -->
+  <section class="pro-gallery-section">
+    <div class="section-label reveal" id="txtGaleriaLabel">Dentro do jogo</div>
+    <h2 class="section-title reveal" id="txtGaleriaTitulo">Screenshots</h2>
+    <p class="section-sub reveal" id="txtGaleriaSub">Veja como o LPFL PRO fica na tela do seu dispositivo.</p>
+
+    <div class="pro-gallery-grid" id="galeriaGrid">
+      <!-- Os placeholders abaixo podem ser substituídos por <img src="..."> quando tiver as fotos -->
+      <div class="pro-gallery-item reveal">
+        <div class="pro-gallery-placeholder">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="var(--muted)"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+          <span>Modo Carreira</span>
+        </div>
+        <div class="pro-gallery-label">Modo Carreira</div>
+      </div>
+      <div class="pro-gallery-item reveal">
+        <div class="pro-gallery-placeholder">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="var(--muted)"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+          <span>Partida ao Vivo</span>
+        </div>
+        <div class="pro-gallery-label">Partida ao Vivo</div>
+      </div>
+      <div class="pro-gallery-item reveal">
+        <div class="pro-gallery-placeholder">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="var(--muted)"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+          <span>Elencos</span>
+        </div>
+        <div class="pro-gallery-label">Elencos 2026</div>
+      </div>
+      <div class="pro-gallery-item reveal">
+        <div class="pro-gallery-placeholder">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="var(--muted)"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+          <span>Estádios</span>
+        </div>
+        <div class="pro-gallery-label">Estádios Brasileiros</div>
+      </div>
+      <div class="pro-gallery-item reveal">
+        <div class="pro-gallery-placeholder">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="var(--muted)"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+          <span>Kits</span>
+        </div>
+        <div class="pro-gallery-label">Kits Exclusivos</div>
+      </div>
+      <div class="pro-gallery-item reveal">
+        <div class="pro-gallery-placeholder">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="var(--muted)"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+          <span>Menu Principal</span>
+        </div>
+        <div class="pro-gallery-label">Menu Principal PRO</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ REQUISITOS ══ -->
+  <section class="pro-req-section">
+    <div class="section-label reveal" id="txtReqLabel">Antes de baixar</div>
+    <h2 class="section-title reveal" id="txtReqTitulo">Requisitos</h2>
+
+    <div class="pro-req-grid" id="requisitosGrid">
+      <div class="pro-req-item reveal">
+        <span class="pro-req-icon">📱</span>
+        <div class="pro-req-text"><strong>Android 8+</strong>Versões mais antigas não são suportadas</div>
+      </div>
+      <div class="pro-req-item reveal">
+        <span class="pro-req-icon">💾</span>
+        <div class="pro-req-text"><strong>4 GB livre</strong>Armazenamento disponível no dispositivo</div>
+      </div>
+      <div class="pro-req-item reveal">
+        <span class="pro-req-icon">🎮</span>
+        <div class="pro-req-text"><strong>PPSSPP instalado</strong>Emulador PSP gratuito na Play Store</div>
+      </div>
+      <div class="pro-req-item reveal">
+        <span class="pro-req-icon">⭐</span>
+        <div class="pro-req-text"><strong>Lumina Plus ativo</strong>Assinatura válida para liberar o download</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ CTA ══ -->
+  <section class="pro-cta-section">
+    <div class="pro-cta-card reveal">
+      <div class="pro-cta-text">
+        <h2 id="txtCtaTitulo">Pronto para jogar<br>no nível <span style="color:var(--blue)">PRO?</span></h2>
+        <p id="txtCtaTexto">Assine o Lumina Plus e tenha acesso imediato ao LPFL PRO, Brazukas Patch, LPFL Normal e muito mais.</p>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:28px" id="ctaBtns">
+          <a href="plus.html" class="btn primary blue-btn" style="font-size:15px;padding:15px 34px">Assinar agora</a>
+          <a href="patches.html" class="btn secondary" style="font-size:15px;padding:15px 34px">Ver outros patchs</a>
+        </div>
+      </div>
+      <div style="text-align:center;flex-shrink:0" id="ctaPriceBlock">
+        <div class="pro-cta-price" id="txtCtaPreco"><span>R$</span>9<span>,90/mês</span></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:8px" id="txtCtaPrecoNota">Cancele quando quiser</div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer class="footer">
+  <div class="footer-logo"><img src="logo.png" alt="Lumina Interactive" style="height:28px;width:auto;opacity:0.85"></div>
+  <div class="footer-links" id="footerDinamico">
+    <a href="index.html">Início</a><a href="patches.html">Patchs</a>
+    <a href="Comunidade.html">Comunidade</a><a href="plus.html">Lumina Plus</a>
+    <a href="login.html" data-auth-link>Login</a>
+  </div>
+  <div class="footer-copy">© 2026 Lumina Interactive™. Todos os direitos reservados.</div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="site-nav.js"></script>
+<script src="navbar-auth.js"></script>
+<script>
+const revealEls = document.querySelectorAll('.reveal');
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((x, i) => {
+    if (x.isIntersecting) {
+      setTimeout(() => x.target.classList.add('visible'), i * 60);
+      obs.unobserve(x.target);
+    }
+  });
+}, { threshold: 0.08 });
+revealEls.forEach(el => obs.observe(el));
+
+/* ════════════════════════════
+   CONTEÚDO DINÂMICO (editável via admin.html → Editor de Patchs)
+   Mantém os valores escritos no HTML como padrão caso a
+   tabela ainda não exista ou não haja dados salvos.
+════════════════════════════ */
+let LINK_DOWNLOAD_LPFL_PRO = "https://drive.google.com/drive/folders/1rOCulLU2EldDg3p-TIdWZmha8Q_vBW-F";
+
+const supabaseClient = supabase.createClient(
+  "https://tqsalhscgkepttbczyjq.supabase.co",
+  "sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK"
+);
+
+function aplicarConteudo(cfg) {
+  if (!cfg) return;
+
+  if (cfg.capa_url) {
+    const fundo = document.getElementById("capaFundo");
+    fundo.style.backgroundImage = `url('${cfg.capa_url}')`;
+    fundo.style.backgroundSize = "cover";
+    fundo.style.backgroundPosition = "center top";
+    fundo.style.filter = "brightness(0.45)";
+  }
+
+  if (cfg.selo) document.getElementById("txtSelo").textContent = cfg.selo;
+
+  if (cfg.titulo) {
+    const linhas = cfg.titulo.split("\n");
+    const el = document.getElementById("txtTitulo");
+    if (linhas.length > 1) {
+      el.innerHTML = linhas[0] + "<br><span class=\"accent\">" + linhas.slice(1).join(" ") + "</span>";
+    } else {
+      el.innerHTML = "<span class=\"accent\">" + linhas[0] + "</span>";
+    }
+  }
+
+  if (cfg.descricao) document.getElementById("txtDescricao").textContent = cfg.descricao;
+  if (cfg.plataforma) document.getElementById("txtPlataforma").textContent = cfg.plataforma;
+  if (cfg.versao) document.getElementById("txtVersao").textContent = cfg.versao;
+  if (cfg.tamanho) document.getElementById("txtTamanho").textContent = cfg.tamanho;
+
+  // Link de download: usado quando o visitante já é assinante Lumina Plus
+  if (cfg.link_download) LINK_DOWNLOAD_LPFL_PRO = cfg.link_download;
+
+  // Seção "O que está incluso"
+  if (cfg.features_label) document.getElementById("txtFeaturesLabel").textContent = cfg.features_label;
+  if (cfg.features_titulo) document.getElementById("txtFeaturesTitulo").innerHTML = cfg.features_titulo;
+  if (cfg.features_sub) document.getElementById("txtFeaturesSub").textContent = cfg.features_sub;
+  if (cfg.features && cfg.features.length) {
+    const grid = document.getElementById("featuresGrid");
+    grid.innerHTML = cfg.features.map(f => `
+      <div class="pro-feature-card reveal visible">
+        <span class="pro-feature-icon">${f.icone || "⭐"}</span>
+        <div class="pro-feature-title">${f.titulo || ""}</div>
+        <p class="pro-feature-desc">${f.desc || ""}</p>
+      </div>
+    `).join("");
+  }
+
+  // Seção Screenshots
+  if (cfg.galeria_label) document.getElementById("txtGaleriaLabel").textContent = cfg.galeria_label;
+  if (cfg.galeria_titulo) document.getElementById("txtGaleriaTitulo").textContent = cfg.galeria_titulo;
+  if (cfg.galeria_sub) document.getElementById("txtGaleriaSub").textContent = cfg.galeria_sub;
+
+  // Seção Requisitos (títulos)
+  if (cfg.req_label) document.getElementById("txtReqLabel").textContent = cfg.req_label;
+  if (cfg.req_titulo) document.getElementById("txtReqTitulo").textContent = cfg.req_titulo;
+
+  // Seção CTA final
+  if (cfg.cta_titulo) document.getElementById("txtCtaTitulo").innerHTML = cfg.cta_titulo;
+  if (cfg.cta_texto) document.getElementById("txtCtaTexto").textContent = cfg.cta_texto;
+  if (cfg.cta_preco) document.getElementById("txtCtaPreco").innerHTML = cfg.cta_preco;
+  if (cfg.cta_preco_nota) document.getElementById("txtCtaPrecoNota").textContent = cfg.cta_preco_nota;
+
+  if (cfg.screenshots && cfg.screenshots.length) {
+    const grid = document.getElementById("galeriaGrid");
+    const itens = grid.querySelectorAll(".pro-gallery-item");
+    cfg.screenshots.forEach((url, i) => {
+      if (!itens[i]) return;
+      const label = itens[i].querySelector(".pro-gallery-label")?.textContent || `Screenshot ${i + 1}`;
+      itens[i].innerHTML = `<img src="${url}" alt="${label}"><div class="pro-gallery-label">${label}</div>`;
+    });
+  }
+
+  if (cfg.requisitos && cfg.requisitos.length) {
+    const grid = document.getElementById("requisitosGrid");
+    grid.innerHTML = cfg.requisitos.map(r => `
+      <div class="pro-req-item reveal visible">
+        <span class="pro-req-icon">${r.icone || "⭐"}</span>
+        <div class="pro-req-text"><strong>${r.titulo || ""}</strong>${r.desc || ""}</div>
+      </div>
+    `).join("");
+  }
+}
+
+(function () {
+  // Modo pré-visualização (aberto pelo admin.html dentro de um iframe)
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("preview") === "1") {
+    const dados = JSON.parse(sessionStorage.getItem("lpfl_pro_preview_data") || "null");
+    if (dados) { aplicarConteudo(dados); return; }
+  }
+
+  // Modo normal: busca o conteúdo publicado no Supabase, depois verifica assinatura
+  supabaseClient
+    .from("lpfl_pro_config")
+    .select("*")
+    .eq("id", "lpfl-pro")
+    .maybeSingle()
+    .then(({ data, error }) => {
+      if (!error && data) aplicarConteudo(data);
+      verificarAssinatura();
+    });
+})();
+
+/* ════════════════════════════
+   VERIFICA ASSINATURA LUMINA PLUS
+   (mesma query usada em minha-conta.html / plus.html)
+   Se ativa: troca os botões de "assinar" por "baixar".
+════════════════════════════ */
+function mostrarBaixar() {
+  const heroBtns = document.getElementById("heroBtns");
+  if (heroBtns) {
+    heroBtns.innerHTML = `
+      <a href="${LINK_DOWNLOAD_LPFL_PRO}" target="_blank" class="btn primary blue-btn" style="font-size:15px;padding:15px 34px">⬇ Baixar LPFL PRO</a>
+      <a href="minha-conta.html" class="btn secondary" style="font-size:15px;padding:15px 34px">Minha conta →</a>
+    `;
+  }
+
+  const ctaBtns = document.getElementById("ctaBtns");
+  if (ctaBtns) {
+    ctaBtns.innerHTML = `
+      <a href="${LINK_DOWNLOAD_LPFL_PRO}" target="_blank" class="btn primary blue-btn" style="font-size:15px;padding:15px 34px">⬇ Baixar LPFL PRO</a>
+      <a href="patches.html" class="btn secondary" style="font-size:15px;padding:15px 34px">Ver outros patchs</a>
+    `;
+  }
+
+  const ctaPriceBlock = document.getElementById("ctaPriceBlock");
+  if (ctaPriceBlock) {
+    ctaPriceBlock.innerHTML = `
+      <div class="pro-cta-price" style="font-size:28px">✅ Assinatura<br>ativa</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:8px">Aproveite o LPFL PRO</div>
+    `;
+  }
+}
+
+async function verificarAssinatura() {
+  let email = null;
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (session?.user) email = session.user.email;
+  else email = localStorage.getItem("lumina_email");
+
+  if (!email) return; // não logado — mantém os botões padrão de assinar
+
+  const { data, error } = await supabaseClient
+    .from("pedidos")
+    .select("*")
+    .eq("email", email)
+    .in("status", ["aprovado", "ativa"])
+    .ilike("produto", "%plus%")
+    .not("produto", "ilike", "%verified%")
+    .order("id", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error || !data) return;
+
+  const agora = new Date();
+  const validade = data.validade_ate ? new Date(data.validade_ate) : (data.data_fim ? new Date(data.data_fim) : null);
+  const ativa = !validade || validade > agora;
+
+  if (ativa) mostrarBaixar();
+}
+</script>
+</body>
+</html>

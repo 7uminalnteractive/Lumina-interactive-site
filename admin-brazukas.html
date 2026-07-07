@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Brazukas | Lumina Interactive</title>
+<link rel="stylesheet" href="style.css">
+<style>
+:root{ --red:#ff2b3f; --red-dim:rgba(255,43,63,0.12); }
+
+/* ── LOGIN ── */
+.admin-login-overlay{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px}
+.admin-login-box{background:var(--bg2);border:1px solid var(--border);border-radius:24px;padding:48px 40px;width:100%;max-width:420px;box-shadow:0 0 80px rgba(255,43,63,.12)}
+.admin-login-box h2{font-family:var(--font-hero);font-size:32px;letter-spacing:1px;margin-bottom:6px;text-align:center}
+.admin-login-box p{color:var(--muted);font-size:14px;margin-bottom:28px;text-align:center}
+.adm-field{margin-bottom:14px}
+.adm-field label{display:block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.adm-field input,.adm-field textarea,.adm-field select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:13px 16px;color:var(--text);font-family:var(--font-body);font-size:14px;outline:none;transition:border-color .2s;box-sizing:border-box}
+.adm-field input:focus,.adm-field textarea:focus,.adm-field select:focus{border-color:rgba(255,43,63,.5)}
+.adm-field textarea{resize:vertical;min-height:90px}
+.adm-hint{font-size:11px;color:var(--muted);margin-top:6px}
+.btn-err{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#fca5a5;border-radius:10px;padding:11px 14px;font-size:13px;margin-bottom:14px;display:none}
+.btn-err.show{display:block}
+.btn-adm-login{width:100%;padding:15px;background:var(--red);color:#fff;border:none;border-radius:12px;font-family:var(--font-body);font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;transition:background .2s,transform .15s;box-shadow:0 0 24px rgba(255,43,63,.35)}
+.btn-adm-login:hover{background:#e0142a;transform:translateY(-1px)}
+
+/* ── LAYOUT GERAL ── */
+.bz-wrap{max-width:900px;margin:0 auto;padding:40px 24px 120px}
+.bz-header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:32px}
+.bz-title{font-family:var(--font-hero);font-size:40px;letter-spacing:1px}
+.bz-title span{color:var(--red)}
+.bz-sub{color:var(--muted);font-size:14px;margin-top:4px}
+.btn-primary{background:var(--red);color:#fff;border:none;border-radius:12px;padding:13px 22px;font-family:var(--font-body);font-weight:700;font-size:14px;cursor:pointer;transition:background .2s,transform .15s;box-shadow:0 0 24px rgba(255,43,63,.3)}
+.btn-primary:hover{background:#e0142a;transform:translateY(-1px)}
+.btn-ghost{background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:12px 20px;font-family:var(--font-body);font-weight:600;font-size:14px;cursor:pointer;transition:border-color .2s;text-decoration:none;display:inline-flex;align-items:center}
+.btn-ghost:hover{border-color:rgba(255,43,63,.4)}
+
+.bz-section{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:28px 26px;margin-bottom:20px}
+.bz-section h3{font-family:var(--font-hero);font-size:20px;letter-spacing:.5px;margin-bottom:18px;color:#fff}
+.bz-section h3 span{color:var(--red)}
+
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-row.single{grid-template-columns:1fr}
+@media(max-width:640px){.form-row{grid-template-columns:1fr}}
+
+.upload-box{border:2px dashed var(--border);border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:border-color .2s;background:var(--bg3)}
+.upload-box:hover{border-color:rgba(255,43,63,.4)}
+.upload-box input{display:none}
+.cover-preview{width:100%;max-width:340px;border-radius:12px;margin-top:12px;display:none;aspect-ratio:16/9;object-fit:cover}
+
+.ss-list{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.ss-thumb{position:relative;width:110px;height:70px;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+.ss-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.ss-thumb button{position:absolute;top:2px;right:2px;background:rgba(239,68,68,.9);border:none;color:#fff;width:18px;height:18px;border-radius:50%;font-size:11px;line-height:1;cursor:pointer}
+.ss-thumb .ss-cap{position:absolute;bottom:0;left:0;right:0;background:rgba(4,7,15,.75);color:#fff;font-size:9px;padding:2px 4px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.req-row{display:grid;grid-template-columns:60px 1fr 1fr auto;gap:10px;align-items:center;margin-bottom:10px}
+.req-row input{margin:0}
+.req-del{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.35);color:#fca5a5;border-radius:8px;width:38px;height:38px;cursor:pointer;font-size:14px}
+@media(max-width:640px){.req-row{grid-template-columns:1fr 1fr;grid-template-areas:"icon icon" "titulo titulo" "desc desc" "del del"}}
+
+.feat-row{display:grid;grid-template-columns:60px 1fr auto;grid-template-rows:auto auto;gap:10px;align-items:center;margin-bottom:14px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px}
+.feat-row input:first-child{grid-row:1/3;text-align:center;padding:9px 8px}
+.feat-row textarea{grid-column:2;resize:vertical;min-height:44px}
+.feat-del{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.35);color:#fca5a5;border-radius:8px;width:38px;height:38px;cursor:pointer;font-size:14px;grid-row:1/3}
+@media(max-width:640px){.feat-row{grid-template-columns:50px 1fr auto}}
+
+.sticky-bar{position:sticky;bottom:0;background:rgba(4,7,15,.9);backdrop-filter:blur(14px);border-top:1px solid var(--border);padding:16px 0;margin-top:24px;display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+
+#bzMsg{font-size:13px;margin-bottom:14px;display:none;padding:11px 14px;border-radius:10px}
+#bzMsg.ok{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#86efac;display:block}
+#bzMsg.err{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#fca5a5;display:block}
+#bzMsg.loading{background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3);color:#fde68a;display:block}
+
+#toast{position:fixed;bottom:24px;right:24px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 20px;font-size:13px;box-shadow:0 10px 40px rgba(0,0,0,.4);z-index:3000;display:none}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div class="admin-login-overlay" id="loginOverlay">
+  <div class="admin-login-box">
+    <h2>Brazukas <span style="color:var(--red)">Admin</span></h2>
+    <p>Painel administrativo da página Brazukas Patch</p>
+    <div class="btn-err" id="loginErr">Credenciais inválidas.</div>
+    <div class="adm-field">
+      <label>E-mail</label>
+      <input type="email" id="loginEmail" autocomplete="username">
+    </div>
+    <div class="adm-field">
+      <label>Senha</label>
+      <input type="password" id="loginSenha" autocomplete="current-password">
+    </div>
+    <button class="btn-adm-login" onclick="fazerLogin()">Entrar</button>
+  </div>
+</div>
+
+<!-- ══ CONTEÚDO ══ -->
+<div class="bz-wrap" id="bzConteudo" style="display:none">
+  <div class="bz-header">
+    <div>
+      <div class="bz-title">Brazukas <span>— Admin</span></div>
+      <div class="bz-sub">Edite o conteúdo exibido na página pública do Brazukas Patch</div>
+    </div>
+    <a href="brazukas.html" target="_blank" class="btn-ghost">Ver site público</a>
+  </div>
+
+  <div id="bzMsg"></div>
+
+  <!-- CAPA / HERO -->
+  <div class="bz-section">
+    <h3>Capa <span>&amp; Hero</span></h3>
+    <div class="adm-field">
+      <label>Imagem de capa (fundo do topo da página)</label>
+      <div class="upload-box" onclick="document.getElementById('fCapaFile').click()">
+        <input type="file" id="fCapaFile" accept="image/*" onchange="preverCapa(event)">
+        📷 Clique para enviar a imagem de capa
+      </div>
+      <img id="capaPreviewImg" class="cover-preview">
+      <input type="hidden" id="fCapaUrl">
+      <div class="adm-hint">Se nenhuma imagem for enviada, a página usa um fundo gerado automaticamente (gradiente vermelho).</div>
+    </div>
+    <div class="form-row">
+      <div class="adm-field">
+        <label>Selo do topo (pill)</label>
+        <input type="text" id="fSelo" placeholder="100% Gratuito">
+      </div>
+      <div class="adm-field">
+        <label>Versão</label>
+        <input type="text" id="fVersao" placeholder="2026">
+      </div>
+    </div>
+    <div class="adm-field">
+      <label>Título</label>
+      <input type="text" id="fTitulo" placeholder="BRAZUKAS PATCH">
+      <div class="adm-hint">Use uma quebra de linha (Enter) no texto para controlar onde o título quebra visualmente — a segunda parte fica destacada em vermelho.</div>
+    </div>
+    <div class="adm-field">
+      <label>Descrição (abaixo do título)</label>
+      <textarea id="fDescricao" rows="3"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="adm-field">
+        <label>Plataforma</label>
+        <input type="text" id="fPlataforma" placeholder="PSP / PPSSPP">
+      </div>
+      <div class="adm-field">
+        <label>Tamanho do arquivo</label>
+        <input type="text" id="fTamanho" placeholder="~1 GB">
+      </div>
+    </div>
+    <div class="adm-field">
+      <label>Link de download *</label>
+      <input type="text" id="fDownload" placeholder="https://drive.google.com/...">
+    </div>
+  </div>
+
+  <!-- NOVIDADES / FEATURES -->
+  <div class="bz-section">
+    <h3>Novidades <span>/ Atualizações</span></h3>
+    <div class="adm-field">
+      <label>Texto livre de novidades (changelog, uma por linha)</label>
+      <textarea id="fNovidades" rows="5" placeholder="Elenco atualizado para 2026&#10;Novos uniformes do Corinthians&#10;Correção de bug no modo carreira"></textarea>
+      <div class="adm-hint">Esse texto fica disponível para referência — pode ser reaproveitado em posts ou no changelog do site.</div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO "O QUE ESTÁ INCLUSO" -->
+  <div class="bz-section">
+    <h3>Seção <span>"O que está incluso"</span></h3>
+    <div class="form-row">
+      <div class="adm-field">
+        <label>Etiqueta (acima do título)</label>
+        <input type="text" id="fFeaturesLabel" placeholder="O que está incluso">
+      </div>
+      <div class="adm-field">
+        <label>Subtítulo</label>
+        <input type="text" id="fFeaturesSub" placeholder="Tudo que o patch brasileiro tem de melhor...">
+      </div>
+    </div>
+    <div class="adm-field">
+      <label>Título (aceita destaque em vermelho com &lt;span style="color:var(--red)"&gt;...&lt;/span&gt;)</label>
+      <input type="text" id="fFeaturesTitulo" placeholder='Experiência <span style="color:var(--red)">Brazukas</span>'>
+    </div>
+    <div class="adm-field">
+      <label>Cards de destaque (ícone, título e descrição)</label>
+      <div id="featuresList"></div>
+      <button class="btn-ghost" onclick="adicionarFeature()" style="margin-top:6px">+ Adicionar card</button>
+    </div>
+  </div>
+
+  <!-- SCREENSHOTS -->
+  <div class="bz-section">
+    <h3>Screenshots <span>/ Galeria</span></h3>
+    <div class="form-row">
+      <div class="adm-field">
+        <label>Etiqueta (acima do título)</label>
+        <input type="text" id="fGaleriaLabel" placeholder="Dentro do jogo">
+      </div>
+      <div class="adm-field">
+        <label>Título da seção</label>
+        <input type="text" id="fGaleriaTitulo" placeholder="Screenshots">
+      </div>
+    </div>
+    <div class="adm-field">
+      <label>Subtítulo</label>
+      <input type="text" id="fGaleriaSub" placeholder="Veja como o Brazukas Patch fica na tela do seu dispositivo.">
+    </div>
+    <div class="upload-box" onclick="document.getElementById('fSsFile').click()">
+      <input type="file" id="fSsFile" accept="image/*" multiple onchange="adicionarScreenshots(event)">
+      🖼️ Clique para enviar uma ou mais imagens
+    </div>
+    <div class="ss-list" id="ssList"></div>
+    <div class="adm-hint">Cada imagem enviada substitui, na ordem, um dos 6 quadros da galeria pública. Passe o mouse e clique no ✕ para remover.</div>
+  </div>
+
+  <!-- REQUISITOS -->
+  <div class="bz-section">
+    <h3>Requisitos <span>do sistema</span></h3>
+    <div class="form-row">
+      <div class="adm-field">
+        <label>Etiqueta (acima do título)</label>
+        <input type="text" id="fReqLabel" placeholder="Antes de baixar">
+      </div>
+      <div class="adm-field">
+        <label>Título da seção</label>
+        <input type="text" id="fReqTitulo" placeholder="Requisitos">
+      </div>
+    </div>
+    <div id="reqList"></div>
+    <button class="btn-ghost" onclick="adicionarRequisito()" style="margin-top:6px">+ Adicionar requisito</button>
+  </div>
+
+  <!-- CTA FINAL -->
+  <div class="bz-section">
+    <h3>Bloco final <span>de download (CTA)</span></h3>
+    <div class="adm-field">
+      <label>Título (use &lt;br&gt; para quebrar linha, &lt;span style="color:var(--red)"&gt;...&lt;/span&gt; para destaque)</label>
+      <input type="text" id="fCtaTitulo" placeholder='Baixe agora,<br>de graça e <span style="color:var(--red)">sem enrolação</span>'>
+    </div>
+    <div class="adm-field">
+      <label>Texto de apoio</label>
+      <textarea id="fCtaTexto" rows="2"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="adm-field">
+        <label>"Preço" em destaque (aceita HTML, ex: R$&lt;span&gt;0,00&lt;/span&gt;)</label>
+        <input type="text" id="fCtaPreco" placeholder="R$<span>0,00</span>">
+      </div>
+      <div class="adm-field">
+        <label>Nota abaixo do preço</label>
+        <input type="text" id="fCtaPrecoNota" placeholder="Grátis, para sempre">
+      </div>
+    </div>
+  </div>
+
+  <div class="sticky-bar">
+    <button class="btn-ghost" onclick="abrirPreview()">👁️ Pré-visualizar</button>
+    <button class="btn-primary" onclick="salvarConfig()">Salvar alterações</button>
+  </div>
+</div>
+
+<!-- ══ MODAL PREVIEW ══ -->
+<div class="modal-overlay" id="previewOverlay" style="position:fixed;inset:0;background:rgba(4,7,15,.85);backdrop-filter:blur(4px);z-index:2000;display:none;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto">
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:24px;padding:20px;width:100%;max-width:900px;box-shadow:0 0 100px rgba(0,0,0,.5)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding:0 10px">
+      <h3 style="font-family:var(--font-hero);font-size:24px;letter-spacing:1px">Pré-visualização</h3>
+      <button onclick="document.getElementById('previewOverlay').style.display='none'" style="background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1">✕</button>
+    </div>
+    <div style="border:1px solid var(--border);border-radius:16px;overflow:hidden;max-height:70vh">
+      <iframe id="previewIframe" style="width:100%;height:70vh;border:none;background:var(--bg)"></iframe>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+/* ════════════════════════════
+   CONFIG SUPABASE (service role — mesmo padrão do admin-vlgus.html)
+════════════════════════════ */
+const supabaseClient = supabase.createClient(
+  "https://tqsalhscgkepttbczyjq.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxc2FsaHNjZ2tlcHR0YmN6eWpxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3OTQ5NTIwNSwiZXhwIjoyMDk1MDcxMjA1fQ.1qvrbIaOyAUED9OmsOqJuSP_HvGKzUMOaA82CPZQp1I",
+  { auth: { persistSession: false } }
+);
+
+const ADMINS = [
+  { email: "lv196814@gmail.com", senha: "LVxV7!_0917", nome: "Luan Vinícius" }
+];
+
+const CONFIG_ID = "brazukas"; // linha fixa única na tabela brazukas_config
+
+/* ════════════════════════════
+   LOGIN
+════════════════════════════ */
+function fazerLogin(){
+  const email = document.getElementById("loginEmail").value.trim().toLowerCase();
+  const senha = document.getElementById("loginSenha").value;
+  const err = document.getElementById("loginErr");
+  const admin = ADMINS.find(a => a.email.toLowerCase() === email && a.senha === senha);
+  if (!admin){
+    err.classList.add("show");
+    return;
+  }
+  err.classList.remove("show");
+  sessionStorage.setItem("brazukas_admin_logado", "1");
+  document.getElementById("loginOverlay").style.display = "none";
+  document.getElementById("bzConteudo").style.display = "block";
+  carregarConfig();
+}
+
+(function verificarSessao(){
+  if (sessionStorage.getItem("brazukas_admin_logado") === "1"){
+    document.getElementById("loginOverlay").style.display = "none";
+    document.getElementById("bzConteudo").style.display = "block";
+    carregarConfig();
+  }
+})();
+
+/* ════════════════════════════
+   ESTADO
+════════════════════════════ */
+let screenshotsAtuais = [];
+let requisitosAtuais = [];
+let featuresAtuais = [];
+
+function toast(texto, cor){
+  const t = document.getElementById("toast");
+  t.textContent = texto;
+  t.style.borderColor = cor || "var(--border)";
+  t.style.display = "block";
+  setTimeout(()=> t.style.display = "none", 3000);
+}
+
+function requisitosPadrao(){
+  return [
+    { icone:"📱", titulo:"Android 8+", desc:"Versões mais antigas não são suportadas" },
+    { icone:"💾", titulo:"1 GB livre", desc:"Armazenamento disponível no dispositivo" },
+    { icone:"🎮", titulo:"PPSSPP instalado", desc:"Emulador PSP gratuito na Play Store" },
+    { icone:"✅", titulo:"Sem assinatura", desc:"Acesso livre, sem custo algum" }
+  ];
+}
+
+function featuresPadrao(){
+  return [
+    { icone:"🇧🇷", titulo:"Times Brasileiros", desc:"Todos os principais clubes do futebol brasileiro, com nomes e uniformes atualizados." },
+    { icone:"⚽", titulo:"Elencos Atualizados", desc:"Escalações revisadas para a temporada 2026, incluindo as principais transferências." },
+    { icone:"👕", titulo:"Uniformes Fiéis", desc:"Kits recriados com atenção aos detalhes reais de cada equipe brasileira." },
+    { icone:"📱", titulo:"Experiência Portátil", desc:"Otimizado para rodar bem no PPSSPP, direto do seu celular Android." },
+    { icone:"🔄", titulo:"Atualizações Mensais", desc:"O patch é mantido e atualizado com frequência pela equipe Lumina." },
+    { icone:"🎧", titulo:"Suporte da Comunidade", desc:"Dúvidas ou problemas? A comunidade e a equipe Lumina te ajudam a instalar." }
+  ];
+}
+
+/* ════════════════════════════
+   CARREGAR
+════════════════════════════ */
+async function carregarConfig(){
+  const msg = document.getElementById("bzMsg");
+  msg.className = "loading";
+  msg.textContent = "⏳ Carregando conteúdo atual...";
+
+  const { data, error } = await supabaseClient
+    .from("brazukas_config")
+    .select("*")
+    .eq("id", CONFIG_ID)
+    .maybeSingle();
+
+  if (error){
+    msg.className = "err";
+    msg.textContent = "⚠️ Não foi possível carregar do banco (" + error.message + "). Se a tabela 'brazukas_config' ainda não existe, crie-a no Supabase antes de salvar. Preenchendo com os valores padrão da página atual.";
+    preencherForm(null);
+    return;
+  }
+
+  msg.style.display = "none";
+  preencherForm(data);
+}
+
+function preencherForm(cfg){
+  document.getElementById("fCapaUrl").value = cfg?.capa_url || "";
+  const capaImg = document.getElementById("capaPreviewImg");
+  if (cfg?.capa_url){ capaImg.src = cfg.capa_url; capaImg.style.display = "block"; }
+  else { capaImg.style.display = "none"; capaImg.src = ""; }
+
+  document.getElementById("fSelo").value = cfg?.selo || "100% Gratuito";
+  document.getElementById("fVersao").value = cfg?.versao || "2026";
+  document.getElementById("fTitulo").value = cfg?.titulo || "BRAZUKAS\nPATCH";
+  document.getElementById("fDescricao").value = cfg?.descricao || "O patch brasileiro definitivo da Lumina Interactive. Times atualizados, uniformes, escalações e experiência portátil aprimorada — sem custo nenhum.";
+  document.getElementById("fPlataforma").value = cfg?.plataforma || "PSP / PPSSPP";
+  document.getElementById("fTamanho").value = cfg?.tamanho || "~1 GB";
+  document.getElementById("fDownload").value = cfg?.link_download || "https://drive.google.com/drive/folders/13yVXPiX8cwyUE7pBpzKS2G65hvqROEZg";
+  document.getElementById("fNovidades").value = cfg?.novidades || "";
+
+  document.getElementById("fFeaturesLabel").value = cfg?.features_label || "O que está incluso";
+  document.getElementById("fFeaturesSub").value = cfg?.features_sub || "Tudo que o patch brasileiro tem de melhor, liberado para todo mundo.";
+  document.getElementById("fFeaturesTitulo").value = cfg?.features_titulo || 'Experiência <span style="color:var(--red)">Brazukas</span>';
+
+  document.getElementById("fGaleriaLabel").value = cfg?.galeria_label || "Dentro do jogo";
+  document.getElementById("fGaleriaTitulo").value = cfg?.galeria_titulo || "Screenshots";
+  document.getElementById("fGaleriaSub").value = cfg?.galeria_sub || "Veja como o Brazukas Patch fica na tela do seu dispositivo.";
+
+  document.getElementById("fReqLabel").value = cfg?.req_label || "Antes de baixar";
+  document.getElementById("fReqTitulo").value = cfg?.req_titulo || "Requisitos";
+
+  document.getElementById("fCtaTitulo").value = cfg?.cta_titulo || 'Baixe agora,<br>de graça e <span style="color:var(--red)">sem enrolação</span>';
+  document.getElementById("fCtaTexto").value = cfg?.cta_texto || "O Brazukas Patch é 100% gratuito. Baixe e comece a jogar com os times brasileiros atualizados agora mesmo.";
+  document.getElementById("fCtaPreco").value = cfg?.cta_preco || "R$<span>0,00</span>";
+  document.getElementById("fCtaPrecoNota").value = cfg?.cta_preco_nota || "Grátis, para sempre";
+
+  screenshotsAtuais = cfg?.screenshots ? [...cfg.screenshots] : [];
+  renderScreenshots();
+
+  requisitosAtuais = cfg?.requisitos ? JSON.parse(JSON.stringify(cfg.requisitos)) : requisitosPadrao();
+  renderRequisitos();
+
+  featuresAtuais = cfg?.features ? JSON.parse(JSON.stringify(cfg.features)) : featuresPadrao();
+  renderFeatures();
+}
+
+/* Upload de capa */
+async function preverCapa(e){
+  const file = e.target.files[0];
+  if (!file) return;
+  const preview = document.getElementById("capaPreviewImg");
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = "block";
+
+  toast("Enviando capa...");
+  const ext = file.name.split(".").pop();
+  const path = `brazukas/capa_${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`;
+  const { error } = await supabaseClient.storage.from("vlgus-midia").upload(path, file, { upsert:true, contentType:file.type });
+  if (error){ toast("Erro no upload da capa: " + error.message, "#ef4444"); return; }
+  const { data } = supabaseClient.storage.from("vlgus-midia").getPublicUrl(path);
+  document.getElementById("fCapaUrl").value = data.publicUrl;
+  toast("Capa enviada!", "#22c55e");
+}
+
+/* Upload de screenshots (múltiplas) */
+async function adicionarScreenshots(e){
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
+  toast(`Enviando ${files.length} imagem(ns)...`);
+  for (const file of files){
+    const ext = file.name.split(".").pop();
+    const path = `brazukas/screenshots/${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`;
+    const { error } = await supabaseClient.storage.from("vlgus-midia").upload(path, file, { upsert:true, contentType:file.type });
+    if (error){ toast("Erro: " + error.message, "#ef4444"); continue; }
+    const { data } = supabaseClient.storage.from("vlgus-midia").getPublicUrl(path);
+    screenshotsAtuais.push(data.publicUrl);
+  }
+  renderScreenshots();
+  toast("Screenshots enviados!", "#22c55e");
+  e.target.value = "";
+}
+function renderScreenshots(){
+  const list = document.getElementById("ssList");
+  list.innerHTML = screenshotsAtuais.map((url,i)=>`
+    <div class="ss-thumb">
+      <img src="${url}">
+      <div class="ss-cap">Print ${i+1}</div>
+      <button onclick="removerScreenshot(${i})">✕</button>
+    </div>
+  `).join("");
+}
+function removerScreenshot(i){
+  screenshotsAtuais.splice(i,1);
+  renderScreenshots();
+}
+
+/* Requisitos (lista dinâmica) */
+function renderRequisitos(){
+  const wrap = document.getElementById("reqList");
+  wrap.innerHTML = requisitosAtuais.map((r,i)=>`
+    <div class="req-row">
+      <input type="text" value="${(r.icone||'').replace(/"/g,'&quot;')}" placeholder="📱" oninput="requisitosAtuais[${i}].icone=this.value" style="text-align:center;padding:9px 8px">
+      <input type="text" value="${(r.titulo||'').replace(/"/g,'&quot;')}" placeholder="Título" oninput="requisitosAtuais[${i}].titulo=this.value" style="padding:9px 12px">
+      <input type="text" value="${(r.desc||'').replace(/"/g,'&quot;')}" placeholder="Descrição" oninput="requisitosAtuais[${i}].desc=this.value" style="padding:9px 12px">
+      <button class="req-del" onclick="removerRequisito(${i})" title="Remover">✕</button>
+    </div>
+  `).join("");
+}
+function adicionarRequisito(){
+  requisitosAtuais.push({ icone:"⭐", titulo:"", desc:"" });
+  renderRequisitos();
+}
+function removerRequisito(i){
+  requisitosAtuais.splice(i,1);
+  renderRequisitos();
+}
+
+/* Cards de destaque (features) */
+function renderFeatures(){
+  const wrap = document.getElementById("featuresList");
+  wrap.innerHTML = featuresAtuais.map((f,i)=>`
+    <div class="feat-row">
+      <input type="text" value="${(f.icone||'').replace(/"/g,'&quot;')}" placeholder="⭐" oninput="featuresAtuais[${i}].icone=this.value">
+      <input type="text" value="${(f.titulo||'').replace(/"/g,'&quot;')}" placeholder="Título do card" oninput="featuresAtuais[${i}].titulo=this.value" style="padding:9px 12px">
+      <button class="feat-del" onclick="removerFeature(${i})" title="Remover">✕</button>
+      <textarea placeholder="Descrição" oninput="featuresAtuais[${i}].desc=this.value">${(f.desc||'')}</textarea>
+    </div>
+  `).join("");
+}
+function adicionarFeature(){
+  featuresAtuais.push({ icone:"⭐", titulo:"", desc:"" });
+  renderFeatures();
+}
+function removerFeature(i){
+  featuresAtuais.splice(i,1);
+  renderFeatures();
+}
+
+/* ════════════════════════════
+   SALVAR
+════════════════════════════ */
+async function salvarConfig(){
+  const msg = document.getElementById("bzMsg");
+  const download = document.getElementById("fDownload").value.trim();
+
+  if (!download){
+    msg.className = "err";
+    msg.textContent = "⚠️ Preencha ao menos o Link de download.";
+    return;
+  }
+
+  const payload = {
+    id: CONFIG_ID,
+    capa_url: document.getElementById("fCapaUrl").value || null,
+    selo: document.getElementById("fSelo").value.trim(),
+    versao: document.getElementById("fVersao").value.trim(),
+    titulo: document.getElementById("fTitulo").value,
+    descricao: document.getElementById("fDescricao").value.trim(),
+    plataforma: document.getElementById("fPlataforma").value.trim(),
+    tamanho: document.getElementById("fTamanho").value.trim(),
+    link_download: download,
+    novidades: document.getElementById("fNovidades").value,
+    screenshots: screenshotsAtuais,
+    requisitos: requisitosAtuais,
+    features: featuresAtuais,
+    features_label: document.getElementById("fFeaturesLabel").value.trim(),
+    features_sub: document.getElementById("fFeaturesSub").value.trim(),
+    features_titulo: document.getElementById("fFeaturesTitulo").value,
+    galeria_label: document.getElementById("fGaleriaLabel").value.trim(),
+    galeria_titulo: document.getElementById("fGaleriaTitulo").value.trim(),
+    galeria_sub: document.getElementById("fGaleriaSub").value.trim(),
+    req_label: document.getElementById("fReqLabel").value.trim(),
+    req_titulo: document.getElementById("fReqTitulo").value.trim(),
+    cta_titulo: document.getElementById("fCtaTitulo").value,
+    cta_texto: document.getElementById("fCtaTexto").value.trim(),
+    cta_preco: document.getElementById("fCtaPreco").value,
+    cta_preco_nota: document.getElementById("fCtaPrecoNota").value.trim(),
+    atualizado_em: new Date().toISOString()
+  };
+
+  msg.className = "loading";
+  msg.textContent = "⏳ Salvando...";
+
+  const { error } = await supabaseClient
+    .from("brazukas_config")
+    .upsert(payload, { onConflict: "id" });
+
+  if (error){
+    msg.className = "err";
+    msg.textContent = "Erro ao salvar: " + error.message + ". Confira se a tabela 'brazukas_config' existe no Supabase com as colunas usadas aqui.";
+    return;
+  }
+
+  msg.className = "ok";
+  msg.textContent = "✅ Alterações salvas! A página pública do Brazukas já reflete o novo conteúdo.";
+  toast("Salvo com sucesso!", "#22c55e");
+}
+
+/* ════════════════════════════
+   PREVIEW
+════════════════════════════ */
+function abrirPreview(){
+  const dadosPreview = {
+    capa_url: document.getElementById("fCapaUrl").value,
+    selo: document.getElementById("fSelo").value.trim(),
+    versao: document.getElementById("fVersao").value.trim(),
+    titulo: document.getElementById("fTitulo").value,
+    descricao: document.getElementById("fDescricao").value.trim(),
+    plataforma: document.getElementById("fPlataforma").value.trim(),
+    tamanho: document.getElementById("fTamanho").value.trim(),
+    link_download: document.getElementById("fDownload").value.trim(),
+    novidades: document.getElementById("fNovidades").value,
+    screenshots: screenshotsAtuais,
+    requisitos: requisitosAtuais,
+    features: featuresAtuais,
+    features_label: document.getElementById("fFeaturesLabel").value.trim(),
+    features_sub: document.getElementById("fFeaturesSub").value.trim(),
+    features_titulo: document.getElementById("fFeaturesTitulo").value,
+    galeria_label: document.getElementById("fGaleriaLabel").value.trim(),
+    galeria_titulo: document.getElementById("fGaleriaTitulo").value.trim(),
+    galeria_sub: document.getElementById("fGaleriaSub").value.trim(),
+    req_label: document.getElementById("fReqLabel").value.trim(),
+    req_titulo: document.getElementById("fReqTitulo").value.trim(),
+    cta_titulo: document.getElementById("fCtaTitulo").value,
+    cta_texto: document.getElementById("fCtaTexto").value.trim(),
+    cta_preco: document.getElementById("fCtaPreco").value,
+    cta_preco_nota: document.getElementById("fCtaPrecoNota").value.trim()
+  };
+  sessionStorage.setItem("brazukas_preview_data", JSON.stringify(dadosPreview));
+  document.getElementById("previewIframe").src = "brazukas.html?preview=1";
+  document.getElementById("previewOverlay").style.display = "flex";
+}
+</script>
+</body>
+</html>
