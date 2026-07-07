@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="pageTitleTag">Site Hospedado | Lumina Interactive</title>
+<link rel="stylesheet" href="style.css">
+<style>
+:root{ --tema: #1a6bff; --tema-dim: rgba(26,107,255,0.14); }
+
+.pro-cover-hero{position:relative;min-height:80vh;display:flex;align-items:flex-end;overflow:hidden;padding-top:70px}
+.pro-cover-bg{position:absolute;inset:0;background:
+  radial-gradient(ellipse 900px 500px at 80% 0%, var(--tema-dim) 0%, transparent 60%),
+  linear-gradient(135deg,#07080f 0%,#04070f 55%,#04070f 100%);z-index:0;
+  background-size:cover;background-position:center top}
+.pro-cover-gradient{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 0%,rgba(4,7,15,.3) 50%,rgba(4,7,15,.95) 80%,var(--bg) 100%);z-index:1}
+.pro-cover-content{position:relative;z-index:2;width:100%;max-width:1280px;margin:0 auto;padding:0 40px 60px}
+.pro-cover-pill{display:inline-flex;align-items:center;gap:8px;background:var(--tema-dim);border:1px solid var(--tema);color:#fff;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:999px;margin-bottom:20px;opacity:.9}
+.pro-cover-title{font-family:var(--font-hero);font-size:clamp(44px,8vw,92px);line-height:.94;letter-spacing:1px;margin-bottom:20px}
+.pro-cover-title .accent{color:var(--tema)}
+.pro-cover-desc{color:#94a3b8;font-size:16px;max-width:540px;line-height:1.7;margin-bottom:36px}
+.btn.primary.tema-btn{background:var(--tema);border-color:var(--tema)}
+.btn.primary.tema-btn:hover{filter:brightness(1.1)}
+
+.hz-section{max-width:1280px;margin:0 auto;padding:70px 40px}
+.hz-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:40px}
+.hz-card{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:26px 22px}
+.hz-icon{font-size:26px;margin-bottom:12px;display:block}
+.hz-card-title{font-family:var(--font-hero);font-size:19px;letter-spacing:.5px;margin-bottom:6px}
+.hz-card-desc{font-size:13px;color:#94a3b8;line-height:1.6}
+
+.gal-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:36px}
+.gal-item{border-radius:14px;overflow:hidden;border:1px solid var(--border);aspect-ratio:16/9}
+.gal-item img{width:100%;height:100%;object-fit:cover;display:block}
+
+.empty-note{text-align:center;color:var(--muted);font-size:13px;padding:30px;border:1px dashed var(--border);border-radius:16px}
+
+.powered{ text-align:center; font-size:11px; color:var(--muted); padding:20px 0 0; }
+.powered a{ color:var(--tema); text-decoration:none; }
+
+@media(max-width:768px){
+  .pro-cover-content{padding:0 20px 48px}
+  .pro-cover-title{font-size:46px}
+  .hz-section{padding:48px 20px}
+}
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="logo"><img src="logo.png" alt="Lumina Interactive" style="height:36px;width:auto;display:block"></div>
+  <div class="menu" id="menuDinamico">
+    <a href="index.html">Início</a><a href="hospedagem.html">Hospedagem Lumina</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+
+  <section class="pro-cover-hero">
+    <div class="pro-cover-bg" id="capaFundo"></div>
+    <div class="pro-cover-gradient"></div>
+    <div class="pro-cover-content">
+      <div class="pro-cover-pill" id="txtSelo">Hospedado pela Lumina</div>
+      <h1 class="pro-cover-title" id="txtTitulo">SEU TÍTULO<br><span class="accent">AQUI</span></h1>
+      <p class="pro-cover-desc" id="txtDescricao">Edite esta página pelo seu painel administrativo.</p>
+      <div id="btnDownloadWrap" style="display:none">
+        <a href="#" target="_blank" class="btn primary tema-btn" style="font-size:15px;padding:15px 34px" id="btnDownload">⬇ Baixar</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="hz-section" id="secFeatures" style="display:none">
+    <div class="section-label reveal">Destaques</div>
+    <h2 class="section-title reveal">O que este site oferece</h2>
+    <div class="hz-grid" id="featuresGrid"></div>
+  </section>
+
+  <section class="hz-section" id="secGaleria" style="display:none">
+    <div class="section-label reveal">Galeria</div>
+    <h2 class="section-title reveal">Imagens</h2>
+    <div class="gal-grid" id="galeriaGrid"></div>
+  </section>
+
+  <section class="hz-section" id="secVazio">
+    <div class="empty-note">Esta página ainda não foi personalizada pelo administrador.</div>
+  </section>
+
+  <div class="powered">Página hospedada por <a href="hospedagem.html">Lumina Interactive™</a></div>
+
+</div>
+
+<footer class="footer">
+  <div class="footer-logo"><img src="logo.png" alt="Lumina Interactive" style="height:28px;width:auto;opacity:0.85"></div>
+    <div class="footer-links" id="footerDinamico"></div>
+<div class="footer-copy">© 2026 Lumina Interactive™. Todos os direitos reservados.</div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="site-nav.js"></script>
+<script src="navbar-auth.js"></script>
+<script>
+const supabaseClient = supabase.createClient(
+  "https://tqsalhscgkepttbczyjq.supabase.co",
+  "sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK"
+);
+
+const tenant = new URLSearchParams(window.location.search).get("tenant");
+
+async function carregar() {
+  if (!tenant) {
+    document.getElementById("txtTitulo").textContent = "Site não encontrado";
+    document.getElementById("txtDescricao").textContent = "Nenhum identificador de site (tenant) foi informado na URL.";
+    return;
+  }
+
+  const { data, error } = await supabaseClient
+    .from("hospedagem_sites")
+    .select("*")
+    .eq("tenant_id", tenant)
+    .maybeSingle();
+
+  if (error || !data) {
+    document.getElementById("txtTitulo").textContent = "Site não encontrado";
+    document.getElementById("txtDescricao").textContent = "Este site não existe ou ainda não foi configurado.";
+    return;
+  }
+
+  document.getElementById("pageTitleTag").textContent = (data.nome_site || "Site Hospedado") + " | Lumina Interactive";
+
+  if (data.cor_tema) {
+    document.documentElement.style.setProperty("--tema", data.cor_tema);
+    document.documentElement.style.setProperty("--tema-dim", data.cor_tema + "26");
+  }
+
+  if (data.capa_url) {
+    const fundo = document.getElementById("capaFundo");
+    fundo.style.backgroundImage = `url('${data.capa_url}')`;
+    fundo.style.filter = "brightness(0.5)";
+  }
+
+  if (data.selo) document.getElementById("txtSelo").textContent = data.selo;
+
+  if (data.titulo) {
+    const linhas = data.titulo.split("\n");
+    const el = document.getElementById("txtTitulo");
+    el.innerHTML = linhas.length > 1
+      ? linhas[0] + "<br><span class=\"accent\">" + linhas.slice(1).join(" ") + "</span>"
+      : "<span class=\"accent\">" + linhas[0] + "</span>";
+  }
+
+  if (data.descricao) document.getElementById("txtDescricao").textContent = data.descricao;
+
+  if (data.link_download) {
+    document.getElementById("btnDownload").href = data.link_download;
+    document.getElementById("btnDownloadWrap").style.display = "block";
+  }
+
+  let temConteudo = false;
+
+  if (data.features && data.features.length) {
+    temConteudo = true;
+    document.getElementById("secFeatures").style.display = "block";
+    document.getElementById("featuresGrid").innerHTML = data.features.map(f => `
+      <div class="hz-card">
+        <span class="hz-icon">${f.icone || "⭐"}</span>
+        <div class="hz-card-title">${f.titulo || ""}</div>
+        <p class="hz-card-desc">${f.desc || ""}</p>
+      </div>
+    `).join("");
+  }
+
+  if (data.screenshots && data.screenshots.length) {
+    temConteudo = true;
+    document.getElementById("secGaleria").style.display = "block";
+    document.getElementById("galeriaGrid").innerHTML = data.screenshots.map(url => `
+      <div class="gal-item"><img src="${url}"></div>
+    `).join("");
+  }
+
+  document.getElementById("secVazio").style.display = temConteudo ? "none" : "block";
+}
+
+carregar();
+</script>
+</body>
+</html>

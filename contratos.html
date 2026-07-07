@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contrato | Lumina Interactive</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.ct-wrap{max-width:760px;margin:0 auto;padding:48px 20px 100px}
+.ct-doc{background:var(--bg2,#0c1528);border:1px solid var(--border,rgba(255,255,255,.08));border-radius:20px;padding:40px 36px}
+.ct-doc h1{font-family:var(--font-hero,'Bebas Neue',sans-serif);font-size:32px;letter-spacing:1px;text-align:center;margin-bottom:4px}
+.ct-doc .sub{text-align:center;color:var(--muted,#94a3b8);font-size:13px;margin-bottom:32px}
+.ct-parties{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px}
+.ct-party{background:var(--bg3,#111c33);border:1px solid var(--border,rgba(255,255,255,.08));border-radius:14px;padding:16px 18px}
+.ct-party-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted,#94a3b8);margin-bottom:6px}
+.ct-party-name{font-size:15px;font-weight:600;color:#fff;margin-bottom:2px}
+.ct-party-detail{font-size:12.5px;color:var(--muted,#94a3b8);line-height:1.5}
+@media(max-width:600px){.ct-parties{grid-template-columns:1fr}}
+
+.ct-meta{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:28px;font-size:13px;color:var(--muted,#94a3b8)}
+.ct-meta strong{color:#fff}
+
+.ct-clausulas{white-space:pre-wrap;font-size:14px;line-height:1.9;color:#cbd5e1;margin-bottom:32px;border-top:1px solid var(--border,rgba(255,255,255,.08));border-bottom:1px solid var(--border,rgba(255,255,255,.08));padding:24px 0}
+
+.ct-sign-block{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:8px}
+@media(max-width:600px){.ct-sign-block{grid-template-columns:1fr}}
+.ct-sign-card{border:1px dashed var(--border,rgba(255,255,255,.15));border-radius:14px;padding:20px;text-align:center}
+.ct-sign-card.assinado{border-style:solid;border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.06)}
+.ct-sign-label{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted,#94a3b8);margin-bottom:10px}
+.ct-sign-name{font-family:'Segoe Script','Brush Script MT',cursive;font-size:26px;color:#fff;margin-bottom:4px}
+.ct-sign-date{font-size:11px;color:var(--muted,#94a3b8)}
+.ct-pending-icon{font-size:22px;margin-bottom:8px;opacity:.5}
+
+.ct-login-needed,.ct-wrong-email,.ct-locked{background:var(--bg3,#111c33);border:1px solid var(--border,rgba(255,255,255,.08));border-radius:16px;padding:24px;text-align:center;margin-top:20px}
+.ct-login-needed p,.ct-wrong-email p,.ct-locked p{color:var(--muted,#94a3b8);font-size:13px;line-height:1.7;margin-bottom:16px}
+
+.ct-sign-form{margin-top:24px;background:var(--bg3,#111c33);border:1px solid var(--border,rgba(255,255,255,.08));border-radius:16px;padding:24px}
+.ct-sign-form label{display:block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted,#94a3b8);margin-bottom:8px}
+.ct-sign-form input{width:100%;background:var(--bg,#04070f);border:1px solid var(--border,rgba(255,255,255,.08));border-radius:10px;padding:12px 14px;color:#fff;font-size:16px;font-family:'Segoe Script','Brush Script MT',cursive;box-sizing:border-box;margin-bottom:14px}
+.ct-sign-form .hint{font-family:var(--font-body,sans-serif);font-size:12px;color:var(--muted,#94a3b8);margin-top:-8px;margin-bottom:16px}
+.ct-btn-sign{width:100%;background:#1a6bff;color:#fff;border:none;border-radius:12px;padding:14px;font-weight:700;font-size:14px;cursor:pointer}
+.ct-btn-sign:disabled{opacity:.5;cursor:not-allowed}
+
+#msg{font-size:13px;margin-top:16px;padding:11px 14px;border-radius:10px;display:none}
+#msg.ok{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#86efac;display:block}
+#msg.err{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#fca5a5;display:block}
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="logo"><img src="logo.png" alt="Lumina Interactive" style="height:36px;width:auto;display:block"></div>
+  <div class="menu" id="menuDinamico"><a href="index.html">Início</a></div>
+</nav>
+
+<div class="ct-wrap">
+  <div id="carregando" style="text-align:center;padding:80px 0;color:var(--muted)">Carregando contrato...</div>
+
+  <div id="ctConteudo" style="display:none">
+    <div class="ct-doc">
+      <h1>CONTRATO DE PRESTAÇÃO DE SERVIÇOS</h1>
+      <p class="sub">Lumina Interactive™</p>
+
+      <div class="ct-parties">
+        <div class="ct-party">
+          <div class="ct-party-label">Contratante</div>
+          <div class="ct-party-name" id="pContratanteNome">Luan Vinícius</div>
+          <div class="ct-party-detail">Lumina Interactive™</div>
+        </div>
+        <div class="ct-party">
+          <div class="ct-party-label">Contratado(a)</div>
+          <div class="ct-party-name" id="pContratadoNome">—</div>
+          <div class="ct-party-detail" id="pContratadoDetail">—</div>
+        </div>
+      </div>
+
+      <div class="ct-meta">
+        <span>Função: <strong id="pFuncao">—</strong></span>
+        <span>Data do contrato: <strong id="pData">—</strong></span>
+      </div>
+
+      <div class="ct-clausulas" id="pClausulas">—</div>
+
+      <div class="ct-sign-block">
+        <div class="ct-sign-card assinado">
+          <div class="ct-sign-label">Contratante</div>
+          <div class="ct-sign-name">Luan Vinícius</div>
+          <div class="ct-sign-date">Assinado</div>
+        </div>
+        <div class="ct-sign-card" id="cardAssinaturaContratado">
+          <div class="ct-pending-icon">✍️</div>
+          <div class="ct-sign-label">Contratado(a)</div>
+          <div class="ct-sign-date">Aguardando assinatura</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estados de assinatura -->
+    <div id="estadoLoginNecessario" class="ct-login-needed" style="display:none">
+      <p>Este contrato está vinculado ao e-mail <strong id="emailNecessarioTxt"></strong>. Faça login com essa conta para assinar.</p>
+      <a href="login.html" class="btn primary">Fazer login</a>
+    </div>
+
+    <div id="estadoEmailErrado" class="ct-wrong-email" style="display:none">
+      <p>Você está logado com um e-mail diferente do vinculado a este contrato (<strong id="emailNecessarioTxt2"></strong>). Entre com a conta correta para assinar.</p>
+      <a href="login.html" class="btn primary">Trocar de conta</a>
+    </div>
+
+    <div id="estadoParaAssinar" class="ct-sign-form" style="display:none">
+      <label>Digite seu nome completo para assinar</label>
+      <input type="text" id="inputNomeAssinatura" placeholder="Seu nome completo">
+      <div class="hint" style="font-family:inherit">Ao assinar, você confirma que leu e concorda com todas as cláusulas deste contrato.</div>
+      <button class="ct-btn-sign" id="btnAssinar" onclick="assinarContrato()">Assinar contrato</button>
+      <div id="msg"></div>
+    </div>
+
+    <div id="estadoJaAssinado" class="ct-login-needed" style="display:none">
+      <p>✅ Este contrato já foi assinado por ambas as partes em <strong id="dataAssinadoTxt"></strong>.</p>
+    </div>
+  </div>
+
+  <div id="naoEncontrado" style="display:none;text-align:center;padding:80px 0;color:var(--muted)">
+    Contrato não encontrado.
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-logo"><img src="logo.png" alt="Lumina Interactive" style="height:28px;width:auto;opacity:0.85"></div>
+    <div class="footer-links" id="footerDinamico"></div>
+<div class="footer-copy">© 2026 Lumina Interactive™. Todos os direitos reservados.</div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="site-nav.js"></script>
+<script src="navbar-auth.js"></script>
+<script>
+const supabaseClient = supabase.createClient(
+  "https://tqsalhscgkepttbczyjq.supabase.co",
+  "sb_publishable_Q99EhX_HpUVotGGqmWAf4A_pkiTB7bK"
+);
+
+const contratoId = new URLSearchParams(window.location.search).get("id");
+let contratoAtual = null;
+
+async function emailLogadoAtual() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (session?.user?.email) return session.user.email.toLowerCase();
+  const local = localStorage.getItem("lumina_email");
+  return local ? local.toLowerCase() : null;
+}
+
+function formatarData(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso + (iso.length === 10 ? "T00:00:00" : ""));
+  return d.toLocaleDateString("pt-BR");
+}
+
+async function carregar() {
+  if (!contratoId) {
+    document.getElementById("carregando").style.display = "none";
+    document.getElementById("naoEncontrado").style.display = "block";
+    return;
+  }
+
+  const { data, error } = await supabaseClient
+    .from("contratos")
+    .select("*")
+    .eq("id", contratoId)
+    .maybeSingle();
+
+  if (error || !data) {
+    document.getElementById("carregando").style.display = "none";
+    document.getElementById("naoEncontrado").style.display = "block";
+    return;
+  }
+
+  contratoAtual = data;
+
+  document.getElementById("pContratanteNome").textContent = data.contratante_nome || "Luan Vinícius";
+  document.getElementById("pContratadoNome").textContent = data.nome_contratado;
+  document.getElementById("pContratadoDetail").textContent = data.contato || data.email_contratado;
+  document.getElementById("pFuncao").textContent = data.funcao;
+  document.getElementById("pData").textContent = formatarData(data.data_contrato);
+  document.getElementById("pClausulas").textContent = data.clausulas;
+
+  if (data.assinado) {
+    document.getElementById("cardAssinaturaContratado").classList.add("assinado");
+    document.getElementById("cardAssinaturaContratado").innerHTML = `
+      <div class="ct-sign-label">Contratado(a)</div>
+      <div class="ct-sign-name">${data.nome_digitado_assinatura || data.nome_contratado}</div>
+      <div class="ct-sign-date">Assinado em ${formatarData(data.assinado_em?.slice(0,10))}</div>
+    `;
+  }
+
+  document.getElementById("carregando").style.display = "none";
+  document.getElementById("ctConteudo").style.display = "block";
+
+  await avaliarEstadoAssinatura();
+}
+
+async function avaliarEstadoAssinatura() {
+  ["estadoLoginNecessario","estadoEmailErrado","estadoParaAssinar","estadoJaAssinado"].forEach(id => {
+    document.getElementById(id).style.display = "none";
+  });
+
+  if (contratoAtual.assinado) {
+    document.getElementById("dataAssinadoTxt").textContent = formatarData(contratoAtual.assinado_em?.slice(0,10));
+    document.getElementById("estadoJaAssinado").style.display = "block";
+    return;
+  }
+
+  const emailLogado = await emailLogadoAtual();
+  const emailContrato = (contratoAtual.email_contratado || "").toLowerCase();
+
+  if (!emailLogado) {
+    document.getElementById("emailNecessarioTxt").textContent = contratoAtual.email_contratado;
+    document.getElementById("estadoLoginNecessario").style.display = "block";
+    return;
+  }
+
+  if (emailLogado !== emailContrato) {
+    document.getElementById("emailNecessarioTxt2").textContent = contratoAtual.email_contratado;
+    document.getElementById("estadoEmailErrado").style.display = "block";
+    return;
+  }
+
+  document.getElementById("estadoParaAssinar").style.display = "block";
+}
+
+async function assinarContrato() {
+  const nome = document.getElementById("inputNomeAssinatura").value.trim();
+  const msg = document.getElementById("msg");
+  const btn = document.getElementById("btnAssinar");
+
+  if (!nome) {
+    msg.className = "err";
+    msg.textContent = "Digite seu nome completo para assinar.";
+    return;
+  }
+
+  const emailLogado = await emailLogadoAtual();
+  if (!emailLogado || emailLogado !== (contratoAtual.email_contratado || "").toLowerCase()) {
+    msg.className = "err";
+    msg.textContent = "Sua sessão mudou. Recarregue a página e tente novamente.";
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Assinando...";
+
+  const { error } = await supabaseClient
+    .from("contratos")
+    .update({
+      assinado: true,
+      assinado_em: new Date().toISOString(),
+      nome_digitado_assinatura: nome
+    })
+    .eq("id", contratoId);
+
+  if (error) {
+    msg.className = "err";
+    msg.textContent = "Erro ao assinar: " + error.message;
+    btn.disabled = false;
+    btn.textContent = "Assinar contrato";
+    return;
+  }
+
+  msg.className = "ok";
+  msg.textContent = "✅ Contrato assinado com sucesso!";
+  contratoAtual.assinado = true;
+  contratoAtual.assinado_em = new Date().toISOString();
+  contratoAtual.nome_digitado_assinatura = nome;
+
+  document.getElementById("cardAssinaturaContratado").classList.add("assinado");
+  document.getElementById("cardAssinaturaContratado").innerHTML = `
+    <div class="ct-sign-label">Contratado(a)</div>
+    <div class="ct-sign-name">${nome}</div>
+    <div class="ct-sign-date">Assinado agora</div>
+  `;
+
+  setTimeout(avaliarEstadoAssinatura, 1200);
+}
+
+carregar();
+</script>
+</body>
+</html>

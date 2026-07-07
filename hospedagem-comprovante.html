@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pagamento Pix | Lumina Interactive</title>
+<title>Pagamento Pix — Hospedagem | Lumina Interactive</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,7 +11,7 @@
   <div class="logo"><img src="logo.png" alt="Lumina Interactive" style="height:36px;width:auto;display:block"></div>
   <div class="menu" id="menuDinamico">
     <a href="index.html">Início</a><a href="patches.html">Patchs</a>
-    <a href="Comunidade.html">Comunidade</a><a href="plus.html">Lumina Plus</a>
+    <a href="Comunidade.html">Comunidade</a><a href="hospedagem.html">Hospedagem</a>
     <a href="login.html" data-auth-link>Login</a>
   </div>
 </nav>
@@ -22,45 +22,39 @@
     <section id="areaPagamento">
       <div class="page-hero" style="padding-left:0;padding-right:0">
         <div class="page-hero-label">Pagamento</div>
-        <h1>Finalizar Lumina Verified+</h1>
-        <p>Escaneie o QR Code, pague via Pix/PicPay e envie o comprovante.</p>
+        <h1>Finalizar assinatura</h1>
+        <p>Pague via Pix (copia e cola) e envie o comprovante para liberarmos seu acesso.</p>
       </div>
 
       <!-- PIX CARD -->
-      <div style="background:linear-gradient(135deg,#0c1528,#080e1c);border:1px solid rgba(240,180,41,0.25);border-radius:24px;padding:36px;text-align:center;margin-bottom:24px;box-shadow:0 0 40px rgba(240,180,41,0.08)">
-        <span class="badge">PIX / PICPAY</span>
-        <h2 style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:1px;margin-bottom:12px">Finalize seu pagamento</h2>
-
-        <!-- QR Code Pix do Lumina Verified+ -->
-        <div style="width:100%;max-width:260px;aspect-ratio:1/1;border-radius:20px;background:white;margin:20px auto;display:flex;align-items:center;justify-content:center;padding:12px;box-sizing:border-box">
-          <img src="assets/qrcode-verificado.jpg" alt="QR Code Pix Lumina Verified+" style="width:100%;height:100%;object-fit:contain;border-radius:8px">
-        </div>
-
-        <!-- Código Pix copia-e-cola do Lumina Verified+ -->
+      <div style="background:linear-gradient(135deg,#0c1528,#080e1c);border:1px solid rgba(124,92,255,0.25);border-radius:24px;padding:36px;text-align:center;margin-bottom:24px;box-shadow:0 0 40px rgba(124,92,255,0.1)">
+        <span class="badge">PIX</span>
+        <h2 style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:1px;margin-bottom:6px">R$ 8,50 — Hospedagem</h2>
+        <p style="color:#94a3b8;font-size:13px;margin-bottom:16px">Copie o código abaixo e cole no app do seu banco na opção Pix Copia e Cola.</p>
         <div style="margin:16px 0;padding:16px;border-radius:14px;background:#04070f;border:1px solid rgba(255,255,255,0.07);word-break:break-all;font-size:12px;line-height:1.6;text-align:left">
-          <span id="pixCode" style="font-family:monospace;color:#f0b429">00020126490014BR.GOV.BCB.PIX0127lpestudioscontato@gmail.com52040000530398654045.005802BR5925Luan Vinicius Da Silva Me6009Sao Paulo62290525REC6A435BCD6C1692802131176304ECE7</span>
+          <span id="pixCode" style="font-family:monospace;color:#b3a3ff">00020126330014BR.GOV.BCB.PIX01110992486459052040000530398654048.505802BR5925Luan Vinicius Da Silva Me6009Sao Paulo62290525REC6A489ADC61A0755543110563049636</span>
         </div>
-        <button class="btn primary" style="width:100%" onclick="copiarPix()">Copiar Pix</button>
+        <button class="btn primary" style="width:100%;background:#7c5cff;border-color:#7c5cff" onclick="copiarPix()">Copiar código Pix</button>
       </div>
 
       <!-- COMPROVANTE CARD -->
       <div style="background:#0c1528;border:1px solid rgba(255,255,255,0.07);border-radius:24px;padding:36px;margin-bottom:60px">
         <span class="badge">Comprovante</span>
         <h2 style="font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:1px;margin-bottom:10px">Enviar comprovante</h2>
-        <p style="color:#94a3b8;font-size:14px;line-height:1.7;margin-bottom:12px">Seu pedido já foi registrado. Agora envie apenas o comprovante.</p>
-        <p style="margin-bottom:24px;font-size:14px"><strong>Pedido:</strong> <span id="pedidoInfo" style="color:#f0b429">Carregando...</span></p>
+        <p style="color:#94a3b8;font-size:14px;line-height:1.7;margin-bottom:12px">Sua assinatura já foi registrada. Agora envie apenas o comprovante do pagamento.</p>
+        <p style="margin-bottom:24px;font-size:14px"><strong>Pedido:</strong> <span id="pedidoInfo" style="color:#b3a3ff">Carregando...</span></p>
         <div class="field"><label>Anexar comprovante</label><input type="file" id="arquivo" accept="image/*" required></div>
-        <button class="btn primary" id="btnEnviar" style="width:100%;margin-top:8px" onclick="enviarComprovante()">Enviar comprovante</button>
+        <button class="btn primary" id="btnEnviar" style="width:100%;margin-top:8px;background:#7c5cff;border-color:#7c5cff" onclick="enviarComprovante()">Enviar comprovante</button>
       </div>
     </section>
 
     <section id="areaSucesso" style="display:none">
       <div class="confirm-card" style="margin:60px auto">
         <div class="confirm-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
-        <span class="badge">PEDIDO EM ANÁLISE</span>
-        <h1>Obrigado por apoiar a Lumina.</h1>
-        <p>Seu pedido foi enviado para análise. Você receberá o seu Lumina Verified+ em até 10 horas.</p>
-        <a href="Comunidade.html" class="btn primary">Voltar para a Comunidade</a>
+        <span class="badge">ASSINATURA EM ANÁLISE</span>
+        <h1>Recebemos seu comprovante.</h1>
+        <p>Assim que confirmarmos o pagamento, você receberá por e-mail o link e a senha do seu painel administrativo e da sua página. Isso costuma levar até algumas horas.</p>
+        <a href="minha-conta.html" class="btn primary">Ir para minha conta</a>
       </div>
     </section>
 
@@ -71,7 +65,7 @@
   <div class="footer-logo"><img src="logo.png" alt="Lumina Interactive" style="height:32px;width:auto;opacity:0.85"></div>
   <div class="footer-links" id="footerDinamico">
     <a href="index.html">Início</a><a href="patches.html">Patchs</a>
-    <a href="Comunidade.html">Comunidade</a><a href="plus.html">Lumina Plus</a>
+    <a href="Comunidade.html">Comunidade</a><a href="hospedagem.html">Hospedagem</a>
     <a href="login.html" data-auth-link>Login</a>
   </div>
   <div class="footer-copy">© 2026 Lumina Interactive™. Todos os direitos reservados.</div>
@@ -87,7 +81,7 @@ const pedidoId = new URLSearchParams(window.location.search).get("pedido_id");
 
 function copiarPix() {
   navigator.clipboard.writeText(document.getElementById("pixCode").innerText);
-  alert("Pix copiado!");
+  alert("Código Pix copiado!");
 }
 
 async function carregarPedido() {
