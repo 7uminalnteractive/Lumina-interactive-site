@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Agenda Escolar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #F2EEE3; font-family: 'Georgia', serif; color: #2B2620; }
+  .sg { font-family: 'Space Grotesk', sans-serif; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .lora { font-family: 'Lora', serif; }
+  input, select, textarea { font-family: 'Lora', serif; }
+  ::placeholder { color: #A69C87; }
+  .tab-btn { transition: all 0.15s ease; }
+  .card { transition: transform 0.12s ease, box-shadow 0.12s ease; }
+  .card:hover { transform: translateY(-1px); }
+  .chk { transition: all 0.15s ease; }
+  input[type="checkbox"] { accent-color: #B5502F; }
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-thumb { background: #D9D2C0; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useMemo } = React;
+
+const STORAGE_KEY = "agenda-escolar-data-v4";
+const DIAS = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"];
+const MATERIAS = ["Português", "Matemática", "Ciências", "História", "Geografia", "Inglês", "Educação Física", "Artes", "Geometria", "Estudo de Gráficos e Infográficos", "Diversificada 1", "Diversificada II"];
+const CORES_MATERIA = ["#3B6E5C", "#B5502F", "#3A5A8C", "#8C5A3A", "#6B4E8C", "#3A7A7A", "#8C3A5A", "#5A7A3A"];
+
+function corParaMateria(nome) {
+  let hash = 0;
+  for (let i = 0; i < nome.length; i++) hash = nome.charCodeAt(i) + ((hash << 5) - hash);
+  return CORES_MATERIA[Math.abs(hash) % CORES_MATERIA.length];
+}
+
+function dadosIniciais() {
+  return {
+    atividades: [],
+    lembretes: [],
+    notas: [
+      { id: uid(), pessoa: "Luan", materia: "Língua Portuguesa", avaliacao: "1ª Unidade", valor: "5.5", peso: "", faltas: "0" },
+      { id: uid(), pessoa: "Luan", materia: "Educação Física", avaliacao: "1ª Unidade", valor: "7.0", peso: "", faltas: "0" },
+      { id: uid(), pessoa: "Luan", materia: "Arte", avaliacao: "1ª Unidade", valor: "", peso: "", faltas: "0" },
+      { id: uid(), pessoa: "Luan", materia: "Língua Inglesa", avaliacao: "1ª Unidade", valor: "8.9", peso: "", faltas: "2" },
+      { id: uid(), pessoa: "Luan", materia: "Matemática", avaliacao: "1ª Unidade", valor: "5.0", peso: "", faltas: "5" },
+      { id: uid(), pessoa: "Luan", materia: "Ciências", avaliacao: "1ª Unidade", valor: "5.0", peso: "", faltas: "0" },
+      { id: uid(), pessoa: "Luan", materia: "História", avaliacao: "1ª Unidade", valor: "4.0", peso: "", faltas: "0" },
+      { id: uid(), pessoa: "Luan", materia: "Geografia", avaliacao: "1ª Unidade", valor: "7.4", peso: "", faltas: "6" },
+      { id: uid(), pessoa: "Luan", materia: "Estudo de Gráficos e Infográficos", avaliacao: "1ª Unidade", valor: "3.3", peso: "", faltas: "2" },
+      { id: uid(), pessoa: "Luan", materia: "Geometria", avaliacao: "1ª Unidade", valor: "", peso: "", faltas: "2" },
+
+      { id: uid(), pessoa: "Oreia", materia: "Língua Portuguesa", avaliacao: "1ª Unidade", valor: "5.0", peso: "", faltas: "" },
+      { id: uid(), pessoa: "Oreia", materia: "Educação Física", avaliacao: "1ª Unidade", valor: "8.0", peso: "", faltas: "" },
+      { id: uid(), pessoa: "Oreia", materia: "Arte", avaliacao: "1ª Unidade", valor: "", peso: "", faltas: "" },
+      { id: uid(), pessoa: "Oreia", materia: "Língua Inglesa", avaliacao: "1ª Unidade", valor: "5.9", peso: "", faltas: "" },
+      { id: uid(), pessoa: "Oreia", materia: "Matemática", avaliacao: "1ª Unidade", valor: "1.1", peso: "", faltas: "" },
+      { id: uid(), pessoa: "Oreia", materia: "Ciências", avaliacao: "1ª Unidade", valor: "1.0", peso: "", faltas: "" },
+      { id: uid(), pessoa: "Oreia", materia: "História", avaliacao: "1ª Unidade", valor: "2.5", peso: "", faltas: "" },
+      { id: uid(), pessoa: "Oreia", materia: "Geografia", avaliacao: "1ª Unidade", valor: "5.0", peso: "", faltas: "" },
+      { id: uid(), pessoa: "Oreia", materia: "Estudo de Gráficos e Infográficos", avaliacao: "1ª Unidade", valor: "3.0", peso: "", faltas: "" },
+      { id: uid(), pessoa: "Oreia", materia: "Geometria", avaliacao: "1ª Unidade", valor: "", peso: "", faltas: "" },
+    ],
+    frequencia: {
+      Luan: { totalFaltas: "17", percentual: "98.3" },
+      Oreia: { totalFaltas: "", percentual: "" },
+      David: { totalFaltas: "", percentual: "" },
+      Igor: { totalFaltas: "", percentual: "" },
+    },
+    horario: [
+      { id: uid(), dia: "Segunda", inicio: "13:10", fim: "14:00", materia: "Ciências", local: "Adriana Gomes" },
+      { id: uid(), dia: "Segunda", inicio: "14:00", fim: "14:50", materia: "Geografia", local: "Carolina" },
+      { id: uid(), dia: "Segunda", inicio: "14:50", fim: "16:00", materia: "Inglês", local: "Josi de Freitas" },
+      { id: uid(), dia: "Segunda", inicio: "16:00", fim: "16:50", materia: "Inglês", local: "Josi de Freitas" },
+      { id: uid(), dia: "Segunda", inicio: "16:50", fim: "17:40", materia: "Educação Física", local: "Edsa" },
+
+      { id: uid(), dia: "Terça", inicio: "13:10", fim: "14:00", materia: "Ciências", local: "Adriana Gomes" },
+      { id: uid(), dia: "Terça", inicio: "14:00", fim: "14:50", materia: "Artes", local: "Lucimeire [Edsa]" },
+      { id: uid(), dia: "Terça", inicio: "14:50", fim: "16:00", materia: "Português", local: "Sandra Lessa" },
+      { id: uid(), dia: "Terça", inicio: "16:00", fim: "16:50", materia: "Matemática", local: "Elaine" },
+      { id: uid(), dia: "Terça", inicio: "16:50", fim: "17:40", materia: "Matemática", local: "Elaine" },
+
+      { id: uid(), dia: "Quarta", inicio: "13:10", fim: "14:00", materia: "Ciências", local: "Adriana Gomes" },
+      { id: uid(), dia: "Quarta", inicio: "14:00", fim: "14:50", materia: "Matemática", local: "Elaine" },
+      { id: uid(), dia: "Quarta", inicio: "14:50", fim: "16:00", materia: "Geografia", local: "Carolina" },
+      { id: uid(), dia: "Quarta", inicio: "16:00", fim: "16:50", materia: "Geografia", local: "Carolina" },
+      { id: uid(), dia: "Quarta", inicio: "16:50", fim: "17:40", materia: "História", local: "Maria Tânia" },
+
+      { id: uid(), dia: "Quinta", inicio: "13:10", fim: "14:00", materia: "Português", local: "Sandra Lessa" },
+      { id: uid(), dia: "Quinta", inicio: "14:00", fim: "14:50", materia: "Diversificada 1", local: "Josi de Freitas" },
+      { id: uid(), dia: "Quinta", inicio: "14:50", fim: "16:00", materia: "História", local: "Maria Tânia" },
+      { id: uid(), dia: "Quinta", inicio: "16:00", fim: "16:50", materia: "História", local: "Maria Tânia" },
+      { id: uid(), dia: "Quinta", inicio: "16:50", fim: "17:40", materia: "Artes", local: "Lucimeire [Edsa]" },
+
+      { id: uid(), dia: "Sexta", inicio: "13:10", fim: "14:00", materia: "Matemática", local: "Elaine" },
+      { id: uid(), dia: "Sexta", inicio: "14:00", fim: "14:50", materia: "Educação Física", local: "Edsa" },
+      { id: uid(), dia: "Sexta", inicio: "14:50", fim: "16:00", materia: "Diversificada II", local: "Elaine" },
+      { id: uid(), dia: "Sexta", inicio: "16:00", fim: "16:50", materia: "Português", local: "Sandra Lessa" },
+      { id: uid(), dia: "Sexta", inicio: "16:50", fim: "17:40", materia: "Português", local: "Sandra Lessa" },
+    ],
+  };
+}
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  const inicial = dadosIniciais();
+  saveData(inicial);
+  return inicial;
+}
+
+function saveData(data) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+}
+
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+function formatarData(dataStr) {
+  if (!dataStr) return "";
+  const [ano, mes, dia] = dataStr.split("-");
+  return `${dia}/${mes}`;
+}
+
+function diasRestantes(dataStr) {
+  if (!dataStr) return null;
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+  const alvo = new Date(dataStr + "T00:00:00");
+  return Math.round((alvo - hoje) / (1000 * 60 * 60 * 24));
+}
+
+function AgendaEscolar() {
+  const [data, setData] = useState(loadData);
+  const [aba, setAba] = useState("atividades");
+
+  useEffect(() => { saveData(data); }, [data]);
+
+  const update = (key, fn) => {
+    setData((prev) => ({ ...prev, [key]: fn(prev[key]) }));
+  };
+
+  return (
+    <div style={{ minHeight: "100vh", background: "#F2EEE3" }}>
+      <header style={{ borderBottom: "2px solid #2B2620", padding: "28px 20px 20px" }}>
+        <div style={{ maxWidth: 880, margin: "0 auto" }}>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
+            <h1 className="sg" style={{ fontSize: 30, fontWeight: 700, margin: 0, letterSpacing: "-0.02em" }}>Agenda</h1>
+            <span className="lora" style={{ fontStyle: "italic", fontSize: 18, color: "#7A6F5A" }}>— sua rotina escolar, num só lugar</span>
+          </div>
+        </div>
+      </header>
+
+      <nav style={{ borderBottom: "1px solid #D9D2C0", position: "sticky", top: 0, background: "#F2EEE3", zIndex: 10 }}>
+        <div style={{ maxWidth: 880, margin: "0 auto", display: "flex", padding: "0 20px", overflowX: "auto" }}>
+          {[
+            { id: "atividades", label: "Atividades" },
+            { id: "horario", label: "Horário" },
+            { id: "notas", label: "Notas" },
+            { id: "lembretes", label: "Lembretes" },
+          ].map((t) => {
+            const active = aba === t.id;
+            return (
+              <button
+                key={t.id}
+                onClick={() => setAba(t.id)}
+                className="tab-btn sg"
+                style={{
+                  display: "flex", alignItems: "center", gap: 6, padding: "14px 16px",
+                  background: "none", border: "none",
+                  borderBottom: active ? "2px solid #B5502F" : "2px solid transparent",
+                  color: active ? "#2B2620" : "#8A8069",
+                  fontWeight: active ? 600 : 500, fontSize: 14, cursor: "pointer",
+                  marginBottom: -1, whiteSpace: "nowrap",
+                }}
+              >
+                {t.label}
+              </button>
+            );
+          })}
+        </div>
+      </nav>
+
+      <main style={{ maxWidth: 880, margin: "0 auto", padding: "28px 20px 80px" }}>
+        {aba === "atividades" && <Atividades data={data} update={update} />}
+        {aba === "horario" && <Horario data={data} />}
+        {aba === "notas" && <Notas data={data} />}
+        {aba === "lembretes" && <Lembretes data={data} update={update} />}
+      </main>
+    </div>
+  );
+}
+
+function Atividades({ data, update }) {
+  const [expandida, setExpandida] = useState(null);
+
+  const pendentes = data.atividades.filter((a) => !a.feita).sort((a, b) => (a.data || "9999").localeCompare(b.data || "9999"));
+  const feitas = data.atividades.filter((a) => a.feita);
+
+  const toggle = (id) => update("atividades", (list) => list.map((a) => (a.id === id ? { ...a, feita: !a.feita } : a)));
+  const expandir = (id) => setExpandida((cur) => (cur === id ? null : id));
+
+  return (
+    <div>
+      <SectionHeader title="Atividades pendentes" count={pendentes.length} />
+
+      {pendentes.length === 0 && <EmptyState text="Nada pendente por aqui." />}
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {pendentes.map((a) => {
+          const dr = diasRestantes(a.data);
+          const atrasada = dr !== null && dr < 0;
+          const hoje = dr === 0;
+          const aberta = expandida === a.id;
+          return (
+            <div key={a.id} className="card" style={{
+              background: "#fff",
+              border: "1px solid #D9D2C0",
+              borderLeft: `4px solid ${atrasada ? "#B5502F" : a.materia ? corParaMateria(a.materia) : "#D9D2C0"}`,
+              borderRadius: 8, overflow: "hidden",
+            }}>
+              <div onClick={() => expandir(a.id)} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", cursor: "pointer" }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div className="lora" style={{ fontSize: 15.5, fontWeight: 500 }}>{a.titulo}</div>
+                  <div className="mono" style={{ fontSize: 12, color: "#8A8069", marginTop: 2, display: "flex", gap: 8, flexWrap: "wrap" }}>
+                    {a.materia && <span>{a.materia}</span>}
+                    {a.data && (
+                      <span style={{ color: atrasada || hoje ? "#B5502F" : "#8A8069", fontWeight: atrasada || hoje ? 600 : 400 }}>
+                        {formatarData(a.data)} {atrasada ? "· atrasada" : hoje ? "· hoje" : dr === 1 ? "· amanhã" : `· em ${dr}d`}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <button onClick={(e) => { e.stopPropagation(); toggle(a.id); }} className="sg" style={btnPronta}>Pronta</button>
+              </div>
+              {aberta && (
+                <div style={{ padding: "0 14px 14px", borderTop: "1px dashed #E2DBC8", marginTop: 2, paddingTop: 12 }}>
+                  {a.materia && (
+                    <div style={{ marginBottom: 8 }}>
+                      <div className="sg" style={{ fontSize: 11, color: "#8A8069", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 2 }}>Matéria</div>
+                      <div className="lora" style={{ fontSize: 14 }}>{a.materia}</div>
+                    </div>
+                  )}
+                  <div style={{ marginBottom: a.eTexto ? 0 : 8 }}>
+                    <div className="sg" style={{ fontSize: 11, color: "#8A8069", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 2 }}>Conteúdo da atividade</div>
+                    <div className="lora" style={{ fontSize: 14, whiteSpace: "pre-wrap" }}>{a.titulo}</div>
+                  </div>
+                  {!a.eTexto && a.resposta && (
+                    <div>
+                      <div className="sg" style={{ fontSize: 11, color: "#8A8069", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 2 }}>Resposta</div>
+                      <div className="lora" style={{ fontSize: 14, whiteSpace: "pre-wrap" }}>{a.resposta}</div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {feitas.length > 0 && (
+        <details style={{ marginTop: 24 }}>
+          <summary className="sg" style={{ cursor: "pointer", fontSize: 13, color: "#8A8069", fontWeight: 500 }}>Concluídas ({feitas.length})</summary>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 10 }}>
+            {feitas.map((a) => (
+              <div key={a.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "8px 14px", opacity: 0.55 }}>
+                <button onClick={() => toggle(a.id)} className="chk" style={{ ...checkboxStyle, background: "#3B6E5C", borderColor: "#3B6E5C", color: "#fff" }}>✓</button>
+                <div className="lora" style={{ fontSize: 14.5, textDecoration: "line-through", flex: 1 }}>{a.titulo}</div>
+              </div>
+            ))}
+          </div>
+        </details>
+      )}
+    </div>
+  );
+}
+
+function Horario({ data }) {
+  const porDia = useMemo(() => {
+    const map = {};
+    DIAS.forEach((d) => (map[d] = []));
+    data.horario.forEach((h) => {
+      if (!map[h.dia]) map[h.dia] = [];
+      map[h.dia].push(h);
+    });
+    Object.keys(map).forEach((d) => map[d].sort((a, b) => a.inicio.localeCompare(b.inicio)));
+    return map;
+  }, [data.horario]);
+
+  return (
+    <div>
+      <SectionHeader title="Horário de aulas" count={data.horario.length} />
+
+      {data.horario.length === 0 && <EmptyState text="Seu horário está vazio." />}
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12 }}>
+        {DIAS.map((dia) => (
+          <div key={dia}>
+            <div className="sg" style={{ fontSize: 12.5, fontWeight: 600, color: "#7A6F5A", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8, borderBottom: "1px solid #D9D2C0", paddingBottom: 6 }}>
+              {dia}
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {porDia[dia].length === 0 && <div className="lora" style={{ fontSize: 12.5, color: "#B5AC96", fontStyle: "italic" }}>—</div>}
+              {porDia[dia].map((h) => (
+                <div key={h.id} className="card" style={{ background: "#fff", border: "1px solid #D9D2C0", borderLeft: `4px solid ${corParaMateria(h.materia)}`, borderRadius: 6, padding: "8px 10px", position: "relative" }}>
+                  <div className="mono" style={{ fontSize: 11, color: "#8A8069" }}>{h.inicio}{h.fim ? `–${h.fim}` : ""}</div>
+                  <div className="lora" style={{ fontSize: 13.5, fontWeight: 500, marginTop: 2 }}>{h.materia}</div>
+                  {h.local && <div className="lora" style={{ fontSize: 11.5, color: "#8A8069", fontStyle: "italic" }}>{h.local}</div>}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const PESSOAS = ["Luan", "Oreia", "David", "Igor"];
+
+function Notas({ data }) {
+  const [pessoa, setPessoa] = useState("Luan");
+
+  const notasPessoa = useMemo(() => data.notas.filter((n) => (n.pessoa || "Luan") === pessoa), [data.notas, pessoa]);
+
+  const porMateria = useMemo(() => {
+    const map = {};
+    notasPessoa.forEach((n) => {
+      if (!map[n.materia]) map[n.materia] = [];
+      map[n.materia].push(n);
+    });
+    return map;
+  }, [notasPessoa]);
+
+  const mediaMateria = (lista) => {
+    const comNota = lista.filter((n) => n.valor !== "" && n.valor !== undefined && n.valor !== null);
+    if (comNota.length === 0) return "—";
+    const comPeso = comNota.filter((n) => n.peso && parseFloat(n.peso) > 0);
+    if (comPeso.length > 0) {
+      const totalPeso = comPeso.reduce((s, n) => s + parseFloat(n.peso), 0);
+      const soma = comPeso.reduce((s, n) => s + parseFloat(n.valor) * parseFloat(n.peso), 0);
+      return (soma / totalPeso).toFixed(1);
+    }
+    const soma = comNota.reduce((s, n) => s + parseFloat(n.valor || 0), 0);
+    return (soma / comNota.length).toFixed(1);
+  };
+
+  const totalFaltasMateria = (lista) => {
+    const soma = lista.reduce((s, n) => s + (parseInt(n.faltas, 10) || 0), 0);
+    return soma;
+  };
+
+  const freq = (data.frequencia && data.frequencia[pessoa]) || {};
+
+  return (
+    <div>
+      <SectionHeader title="Notas" count={notasPessoa.length} />
+
+      <div style={{ display: "flex", gap: 8, marginBottom: 18, flexWrap: "wrap" }}>
+        {PESSOAS.map((p) => {
+          const active = pessoa === p;
+          return (
+            <button
+              key={p}
+              onClick={() => setPessoa(p)}
+              className="sg"
+              style={{
+                padding: "8px 16px", borderRadius: 20, fontSize: 13.5, fontWeight: 600, cursor: "pointer",
+                border: active ? "1.5px solid #2B2620" : "1.5px solid #D9D2C0",
+                background: active ? "#2B2620" : "#fff",
+                color: active ? "#F2EEE3" : "#7A6F5A",
+              }}
+            >
+              {p}
+            </button>
+          );
+        })}
+      </div>
+
+      {(freq.totalFaltas || freq.percentual) && (
+        <div style={{ display: "flex", gap: 10, marginBottom: 18, flexWrap: "wrap" }}>
+          <div className="card" style={{ flex: "1 1 160px", background: "#2B2620", color: "#F2EEE3", borderRadius: 10, padding: "14px 16px" }}>
+            <div className="sg" style={{ fontSize: 11.5, letterSpacing: "0.06em", textTransform: "uppercase", opacity: 0.7 }}>Faltas no ano</div>
+            <div className="mono" style={{ fontSize: 24, fontWeight: 600, marginTop: 2 }}>{freq.totalFaltas || "0"}</div>
+          </div>
+          <div className="card" style={{ flex: "1 1 160px", background: "#3B6E5C", color: "#F2EEE3", borderRadius: 10, padding: "14px 16px" }}>
+            <div className="sg" style={{ fontSize: 11.5, letterSpacing: "0.06em", textTransform: "uppercase", opacity: 0.8 }}>Frequência atual</div>
+            <div className="mono" style={{ fontSize: 24, fontWeight: 600, marginTop: 2 }}>{freq.percentual || "0"}%</div>
+          </div>
+        </div>
+      )}
+
+      {notasPessoa.length === 0 && <EmptyState text={`Ainda sem notas registradas para ${pessoa}.`} />}
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+        {Object.entries(porMateria).map(([materia, lista]) => (
+          <div key={materia}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8, flexWrap: "wrap", gap: 8 }}>
+              <div className="sg" style={{ fontWeight: 600, fontSize: 15, display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ width: 8, height: 8, borderRadius: "50%", background: corParaMateria(materia), display: "inline-block" }} />
+                {materia}
+              </div>
+              <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                {totalFaltasMateria(lista) > 0 && (
+                  <div className="mono" style={{ fontSize: 12, color: "#8A8069" }}>
+                    {totalFaltasMateria(lista)} falta{totalFaltasMateria(lista) === 1 ? "" : "s"}
+                  </div>
+                )}
+                <div className="mono" style={{ fontSize: 13, background: "#2B2620", color: "#F2EEE3", padding: "2px 9px", borderRadius: 5 }}>
+                  média {mediaMateria(lista)}
+                </div>
+              </div>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {lista.map((n) => (
+                <div key={n.id} style={{ display: "flex", alignItems: "center", gap: 10, background: "#fff", border: "1px solid #D9D2C0", borderRadius: 8, padding: "8px 12px" }}>
+                  <div className="lora" style={{ flex: 1, fontSize: 14 }}>{n.avaliacao || "Avaliação"}</div>
+                  {n.peso && <div className="mono" style={{ fontSize: 11.5, color: "#8A8069" }}>peso {n.peso}</div>}
+                  {n.faltas && parseInt(n.faltas, 10) > 0 && <div className="mono" style={{ fontSize: 11.5, color: "#8A8069" }}>{n.faltas}f</div>}
+                  <div className="mono" style={{ fontSize: 14.5, fontWeight: 600 }}>{n.valor !== "" ? n.valor : "—"}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Lembretes({ data, update }) {
+  const toggle = (id) => update("lembretes", (list) => list.map((l) => (l.id === id ? { ...l, feito: !l.feito } : l)));
+
+  const ativos = data.lembretes.filter((l) => !l.feito).sort((a, b) => (a.data || "9999").localeCompare(b.data || "9999"));
+  const feitos = data.lembretes.filter((l) => l.feito);
+
+  return (
+    <div>
+      <SectionHeader title="Lembretes" count={ativos.length} />
+
+      {ativos.length === 0 && <EmptyState text="Nenhum lembrete ativo." />}
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {ativos.map((l) => {
+          const dr = diasRestantes(l.data);
+          return (
+            <div key={l.id} className="card" style={{ display: "flex", alignItems: "center", gap: 12, background: "#FFF9E9", border: "1px solid #E8DDB0", borderRadius: 8, padding: "12px 14px" }}>
+              <span style={{ color: "#B5502F" }}>🔔</span>
+              <div style={{ flex: 1 }}>
+                <div className="lora" style={{ fontSize: 15 }}>{l.texto}</div>
+                {l.data && (
+                  <div className="mono" style={{ fontSize: 11.5, color: "#8A8069", marginTop: 2 }}>
+                    {formatarData(l.data)} {dr === 0 ? "· hoje" : dr === 1 ? "· amanhã" : dr < 0 ? "· passou" : `· em ${dr}d`}
+                  </div>
+                )}
+              </div>
+              <button onClick={() => toggle(l.id)} className="sg" style={btnPronta}>Feito</button>
+            </div>
+          );
+        })}
+      </div>
+
+      {feitos.length > 0 && (
+        <details style={{ marginTop: 24 }}>
+          <summary className="sg" style={{ cursor: "pointer", fontSize: 13, color: "#8A8069", fontWeight: 500 }}>Resolvidos ({feitos.length})</summary>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 10 }}>
+            {feitos.map((l) => (
+              <div key={l.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "8px 14px", opacity: 0.55 }}>
+                <div className="lora" style={{ fontSize: 14, textDecoration: "line-through", flex: 1 }}>{l.texto}</div>
+              </div>
+            ))}
+          </div>
+        </details>
+      )}
+    </div>
+  );
+}
+
+function SectionHeader({ title, count, actionLabel, onAction }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18, flexWrap: "wrap", gap: 10 }}>
+      <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+        <h2 className="sg" style={{ fontSize: 21, fontWeight: 700, margin: 0 }}>{title}</h2>
+        {count !== undefined && <span className="mono" style={{ fontSize: 12.5, color: "#8A8069" }}>{count}</span>}
+      </div>
+      {onAction && <button onClick={onAction} className="sg" style={btnGhost}>+ {actionLabel}</button>}
+    </div>
+  );
+}
+
+function EmptyState({ text }) {
+  return (
+    <div style={{ border: "1px dashed #D9D2C0", borderRadius: 10, padding: "28px 20px", textAlign: "center", marginBottom: 8 }}>
+      <p className="lora" style={{ color: "#8A8069", fontStyle: "italic", margin: 0, fontSize: 14.5 }}>{text}</p>
+    </div>
+  );
+}
+
+const inputStyle = {
+  padding: "9px 12px", border: "1px solid #D9D2C0", borderRadius: 7, fontSize: 14.5,
+  background: "#FCFAF4", color: "#2B2620", outline: "none", width: "100%",
+};
+
+const btnPrimary = {
+  display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+  background: "#B5502F", color: "#fff", border: "none", borderRadius: 7,
+  padding: "10px 16px", fontSize: 13.5, fontWeight: 600, cursor: "pointer",
+};
+
+const btnGhost = {
+  display: "flex", alignItems: "center", gap: 5, background: "none",
+  border: "1px solid #2B2620", borderRadius: 7, padding: "7px 12px",
+  fontSize: 12.5, fontWeight: 600, cursor: "pointer", color: "#2B2620",
+};
+
+const checkboxStyle = {
+  width: 20, height: 20, borderRadius: 5, border: "1.5px solid #C9BFA8", background: "#fff",
+  display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
+  flexShrink: 0, padding: 0, fontSize: 12, color: "#fff",
+};
+
+const iconBtn = {
+  background: "none", border: "none", color: "#B5AC96", cursor: "pointer",
+  padding: 4, display: "flex", alignItems: "center", fontSize: 13,
+};
+
+const btnPronta = {
+  flexShrink: 0, background: "#fff", color: "#3B6E5C", border: "1.5px solid #3B6E5C",
+  borderRadius: 7, padding: "7px 12px", fontSize: 12.5, fontWeight: 600, cursor: "pointer",
+};
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<AgendaEscolar />);
+</script>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Gerenciar Agenda Escolar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #F2EEE3; font-family: 'Georgia', serif; color: #2B2620; }
+  .sg { font-family: 'Space Grotesk', sans-serif; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .lora { font-family: 'Lora', serif; }
+  input, select, textarea { font-family: 'Lora', serif; }
+  ::placeholder { color: #A69C87; }
+  .tab-btn { transition: all 0.15s ease; }
+  .card { transition: transform 0.12s ease, box-shadow 0.12s ease; }
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-thumb { background: #D9D2C0; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState } = React;
+
+const STORAGE_KEY = "agenda-escolar-data-v4";
+const DIAS = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"];
+const MATERIAS = ["Português", "Matemática", "Ciências", "História", "Geografia", "Inglês", "Educação Física", "Artes", "Geometria", "Estudo de Gráficos e Infográficos", "Diversificada 1", "Diversificada II"];
+const PESSOAS = ["Luan", "Oreia", "David", "Igor"];
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return { atividades: [], notas: [], horario: [], lembretes: [], frequencia: {} };
+}
+
+function saveData(data) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+}
+
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+function update(key, fn) {
+  const data = loadData();
+  const novo = { ...data, [key]: fn(data[key] || []) };
+  saveData(novo);
+}
+
+const TIPOS = [
+  { id: "atividade", label: "Atividade" },
+  { id: "aula", label: "Aula" },
+  { id: "nota", label: "Nota" },
+  { id: "lembrete", label: "Lembrete" },
+];
+
+function GerenciarApp() {
+  const [tipo, setTipo] = useState("atividade");
+
+  return (
+    <div style={{ minHeight: "100vh", background: "#F2EEE3" }}>
+      <header style={{ borderBottom: "2px solid #2B2620", padding: "28px 20px 20px" }}>
+        <div style={{ maxWidth: 640, margin: "0 auto" }}>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
+            <h1 className="sg" style={{ fontSize: 26, fontWeight: 700, margin: 0, letterSpacing: "-0.02em" }}>Gerenciar</h1>
+            <span className="lora" style={{ fontStyle: "italic", fontSize: 16, color: "#7A6F5A" }}>— adicionar itens na agenda</span>
+          </div>
+        </div>
+      </header>
+
+      <main style={{ maxWidth: 640, margin: "0 auto", padding: "24px 20px 80px" }}>
+        <div style={{ display: "flex", gap: 8, marginBottom: 22, flexWrap: "wrap" }}>
+          {TIPOS.map((t) => {
+            const active = tipo === t.id;
+            return (
+              <button
+                key={t.id}
+                onClick={() => setTipo(t.id)}
+                className="sg"
+                style={{
+                  padding: "9px 18px", borderRadius: 20, fontSize: 14, fontWeight: 600, cursor: "pointer",
+                  border: active ? "1.5px solid #2B2620" : "1.5px solid #D9D2C0",
+                  background: active ? "#2B2620" : "#fff",
+                  color: active ? "#F2EEE3" : "#7A6F5A",
+                }}
+              >
+                {t.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {tipo === "atividade" && <FormAtividade />}
+        {tipo === "aula" && <FormAula />}
+        {tipo === "nota" && <FormNota />}
+        {tipo === "lembrete" && <FormLembrete />}
+      </main>
+    </div>
+  );
+}
+
+function FormAtividade() {
+  const [novo, setNovo] = useState({ titulo: "", materia: "", data: "", resposta: "", eTexto: false });
+  const [confirmado, setConfirmado] = useState(false);
+
+  const adicionar = () => {
+    if (!novo.titulo.trim()) return;
+    update("atividades", (list) => [...list, { id: uid(), ...novo, feita: false }]);
+    setNovo({ titulo: "", materia: "", data: "", resposta: "", eTexto: false });
+    setConfirmado(true);
+    setTimeout(() => setConfirmado(false), 2000);
+  };
+
+  return (
+    <div className="card" style={{ background: "#fff", border: "1px solid #D9D2C0", borderRadius: 10, padding: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 10 }}>
+        <div>
+          <div className="sg" style={{ fontSize: 11.5, color: "#8A8069", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>Conteúdo da atividade</div>
+          <textarea rows={3} placeholder="O que precisa ser feito?" value={novo.titulo}
+            onChange={(e) => setNovo({ ...novo, titulo: e.target.value })}
+            style={{ ...inputStyle, resize: "vertical" }} />
+        </div>
+
+        <div>
+          <div className="sg" style={{ fontSize: 11.5, color: "#8A8069", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>Matéria</div>
+          <select value={novo.materia} onChange={(e) => setNovo({ ...novo, materia: e.target.value })} style={inputStyle}>
+            <option value="">Selecionar matéria</option>
+            {MATERIAS.map((m) => <option key={m} value={m}>{m}</option>)}
+          </select>
+        </div>
+
+        <div>
+          <div className="sg" style={{ fontSize: 11.5, color: "#8A8069", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>Prazo</div>
+          <input type="date" value={novo.data} onChange={(e) => setNovo({ ...novo, data: e.target.value })} style={inputStyle} />
+        </div>
+
+        <button
+          onClick={() => setNovo({ ...novo, eTexto: !novo.eTexto, resposta: "" })}
+          className="sg"
+          style={{
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+            padding: "9px 12px", borderRadius: 7, fontSize: 13.5, fontWeight: 600, cursor: "pointer",
+            border: novo.eTexto ? "1.5px solid #2B2620" : "1.5px solid #D9D2C0",
+            background: novo.eTexto ? "#2B2620" : "#fff",
+            color: novo.eTexto ? "#F2EEE3" : "#7A6F5A",
+          }}
+        >
+          {novo.eTexto ? "✓ " : ""}É texto (sem resposta a registrar)
+        </button>
+
+        {!novo.eTexto && (
+          <div>
+            <div className="sg" style={{ fontSize: 11.5, color: "#8A8069", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>Resposta</div>
+            <textarea rows={3} placeholder="Resposta da atividade (opcional)" value={novo.resposta}
+              onChange={(e) => setNovo({ ...novo, resposta: e.target.value })}
+              style={{ ...inputStyle, resize: "vertical" }} />
+          </div>
+        )}
+
+        <button onClick={adicionar} className="sg" style={btnPrimary}>+ Adicionar atividade</button>
+        {confirmado && <div className="lora" style={{ fontSize: 13, color: "#3B6E5C", textAlign: "center" }}>Atividade adicionada ✓</div>}
+      </div>
+    </div>
+  );
+}
+
+function FormAula() {
+  const [novo, setNovo] = useState({ dia: "Segunda", inicio: "", fim: "", materia: "", local: "" });
+  const [confirmado, setConfirmado] = useState(false);
+
+  const adicionar = () => {
+    if (!novo.materia.trim() || !novo.inicio) return;
+    update("horario", (list) => [...list, { id: uid(), ...novo }]);
+    setNovo({ dia: "Segunda", inicio: "", fim: "", materia: "", local: "" });
+    setConfirmado(true);
+    setTimeout(() => setConfirmado(false), 2000);
+  };
+
+  return (
+    <div className="card" style={{ background: "#fff", border: "1px solid #D9D2C0", borderRadius: 10, padding: 16 }}>
+      <div style={{ display: "grid", gap: 10 }}>
+        <input placeholder="Matéria" value={novo.materia} onChange={(e) => setNovo({ ...novo, materia: e.target.value })} style={inputStyle} />
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <select value={novo.dia} onChange={(e) => setNovo({ ...novo, dia: e.target.value })} style={{ ...inputStyle, flex: "1 1 120px" }}>
+            {DIAS.map((d) => <option key={d} value={d}>{d}</option>)}
+          </select>
+          <input type="time" value={novo.inicio} onChange={(e) => setNovo({ ...novo, inicio: e.target.value })} style={{ ...inputStyle, flex: "1 1 100px" }} />
+          <input type="time" value={novo.fim} onChange={(e) => setNovo({ ...novo, fim: e.target.value })} style={{ ...inputStyle, flex: "1 1 100px" }} />
+        </div>
+        <input placeholder="Professor(a) / local (opcional)" value={novo.local} onChange={(e) => setNovo({ ...novo, local: e.target.value })} style={inputStyle} />
+        <button onClick={adicionar} className="sg" style={btnPrimary}>+ Adicionar aula</button>
+        {confirmado && <div className="lora" style={{ fontSize: 13, color: "#3B6E5C", textAlign: "center" }}>Aula adicionada ✓</div>}
+      </div>
+    </div>
+  );
+}
+
+function FormNota() {
+  const [pessoa, setPessoa] = useState("Luan");
+  const [novo, setNovo] = useState({ materia: "", avaliacao: "", valor: "", peso: "", faltas: "" });
+  const [confirmado, setConfirmado] = useState(false);
+
+  const adicionar = () => {
+    if (!novo.materia.trim() || novo.valor === "") return;
+    update("notas", (list) => [...list, { id: uid(), pessoa, ...novo }]);
+    setNovo({ materia: "", avaliacao: "", valor: "", peso: "", faltas: "" });
+    setConfirmado(true);
+    setTimeout(() => setConfirmado(false), 2000);
+  };
+
+  return (
+    <div className="card" style={{ background: "#fff", border: "1px solid #D9D2C0", borderRadius: 10, padding: 16 }}>
+      <div style={{ display: "grid", gap: 10 }}>
+        <select value={pessoa} onChange={(e) => setPessoa(e.target.value)} style={inputStyle}>
+          {PESSOAS.map((p) => <option key={p} value={p}>{p}</option>)}
+        </select>
+        <input placeholder="Matéria" value={novo.materia} onChange={(e) => setNovo({ ...novo, materia: e.target.value })} style={inputStyle} />
+        <input placeholder="Avaliação (ex: Prova 1, Trabalho...)" value={novo.avaliacao} onChange={(e) => setNovo({ ...novo, avaliacao: e.target.value })} style={inputStyle} />
+        <div style={{ display: "flex", gap: 10 }}>
+          <input type="number" step="0.1" placeholder="Nota" value={novo.valor} onChange={(e) => setNovo({ ...novo, valor: e.target.value })} style={{ ...inputStyle, flex: 1 }} />
+          <input type="number" step="0.1" placeholder="Peso (opcional)" value={novo.peso} onChange={(e) => setNovo({ ...novo, peso: e.target.value })} style={{ ...inputStyle, flex: 1 }} />
+          <input type="number" step="1" placeholder="Faltas" value={novo.faltas} onChange={(e) => setNovo({ ...novo, faltas: e.target.value })} style={{ ...inputStyle, flex: 1 }} />
+        </div>
+        <button onClick={adicionar} className="sg" style={btnPrimary}>+ Adicionar nota</button>
+        {confirmado && <div className="lora" style={{ fontSize: 13, color: "#3B6E5C", textAlign: "center" }}>Nota adicionada para {pessoa} ✓</div>}
+      </div>
+    </div>
+  );
+}
+
+function FormLembrete() {
+  const [novo, setNovo] = useState({ texto: "", data: "" });
+  const [confirmado, setConfirmado] = useState(false);
+
+  const adicionar = () => {
+    if (!novo.texto.trim()) return;
+    update("lembretes", (list) => [...list, { id: uid(), ...novo, feito: false }]);
+    setNovo({ texto: "", data: "" });
+    setConfirmado(true);
+    setTimeout(() => setConfirmado(false), 2000);
+  };
+
+  return (
+    <div className="card" style={{ background: "#fff", border: "1px solid #D9D2C0", borderRadius: 10, padding: 16 }}>
+      <div style={{ display: "grid", gap: 10 }}>
+        <input autoFocus placeholder="Lembrar de..." value={novo.texto}
+          onChange={(e) => setNovo({ ...novo, texto: e.target.value })}
+          onKeyDown={(e) => e.key === "Enter" && adicionar()} style={inputStyle} />
+        <input type="date" value={novo.data} onChange={(e) => setNovo({ ...novo, data: e.target.value })} style={inputStyle} />
+        <button onClick={adicionar} className="sg" style={btnPrimary}>+ Adicionar lembrete</button>
+        {confirmado && <div className="lora" style={{ fontSize: 13, color: "#3B6E5C", textAlign: "center" }}>Lembrete adicionado ✓</div>}
+      </div>
+    </div>
+  );
+}
+
+const inputStyle = {
+  padding: "9px 12px", border: "1px solid #D9D2C0", borderRadius: 7, fontSize: 14.5,
+  background: "#FCFAF4", color: "#2B2620", outline: "none", width: "100%",
+};
+
+const btnPrimary = {
+  display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+  background: "#B5502F", color: "#fff", border: "none", borderRadius: 7,
+  padding: "10px 16px", fontSize: 13.5, fontWeight: 600, cursor: "pointer",
+};
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<GerenciarApp />);
+</script>
+</body>
+</html>
