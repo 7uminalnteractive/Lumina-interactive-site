@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Figuras de Linguagem — Exagerado, Cazuza</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Archivo:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap');
+
+  :root{
+    --bg-1: #150a24;
+    --bg-2: #3a1560;
+    --bg-3: #6b1f8c;
+    --ink: #f7f2ec;
+    --ink-dim: #cbb9d8;
+    --accent: #ff6ec9;
+    --accent-2: #ffd23f;
+    --line: rgba(247,242,236,0.18);
+    --panel: rgba(255,255,255,0.06);
+  }
+
+  *{ box-sizing: border-box; }
+
+  html,body{
+    margin:0; padding:0;
+    min-height:100%;
+    background: var(--bg-1);
+    color: var(--ink);
+    font-family: 'Archivo', sans-serif;
+  }
+
+  .deck{
+    position: relative;
+    width:100%;
+  }
+
+  .slide{
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding: 10vh 8vw 16vh;
+    background:
+      radial-gradient(ellipse at 85% 15%, rgba(255,110,201,0.16), transparent 55%),
+      radial-gradient(ellipse at 10% 90%, rgba(255,210,63,0.10), transparent 50%),
+      linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 55%, var(--bg-3) 130%);
+  }
+
+  .eyebrow{
+    font-size: 0.85rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent-2);
+    font-weight: 600;
+    margin-bottom: 1.2rem;
+  }
+
+  h1{
+    font-family:'Bebas Neue', sans-serif;
+    font-size: clamp(3rem, 8vw, 6.5rem);
+    line-height: 0.92;
+    letter-spacing: 0.01em;
+    margin: 0 0 0.6rem 0;
+    font-style: italic;
+    color: var(--ink);
+    text-shadow: 0 0 40px rgba(255,110,201,0.25);
+  }
+
+  h2.sub{
+    font-family:'Archivo', sans-serif;
+    font-weight: 500;
+    font-size: clamp(1rem, 2.2vw, 1.4rem);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin: 0;
+    border-left: 3px solid var(--accent);
+    padding-left: 0.9rem;
+  }
+
+  .content{
+    max-width: 68ch;
+  }
+
+  .content p{
+    font-size: clamp(1rem, 1.6vw, 1.3rem);
+    line-height: 1.6;
+    color: var(--ink);
+    margin: 0 0 1.1rem 0;
+  }
+
+  .content p strong{ color: var(--accent-2); font-weight: 700; }
+
+  .quote-block{
+    border-left: 3px solid var(--accent);
+    background: var(--panel);
+    padding: 0.9rem 1.3rem;
+    margin: 0.6rem 0;
+    font-style: italic;
+    font-size: clamp(1rem, 1.7vw, 1.35rem);
+    border-radius: 0 8px 8px 0;
+  }
+
+  .grid-two{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    max-width: 100%;
+  }
+
+  .grid-two .col p{ font-size: clamp(0.85rem, 1.3vw, 1.05rem); line-height:1.55; }
+
+  .tag{
+    display:inline-block;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--bg-1);
+    background: var(--accent-2);
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .final-line{
+    margin-top: 2rem;
+    font-family:'Bebas Neue', sans-serif;
+    font-style: italic;
+    font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+    color: var(--bg-1);
+    background: var(--accent);
+    display:inline-block;
+    padding: 0.4rem 1.2rem;
+    border-radius: 8px;
+    letter-spacing: 0.02em;
+    max-width: fit-content;
+  }
+
+  /* conteúdo das falas — fica escondido no DOM, é lido pelo JS pra alimentar o drawer */
+  .notes{ display:none; }
+
+  /* speaker notes drawer — puxar pra cima pra revelar a fala do slide atual */
+  .notes-drawer{
+    position: fixed;
+    left:0; right:0; bottom:0;
+    z-index: 20;
+    height: 76px;
+    max-height: 70vh;
+    background: linear-gradient(180deg, rgba(21,10,36,0.97), rgba(21,10,36,1));
+    border-top: 1px solid var(--line);
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.45);
+    transition: height .35s cubic-bezier(.22,.68,0,1.2);
+    touch-action: none;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .notes-drawer.open{ height: min(340px, 60vh); }
+  .notes-drawer.dragging{ transition: none; }
+
+  .drawer-handle{
+    flex: none;
+    padding: 0.7rem 0 0.5rem;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap: 0.4rem;
+    cursor: grab;
+    user-select: none;
+  }
+  .drawer-handle:active{ cursor: grabbing; }
+
+  .drawer-grip{
+    width: 42px; height: 5px;
+    border-radius: 999px;
+    background: var(--ink-dim);
+    opacity: 0.55;
+  }
+
+  .drawer-label{
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    display:flex;
+    align-items:center;
+    gap: 0.4rem;
+  }
+  .drawer-label .arrow{
+    display:inline-block;
+    transition: transform .35s ease;
+  }
+  .notes-drawer.open .drawer-label .arrow{ transform: rotate(180deg); }
+
+  .drawer-body{
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 1.6rem 1.6rem;
+  }
+
+  .drawer-body .fala-label{
+    display:block;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent-2);
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+  }
+
+  .drawer-body p{
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--ink);
+    margin: 0;
+  }
+
+  /* footer / controls */
+  .bar{
+    position: fixed;
+    left:0; right:0; bottom: 76px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 1rem 2rem;
+    z-index: 10;
+    background: linear-gradient(to top, rgba(10,4,20,0.6), transparent);
+    transition: bottom .35s cubic-bezier(.22,.68,0,1.2);
+  }
+  body.notes-open .bar{ bottom: min(340px, 60vh); }
+
+  .counter{
+    font-family:'Bebas Neue', sans-serif;
+    letter-spacing: 0.1em;
+    font-size: 1.1rem;
+    color: var(--ink-dim);
+  }
+  .counter b{ color: var(--accent-2); }
+
+  .controls{ display:flex; gap: 0.6rem; align-items:center; }
+
+  .btn{
+    background: rgba(255,255,255,0.08);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    font-family: 'Archivo', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    padding: 0.55rem 1.1rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background .2s ease, transform .15s ease;
+  }
+  .btn:hover{ background: rgba(255,255,255,0.16); }
+  .btn:active{ transform: scale(0.96); }
+  .btn.primary{ background: var(--accent); color: var(--bg-1); border-color: var(--accent); }
+  .btn.primary:hover{ background: var(--accent-2); border-color: var(--accent-2); }
+
+  .progress{
+    position: fixed;
+    top:0; left:0; right:0;
+    height: 4px;
+    background: rgba(255,255,255,0.08);
+    z-index: 10;
+  }
+  .progress-fill{
+    height:100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    transition: width .15s linear;
+  }
+
+  /* cover slide specifics */
+  #slide-0{ align-items:flex-start; }
+  #slide-0 .cover-wrap{ max-width: 60ch; }
+
+  ul.credit-list{
+    list-style:none;
+    padding:0; margin: 1rem 0 0 0;
+    display:flex; flex-wrap:wrap; gap: 0.6rem 1rem;
+  }
+  ul.credit-list li{
+    font-size: 0.95rem;
+    color: var(--ink-dim);
+    padding: 0.3rem 0.8rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+  }
+
+  @media (max-width: 720px){
+    .grid-two{ grid-template-columns: 1fr; gap: 1rem; }
+    .slide{ padding: 12vh 6vw 16vh; }
+    .bar{ padding: 0.8rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="deck">
+
+  <!-- SLIDE 0 — CAPA -->
+  <section class="slide" id="slide-0">
+    <div class="cover-wrap">
+      <div class="eyebrow">Colégio Estadual de Tempo Integral Carolina Maria de Jesus</div>
+      <h1>Figuras de<br>Linguagem</h1>
+      <h2 class="sub">Hipérbole &amp; Comparação</h2>
+      <div class="eyebrow" style="margin-top:1.4rem; color:var(--ink-dim); font-size:0.75rem;">Apresentação: Luan Vinicius</div>
+      <ul class="credit-list">
+        <li>Luan Vinicius</li>
+        <li>David Ronald</li>
+        <li>Igor</li>
+        <li>Pedro Guilherme</li>
+      </ul>
+      <div class="notes">
+        "Boa tarde! Hoje vou apresentar um trabalho sobre figuras de linguagem, com foco na hipérbole e na comparação. Para explicar esses conceitos, escolhi a música Exagerado, de Cazuza, que traz ótimos exemplos dessas figuras de linguagem."
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 1 — LETRA DA MÚSICA -->
+  <section class="slide" id="slide-1">
+    <div class="tag">Exagerado — Cazuza</div>
+    <h1 style="font-size:clamp(2.2rem,5vw,4rem)">Letra da Música</h1>
+    <div class="grid-two">
+      <div class="col">
+        <p>Eu nunca mais vou respirar se você não me notar<br>
+        Eu posso até morrer<br>
+        Eu quero mais é que se foda, eu quero é ser feliz<br>
+        Andar tranquilamente na favela onde eu nasci<br>
+        Eu sou mais um qualquer como você<br>
+        E quero é ser feliz<br>
+        Eu preciso dizer que eu te amo<br>
+        Eu preciso dizer que eu te quero<br>
+        Eu preciso dizer que eu te acho linda demais</p>
+      </div>
+      <div class="col">
+        <p>Quero colo, quero cafuné<br>
+        Quero um beijo, quero um abraço, quero carinho<br>
+        Eu sou exagerado, mesmo assim vamos ficar<br>
+        Mas se você quiser<br>
+        Eu tenho mil planos impossíveis pra te fazer feliz<br>
+        Eu sou mais um qualquer como você<br>
+        E quero é ser feliz</p>
+      </div>
+    </div>
+    <div class="notes">
+      "Escolhi a música Exagerado porque ela apresenta vários exemplos de hipérbole. A letra fala sobre um amor muito intenso, em que o eu lírico usa exageros para demonstrar seus sentimentos. Agora vamos observar alguns trechos da música."
+    </div>
+  </section>
+
+  <!-- SLIDE 2 — INTERPRETAÇÃO -->
+  <section class="slide" id="slide-2">
+    <div class="eyebrow">Sobre a canção</div>
+    <h1>Interpretação</h1>
+    <div class="content">
+      <p>A música <strong>"Exagerado"</strong> fala sobre um amor intenso e avassalador. O eu lírico demonstra seus sentimentos de forma profunda e exagerada, dizendo que faria qualquer coisa pela pessoa amada. Ele usa palavras fortes para mostrar que seu amor vai além do comum.</p>
+      <p>A intenção da música não é ser levada ao pé da letra, mas transmitir a intensidade da paixão e a importância desse amor na vida dele.</p>
+    </div>
+    <div class="notes">
+      "A música fala sobre alguém completamente apaixonado. O eu lírico demonstra que faria qualquer coisa pela pessoa amada e usa palavras fortes para mostrar a intensidade desse sentimento. Esses exageros não devem ser entendidos ao pé da letra, mas como uma forma de transmitir emoção."
+    </div>
+  </section>
+
+  <!-- SLIDE 3 — HIPÉRBOLE -->
+  <section class="slide" id="slide-3">
+    <div class="eyebrow">Figura de linguagem 1</div>
+    <h1>Hipérbole</h1>
+    <div class="content">
+      <p><strong>O que é?</strong> É uma figura de linguagem que consiste em exagerar uma ideia para dar mais força à mensagem.</p>
+      <div class="quote-block">"Eu nunca mais vou respirar se você não me notar."</div>
+      <div class="quote-block">"Eu posso até morrer."</div>
+      <div class="quote-block">"Eu tenho mil planos impossíveis pra te fazer feliz."</div>
+      <p>O eu lírico exagera ao dizer que não vai respirar ou que pode até morrer, mostrando o quanto está apaixonado. Esses exageros não devem ser entendidos literalmente — eles servem para transmitir a intensidade do sentimento.</p>
+    </div>
+    <div class="notes">
+      "A hipérbole é uma figura de linguagem que consiste em exagerar uma ideia para dar mais força à mensagem. Na música, isso aparece em frases como: 'Eu nunca mais vou respirar se você não me notar', 'Eu posso até morrer' e 'Eu tenho mil planos impossíveis pra te fazer feliz'. Esses exageros mostram o tamanho da paixão do eu lírico."
+    </div>
+  </section>
+
+  <!-- SLIDE 4 — COMPARAÇÃO -->
+  <section class="slide" id="slide-4">
+    <div class="eyebrow">Figura de linguagem 2</div>
+    <h1>Comparação</h1>
+    <div class="content">
+      <p><strong>O que é?</strong> Comparação é quando duas coisas são comparadas usando palavras como "como", "tal qual", "feito", "parecido com", etc.</p>
+      <p>A música "Exagerado" utiliza principalmente a hipérbole para expressar sentimentos. Não há comparações explícitas ao longo da letra.</p>
+      <p>Por isso, podemos dizer que a figura de linguagem predominante na música é a <strong>hipérbole</strong>.</p>
+    </div>
+    <div class="notes">
+      "A comparação acontece quando duas coisas são comparadas usando palavras como 'como', 'tal qual' ou 'feito'. Na música Exagerado, praticamente não encontramos esse tipo de figura de linguagem. A figura predominante é a hipérbole, utilizada para intensificar os sentimentos apresentados na letra."
+    </div>
+  </section>
+
+  <!-- SLIDE 5 — OUTROS EXEMPLOS -->
+  <section class="slide" id="slide-5">
+    <div class="eyebrow">Mais hipérboles</div>
+    <h1 style="font-size:clamp(2rem,5vw,3.6rem)">Outros exemplos na música</h1>
+    <div class="content">
+      <div class="quote-block">"Quero colo, quero cafuné, quero um beijo, quero um abraço, quero carinho."</div>
+      <p>Repetição e exagero para mostrar o quanto ele deseja atenção e amor.</p>
+      <div class="quote-block">"Eu tenho mil planos impossíveis pra te fazer feliz."</div>
+      <p>Exagera ao dizer que tem mil planos impossíveis, mostrando dedicação total.</p>
+    </div>
+    <div class="notes">
+      "Além dos exemplos anteriores, a música traz outros exageros, como 'Quero colo, quero cafuné, quero um beijo, quero um abraço, quero carinho', mostrando um desejo muito intenso por atenção e afeto. Outro exemplo é 'Eu tenho mil planos impossíveis pra te fazer feliz', reforçando a dedicação do eu lírico."
+    </div>
+  </section>
+
+  <!-- SLIDE 6 — CONCLUSÃO -->
+  <section class="slide" id="slide-6">
+    <div class="eyebrow">Para fechar</div>
+    <h1>Conclusão</h1>
+    <div class="content">
+      <p>A música "Exagerado" usa principalmente a hipérbole para mostrar o quanto o eu lírico ama intensamente. Os exageros presentes na letra tornam a mensagem mais emocionante e ajudam o ouvinte a entender a força desse sentimento.</p>
+      <p>As figuras de linguagem tornam a música mais bonita, expressiva e marcante.</p>
+      <div class="final-line">"Eu sou exagerado, mesmo assim vamos ficar"</div>
+    </div>
+    <div class="notes">
+      "Para concluir, podemos dizer que a música Exagerado é um ótimo exemplo do uso da hipérbole. Essa figura de linguagem torna a letra mais emocionante e ajuda a transmitir a intensidade dos sentimentos do eu lírico. Muito obrigado pela atenção!"
+    </div>
+  </section>
+
+</div>
+
+<div class="bar">
+  <div class="counter"><b id="curNum">1</b> / <span id="totalNum">7</span></div>
+  <div class="controls">
+    <button class="btn" id="prevBtn">← Anterior</button>
+    <button class="btn primary" id="nextBtn">Próximo →</button>
+  </div>
+</div>
+
+<div class="notes-drawer" id="notesDrawer">
+  <div class="drawer-handle" id="drawerHandle">
+    <div class="drawer-grip"></div>
+    <div class="drawer-label"><span class="arrow">▲</span> Puxe pra ver a fala <span class="arrow">▲</span></div>
+  </div>
+  <div class="drawer-body">
+    <span class="fala-label">Fala deste slide</span>
+    <p id="drawerText"></p>
+  </div>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+
+  const curNum = document.getElementById('curNum');
+  const totalNum = document.getElementById('totalNum');
+  const progressFill = document.getElementById('progressFill');
+  const drawerText = document.getElementById('drawerText');
+  totalNum.textContent = total;
+
+  function currentIndex(){
+    const mid = window.scrollY + window.innerHeight/2;
+    let idx = 0;
+    slides.forEach((s,i)=>{
+      if(s.offsetTop <= mid) idx = i;
+    });
+    return idx;
+  }
+
+  function updateProgress(){
+    const idx = currentIndex();
+    curNum.textContent = idx+1;
+    const docH = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = docH > 0 ? (window.scrollY / docH) * 100 : 0;
+    progressFill.style.width = pct + '%';
+
+    const noteEl = slides[idx].querySelector('.notes');
+    const text = noteEl ? noteEl.textContent.trim() : '';
+    if(drawerText.textContent !== text) drawerText.textContent = text;
+  }
+
+  function goTo(idx){
+    idx = Math.max(0, Math.min(total-1, idx));
+    slides[idx].scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+
+  function next(){ goTo(currentIndex()+1); }
+  function prev(){ goTo(currentIndex()-1); }
+
+  document.getElementById('nextBtn').addEventListener('click', next);
+  document.getElementById('prevBtn').addEventListener('click', prev);
+
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'ArrowRight') next();
+    if(e.key === 'ArrowLeft') prev();
+  });
+
+  window.addEventListener('scroll', updateProgress, {passive:true});
+  window.addEventListener('resize', updateProgress);
+
+  /* ---- drawer de falas: puxar pra cima pra revelar ---- */
+  const drawer = document.getElementById('notesDrawer');
+  const handle = document.getElementById('drawerHandle');
+  const CLOSED_H = 76;
+  const OPEN_H = () => Math.min(340, window.innerHeight * 0.6);
+
+  let dragging = false;
+  let startY = 0;
+  let startH = CLOSED_H;
+  let dragDistance = 0;
+
+  function isOpen(){ return drawer.classList.contains('open'); }
+
+  function openDrawer(){
+    drawer.classList.add('open');
+    drawer.style.height = '';
+    document.body.classList.add('notes-open');
+  }
+  function closeDrawer(){
+    drawer.classList.remove('open');
+    drawer.style.height = '';
+    document.body.classList.remove('notes-open');
+  }
+  function toggleDrawer(){ isOpen() ? closeDrawer() : openDrawer(); }
+
+  function dragStart(y){
+    dragging = true;
+    startY = y;
+    dragDistance = 0;
+    startH = drawer.getBoundingClientRect().height;
+    drawer.classList.add('dragging');
+  }
+  function dragMove(y){
+    if(!dragging) return;
+    const delta = startY - y; // puxar pra cima = positivo
+    dragDistance = Math.abs(delta);
+    let h = startH + delta;
+    h = Math.max(CLOSED_H, Math.min(OPEN_H(), h));
+    drawer.style.height = h + 'px';
+  }
+  function dragEnd(){
+    if(!dragging) return;
+    dragging = false;
+    drawer.classList.remove('dragging');
+
+    // toque/clique sem arrastar de verdade -> apenas alterna
+    if(dragDistance < 6){
+      toggleDrawer();
+      return;
+    }
+
+    const h = drawer.getBoundingClientRect().height;
+    const threshold = CLOSED_H + (OPEN_H() - CLOSED_H) * 0.3;
+    if(h > threshold){ openDrawer(); } else { closeDrawer(); }
+  }
+
+  // mouse
+  handle.addEventListener('mousedown', (e)=>{ dragStart(e.clientY); e.preventDefault(); });
+  window.addEventListener('mousemove', (e)=>{ if(dragging) dragMove(e.clientY); });
+  window.addEventListener('mouseup', dragEnd);
+
+  // touch
+  handle.addEventListener('touchstart', (e)=>{ dragStart(e.touches[0].clientY); }, {passive:true});
+  window.addEventListener('touchmove', (e)=>{ if(dragging){ dragMove(e.touches[0].clientY); } }, {passive:true});
+  window.addEventListener('touchend', dragEnd);
+
+  updateProgress();
+</script>
+
+</body>
+</html>

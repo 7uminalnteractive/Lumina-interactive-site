@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cofre de Prompts</title>
+<style>
+  :root{
+    --bg: #14151a;
+    --panel: #1c1e26;
+    --panel-2: #22242e;
+    --line: #33364399;
+    --text: #eceef2;
+    --muted: #8b8fa3;
+    --accent: #7dd3c0;
+    --accent-dim: #3f5c56;
+    --warn: #e0a458;
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  }
+  *{ box-sizing: border-box; }
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--text);
+    min-height:100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  .mono{ font-family: 'IBM Plex Mono', 'SF Mono', Menlo, monospace; }
+
+  /* Layout */
+  .wrap{
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 24px 100px;
+  }
+  header{
+    display:flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 20px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+  h1{
+    font-size: 28px;
+    font-weight: 500;
+    margin: 0;
+    letter-spacing: 0.2px;
+  }
+  h1 span{ color: var(--accent); }
+  .subtitle{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-top: 6px;
+  }
+  .count{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* Controls */
+  .controls{
+    display:flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  input[type=text], textarea, select{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    color: var(--text);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    outline: none;
+  }
+  input[type=text]:focus, textarea:focus, select:focus{
+    border-color: var(--accent-dim);
+  }
+  .search{
+    flex: 1;
+    min-width: 200px;
+  }
+  select.filter{
+    min-width: 140px;
+    cursor: pointer;
+  }
+  button{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    color: var(--text);
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: all .15s ease;
+  }
+  button:hover{ border-color: var(--accent-dim); color: var(--accent); }
+  .btn-primary{
+    background: var(--accent);
+    color: #0d1512;
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+  .btn-primary:hover{ opacity: 0.88; color: #0d1512; }
+
+  /* New prompt form */
+  .form-card{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 32px;
+    display: none;
+  }
+  .form-card.open{ display:block; }
+  .form-row{
+    display:flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .form-row input[type=text]{ flex:1; min-width: 160px; }
+  textarea{
+    width: 100%;
+    min-height: 140px;
+    resize: vertical;
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+  .form-actions{ display:flex; justify-content: space-between; align-items:center; gap: 8px; }
+
+  /* Image upload */
+  .img-drop{
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: all .15s ease;
+  }
+  .img-drop:hover, .img-drop.dragover{
+    border-color: var(--accent-dim);
+    color: var(--accent);
+  }
+  .img-previews{
+    display:flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .img-thumb{
+    position: relative;
+    width: 72px;
+    height: 72px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+  }
+  .img-thumb img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display:block;
+  }
+  .img-thumb .rm{
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 18px;
+    height: 18px;
+    background: rgba(20,21,26,0.85);
+    color: #d98787;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    line-height: 1;
+    padding: 0;
+    cursor: pointer;
+  }
+  .card-images{
+    display:flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .card-images img{
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    cursor: pointer;
+  }
+  .lightbox{
+    position: fixed;
+    inset: 0;
+    background: rgba(10,10,12,0.9);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 30px;
+  }
+  .lightbox.open{ display:flex; }
+  .lightbox img{
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  }
+
+  /* Cards */
+  .grid{
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .card{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px 20px;
+    position: relative;
+  }
+  .card-head{
+    display:flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .card-title{
+    font-size: 17px;
+    font-weight: 500;
+    margin: 0;
+  }
+  .tag{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent);
+    background: var(--accent-dim);
+    border-radius: 4px;
+    padding: 3px 8px;
+    white-space: nowrap;
+  }
+  .card-body{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: #c7cad4;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    background: var(--panel-2);
+    border-radius: 6px;
+    padding: 12px 14px;
+    max-height: 140px;
+    overflow-y: auto;
+    margin-bottom: 12px;
+  }
+  .card-foot{
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+  }
+  .card-date{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .card-actions{ display:flex; gap: 6px; }
+  .card-actions button{
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+  .card-actions .danger:hover{ border-color: #a86464; color: #d98787; }
+
+  .empty{
+    text-align:center;
+    padding: 60px 20px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+  }
+
+  .toast{
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--accent);
+    color: #0d1512;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all .25s ease;
+    letter-spacing: 0.5px;
+  }
+  .toast.show{
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  @media (max-width: 600px){
+    .wrap{ padding: 24px 16px 80px; }
+    header{ align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Cofre de <span>Prompts</span></h1>
+      <div class="subtitle">anotações pessoais · uso com claude</div>
+    </div>
+    <div class="count" id="count">0 prompts salvos</div>
+  </header>
+
+  <div class="controls">
+    <input type="text" class="search" id="search" placeholder="Buscar por título ou conteúdo...">
+    <select class="filter" id="filterCategory">
+      <option value="">Todas categorias</option>
+    </select>
+    <button class="btn-primary" id="toggleForm">+ Novo prompt</button>
+  </div>
+
+  <div class="form-card" id="formCard">
+    <div class="form-row">
+      <input type="text" id="fTitle" placeholder="Título (ex: Resumo de reunião)">
+      <input type="text" id="fCategory" placeholder="Categoria (ex: trabalho, código, escrita)">
+    </div>
+    <textarea id="fBody" placeholder="Cole ou escreva o prompt aqui..."></textarea>
+    <div class="img-drop" id="imgDrop">+ Adicionar imagem (clique, arraste ou cole com Ctrl+V)</div>
+    <input type="file" id="imgInput" accept="image/*" multiple style="display:none;">
+    <div class="img-previews" id="imgPreviews"></div>
+    <div class="form-actions">
+      <span></span>
+      <div style="display:flex; gap:8px;">
+        <button id="cancelForm">Cancelar</button>
+        <button class="btn-primary" id="saveForm">Salvar prompt</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="emptyState" style="display:none;">Nenhum prompt ainda. Clique em "+ Novo prompt" pra começar.</div>
+</div>
+
+<div class="toast" id="toast">Copiado!</div>
+<div class="lightbox" id="lightbox"><img id="lightboxImg" src=""></div>
+
+<script>
+const STORAGE_KEY = 'cofre_prompts_v1';
+let prompts = [];
+let editingId = null;
+let pendingImages = []; // array of dataURL strings for the open form
+
+const MAX_DIM = 1000; // max width/height in px, resized to save space
+const JPEG_QUALITY = 0.75;
+
+function compressImage(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      const img = new Image();
+      img.onload = ()=>{
+        let { width, height } = img;
+        if(width > MAX_DIM || height > MAX_DIM){
+          if(width > height){
+            height = Math.round(height * (MAX_DIM / width));
+            width = MAX_DIM;
+          } else {
+            width = Math.round(width * (MAX_DIM / height));
+            height = MAX_DIM;
+          }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', JPEG_QUALITY));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handleFiles(files){
+  const imgFiles = [...files].filter(f => f.type.startsWith('image/'));
+  for(const file of imgFiles){
+    try{
+      const dataUrl = await compressImage(file);
+      pendingImages.push(dataUrl);
+    }catch(e){
+      showToast('Erro ao processar imagem');
+    }
+  }
+  renderPreviews();
+}
+
+function renderPreviews(){
+  const wrap = document.getElementById('imgPreviews');
+  wrap.innerHTML = pendingImages.map((src, i) => `
+    <div class="img-thumb" data-i="${i}">
+      <img src="${src}">
+      <button class="rm" type="button">×</button>
+    </div>
+  `).join('');
+}
+
+function load(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    prompts = raw ? JSON.parse(raw) : [];
+  }catch(e){
+    prompts = [];
+  }
+}
+function save(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(prompts));
+}
+
+function formatDate(ts){
+  const d = new Date(ts);
+  return d.toLocaleDateString('pt-BR', {day:'2-digit', month:'short', year:'numeric'});
+}
+
+function uid(){
+  return Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=> t.classList.remove('show'), 1600);
+}
+
+function updateCategoryFilter(){
+  const sel = document.getElementById('filterCategory');
+  const current = sel.value;
+  const cats = [...new Set(prompts.map(p => p.category).filter(Boolean))].sort();
+  sel.innerHTML = '<option value="">Todas categorias</option>' +
+    cats.map(c => `<option value="${escapeAttr(c)}">${escapeHtml(c)}</option>`).join('');
+  sel.value = cats.includes(current) ? current : '';
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+function escapeAttr(str){
+  return escapeHtml(str).replace(/"/g,'&quot;');
+}
+
+function render(){
+  const search = document.getElementById('search').value.trim().toLowerCase();
+  const cat = document.getElementById('filterCategory').value;
+
+  let filtered = prompts.filter(p=>{
+    const matchesSearch = !search || p.title.toLowerCase().includes(search) || p.body.toLowerCase().includes(search);
+    const matchesCat = !cat || p.category === cat;
+    return matchesSearch && matchesCat;
+  });
+
+  filtered.sort((a,b) => b.updatedAt - a.updatedAt);
+
+  const grid = document.getElementById('grid');
+  const empty = document.getElementById('emptyState');
+  document.getElementById('count').textContent = `${prompts.length} prompt${prompts.length===1?'':'s'} salvo${prompts.length===1?'':'s'}`;
+
+  if(filtered.length === 0){
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    empty.textContent = prompts.length === 0
+      ? 'Nenhum prompt ainda. Clique em "+ Novo prompt" pra começar.'
+      : 'Nada encontrado com esse filtro.';
+    updateCategoryFilter();
+    return;
+  }
+  empty.style.display = 'none';
+
+  grid.innerHTML = filtered.map(p => `
+    <div class="card" data-id="${p.id}">
+      <div class="card-head">
+        <h3 class="card-title">${escapeHtml(p.title)}</h3>
+        ${p.category ? `<span class="tag">${escapeHtml(p.category)}</span>` : ''}
+      </div>
+      <div class="card-body">${escapeHtml(p.body)}</div>
+      ${p.images && p.images.length ? `<div class="card-images">${p.images.map(src => `<img src="${src}">`).join('')}</div>` : ''}
+      <div class="card-foot">
+        <span class="card-date">editado em ${formatDate(p.updatedAt)}</span>
+        <div class="card-actions">
+          <button class="copy-btn">Copiar</button>
+          <button class="edit-btn">Editar</button>
+          <button class="danger delete-btn">Apagar</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  updateCategoryFilter();
+}
+
+function openForm(prompt){
+  const card = document.getElementById('formCard');
+  card.classList.add('open');
+  if(prompt){
+    editingId = prompt.id;
+    document.getElementById('fTitle').value = prompt.title;
+    document.getElementById('fCategory').value = prompt.category || '';
+    document.getElementById('fBody').value = prompt.body;
+    pendingImages = prompt.images ? [...prompt.images] : [];
+    document.getElementById('saveForm').textContent = 'Salvar alterações';
+  } else {
+    editingId = null;
+    document.getElementById('fTitle').value = '';
+    document.getElementById('fCategory').value = '';
+    document.getElementById('fBody').value = '';
+    pendingImages = [];
+    document.getElementById('saveForm').textContent = 'Salvar prompt';
+  }
+  renderPreviews();
+  document.getElementById('fTitle').focus();
+}
+
+function closeForm(){
+  document.getElementById('formCard').classList.remove('open');
+  editingId = null;
+  pendingImages = [];
+  document.getElementById('imgInput').value = '';
+  renderPreviews();
+}
+
+document.getElementById('toggleForm').addEventListener('click', ()=>{
+  const card = document.getElementById('formCard');
+  if(card.classList.contains('open')){
+    closeForm();
+  } else {
+    openForm(null);
+  }
+});
+
+document.getElementById('cancelForm').addEventListener('click', closeForm);
+
+document.getElementById('saveForm').addEventListener('click', ()=>{
+  const title = document.getElementById('fTitle').value.trim();
+  const category = document.getElementById('fCategory').value.trim();
+  const body = document.getElementById('fBody').value.trim();
+
+  if(!title || !body){
+    showToast('Preencha título e prompt');
+    return;
+  }
+
+  if(editingId){
+    const p = prompts.find(x => x.id === editingId);
+    p.title = title;
+    p.category = category;
+    p.body = body;
+    p.images = [...pendingImages];
+    p.updatedAt = Date.now();
+    showToast('Alterações salvas');
+  } else {
+    prompts.push({
+      id: uid(),
+      title, category, body,
+      images: [...pendingImages],
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    });
+    showToast('Prompt salvo');
+  }
+
+  try{
+    save();
+  }catch(e){
+    showToast('Espaço cheio — remova imagens ou prompts antigos');
+    return;
+  }
+  closeForm();
+  render();
+});
+
+document.getElementById('search').addEventListener('input', render);
+document.getElementById('filterCategory').addEventListener('change', render);
+
+document.getElementById('grid').addEventListener('click', (e)=>{
+  const card = e.target.closest('.card');
+  if(!card) return;
+  const id = card.dataset.id;
+  const prompt = prompts.find(p => p.id === id);
+  if(!prompt) return;
+
+  if(e.target.classList.contains('copy-btn')){
+    navigator.clipboard.writeText(prompt.body).then(()=>{
+      showToast('Copiado!');
+    }).catch(()=>{
+      showToast('Não foi possível copiar');
+    });
+  } else if(e.target.classList.contains('edit-btn')){
+    openForm(prompt);
+    window.scrollTo({top:0, behavior:'smooth'});
+  } else if(e.target.classList.contains('delete-btn')){
+    if(confirm(`Apagar o prompt "${prompt.title}"?`)){
+      prompts = prompts.filter(p => p.id !== id);
+      save();
+      render();
+      showToast('Apagado');
+    }
+  }
+});
+
+// Image upload interactions
+const imgDrop = document.getElementById('imgDrop');
+const imgInput = document.getElementById('imgInput');
+
+imgDrop.addEventListener('click', ()=> imgInput.click());
+
+imgInput.addEventListener('change', (e)=>{
+  handleFiles(e.target.files);
+});
+
+imgDrop.addEventListener('dragover', (e)=>{
+  e.preventDefault();
+  imgDrop.classList.add('dragover');
+});
+imgDrop.addEventListener('dragleave', ()=>{
+  imgDrop.classList.remove('dragover');
+});
+imgDrop.addEventListener('drop', (e)=>{
+  e.preventDefault();
+  imgDrop.classList.remove('dragover');
+  handleFiles(e.dataTransfer.files);
+});
+
+document.getElementById('formCard').addEventListener('paste', (e)=>{
+  const items = e.clipboardData?.items;
+  if(!items) return;
+  const files = [...items].filter(i => i.type.startsWith('image/')).map(i => i.getAsFile());
+  if(files.length){
+    handleFiles(files);
+  }
+});
+
+document.getElementById('imgPreviews').addEventListener('click', (e)=>{
+  if(e.target.classList.contains('rm')){
+    const thumb = e.target.closest('.img-thumb');
+    const i = parseInt(thumb.dataset.i, 10);
+    pendingImages.splice(i, 1);
+    renderPreviews();
+  }
+});
+
+// Lightbox for viewing full images in cards
+const lightbox = document.getElementById('lightbox');
+document.getElementById('grid').addEventListener('click', (e)=>{
+  if(e.target.closest('.card-images') && e.target.tagName === 'IMG'){
+    document.getElementById('lightboxImg').src = e.target.src;
+    lightbox.classList.add('open');
+  }
+});
+lightbox.addEventListener('click', ()=> lightbox.classList.remove('open'));
+
+// init
+load();
+render();
+</script>
+</body>
+</html>

@@ -75,7 +75,7 @@
           <div class="field" style="margin-bottom:24px">
             <label>Cupom de desconto (opcional)</label>
             <div style="display:flex;gap:8px">
-              <input type="text" id="cupomInput" placeholder="Digite seu cupom" style="flex:1;text-transform:uppercase">
+              <input type="text" id="cupomInput" placeholder="Digite seu cupom" style="flex:1;background:#0c1528;border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:14px 16px;color:#fff;font-size:15px;text-transform:uppercase;outline:none;box-sizing:border-box">
               <button type="button" onclick="aplicarCupom()" class="btn secondary" style="white-space:nowrap;padding:0 18px">Aplicar</button>
             </div>
             <div id="cupomMsg" style="font-size:12px;margin-top:8px;display:none"></div>
@@ -143,6 +143,23 @@
     <div id="telaLoading" style="text-align:center;padding:100px 20px">
       <div style="width:36px;height:36px;border:3px solid rgba(26,107,255,0.2);border-top-color:#1a6bff;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px"></div>
       <p style="color:#94a3b8;font-size:14px">Verificando conta...</p>
+    </div>
+
+    <!-- ===== TELA: SUCESSO INSTANTÂNEO (cupom grátis) ===== -->
+    <div id="telaSucessoGratis" style="display:none;max-width:480px;margin:80px auto;padding:0 16px">
+      <div style="background:#0c1528;border:1px solid rgba(34,197,94,0.3);border-radius:24px;padding:36px;text-align:center">
+        <div style="width:64px;height:64px;border-radius:50%;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
+          <svg viewBox="0 0 24 24" fill="#22c55e" width="28" height="28"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+        </div>
+        <span class="badge" style="margin-bottom:16px;display:inline-block">Acesso liberado</span>
+        <h2 style="font-size:24px;margin-bottom:12px">Seu cupom liberou o acesso grátis!</h2>
+        <p style="color:#94a3b8;font-size:14px;line-height:1.7;margin-bottom:28px">
+          Não precisa enviar comprovante — seu <strong style="color:#fff">Lumina Plus</strong> já está ativo. Aproveite!
+        </p>
+        <a href="index.html" class="btn primary" style="width:100%;display:block;text-align:center;box-sizing:border-box">
+          Voltar ao início
+        </a>
+      </div>
     </div>
 
   </div>
@@ -327,16 +344,18 @@ async function confirmarAssinatura() {
   const metodo = document.getElementById("metodo").value;
   const nome   = document.getElementById("perfilNome").textContent;
   const email  = document.getElementById("perfilEmail").textContent;
+  const gratis = precoFinal <= 0;
 
   const pedido = {
     nome_cliente:      nome,
     email:             email,
     whatsapp:          "",
     produto:           "Lumina Plus",
-    metodo_pagamento:  metodo,
-    status:            "aguardando_pagamento",
+    metodo_pagamento:  gratis ? "Cupom" : metodo,
+    status:            gratis ? "aprovado" : "aguardando_pagamento",
     valor:             precoFinal,
-    acesso_liberado:   false
+    cupom_usado:       promoAplicada ? promoAplicada.cupom : null,
+    acesso_liberado:   gratis
   };
 
   const { data, error } = await sb.from("pedidos").insert([pedido]).select();
@@ -345,6 +364,13 @@ async function confirmarAssinatura() {
     alert("Erro ao registrar pedido: " + error.message);
     btn.textContent = "Confirmar e ir para pagamento";
     btn.disabled = false;
+    return;
+  }
+
+  if (gratis) {
+    document.getElementById("telaConfirmacao").style.display = "none";
+    document.getElementById("telaSucessoGratis").style.display = "block";
+    document.querySelectorAll("#telaSucessoGratis .reveal").forEach((el,i)=>setTimeout(()=>el.classList.add("visible"),i*80));
     return;
   }
 
