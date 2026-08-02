@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumina Interactive — Gerador de Técnico</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&display=swap');
+
+:root{
+  --bg:        #04070f;
+  --bg2:       #080e1c;
+  --bg3:       #0c1528;
+  --blue:      #1a6bff;
+  --blue-glow: rgba(26,107,255,0.35);
+  --blue-dim:  rgba(26,107,255,0.12);
+  --text:      #f0f4ff;
+  --muted:     #64748b;
+  --border:    rgba(255,255,255,0.07);
+  --font-hero: 'Bebas Neue', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --radius:    18px;
+  --radius-sm: 12px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:var(--font-body);
+  background:var(--bg);
+  color:var(--text);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+a{text-decoration:none;color:inherit;}
+
+body::before{
+  content:'';
+  position:fixed; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none; z-index:0;
+}
+
+.navbar{
+  position:relative; z-index:2;
+  display:flex; align-items:center; justify-content:center;
+  padding:0 40px; height:70px;
+  background:rgba(4,7,15,0.8);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+}
+.logo{
+  font-family:var(--font-hero);
+  font-size:20px; letter-spacing:2px;
+  display:flex; align-items:center; gap:6px;
+}
+.logo span{color:var(--blue);}
+
+.container{width:100%;max-width:760px;margin:auto;padding:0 24px;position:relative;z-index:1;}
+
+.page-hero{
+  padding:70px 24px 40px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.page-hero::before{
+  content:''; position:absolute;
+  width:500px; height:500px;
+  background:radial-gradient(circle,rgba(26,107,255,0.14) 0%,transparent 70%);
+  top:-160px; left:50%; transform:translateX(-50%);
+  pointer-events:none;
+}
+.page-hero-label{
+  position:relative; display:inline-block;
+  color:var(--blue); font-size:12px; font-weight:700;
+  letter-spacing:3px; text-transform:uppercase; margin-bottom:14px;
+}
+.page-hero h1{
+  position:relative;
+  font-family:var(--font-hero); font-size:clamp(38px,7vw,58px);
+  letter-spacing:1px; line-height:1; margin-bottom:16px;
+}
+.page-hero h1 .accent{color:var(--blue);}
+.page-hero p{
+  position:relative;
+  color:#94a3b8; font-size:15.5px; line-height:1.7;
+  max-width:480px; margin:0 auto;
+}
+
+.form-card{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:36px;
+  margin:0 auto 90px;
+  max-width:560px;
+  box-shadow:0 0 60px rgba(26,107,255,0.06);
+}
+.form-card h2{font-family:var(--font-hero);font-size:30px;letter-spacing:1px;margin-bottom:8px;}
+.form-card > p.lead{color:#94a3b8;font-size:14px;margin-bottom:28px;line-height:1.6;}
+
+.field{margin-bottom:26px;}
+.field label.campo-label{
+  display:block; font-size:12.5px; font-weight:700;
+  color:var(--blue); text-transform:uppercase; letter-spacing:1.5px;
+  margin-bottom:10px;
+}
+
+/* upload */
+.dropzone{
+  display:flex; align-items:center; justify-content:center; text-align:center;
+  border:1.5px dashed rgba(255,255,255,0.16);
+  border-radius:var(--radius-sm);
+  background:var(--bg2);
+  padding:26px 18px;
+  cursor:pointer;
+  transition:border-color .15s, background .15s;
+}
+.dropzone:hover, .dropzone.ativa{
+  border-color:var(--blue);
+  background:rgba(26,107,255,0.06);
+}
+.dropzone input{display:none;}
+.dz-text{font-size:14px;color:#94a3b8;}
+.dz-text b{color:var(--text);}
+.arquivo-ok{
+  display:none;
+  margin-top:12px;
+  padding:11px 14px;
+  background:rgba(34,197,94,0.1);
+  border:1px solid rgba(34,197,94,0.25);
+  border-radius:var(--radius-sm);
+  font-size:13.5px;
+  color:#4ade80;
+  align-items:center;
+  gap:10px;
+}
+.arquivo-ok.mostrar{display:flex;}
+.dot-ok{width:7px;height:7px;border-radius:50%;background:#22c55e;flex:0 0 auto;}
+
+/* busca */
+.field input#busca{
+  width:100%;
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:13px 16px;
+  color:var(--text);
+  font-family:inherit;
+  font-size:14px;
+  outline:none;
+  transition:border-color .2s;
+  margin-bottom:12px;
+}
+.field input#busca:focus{border-color:rgba(26,107,255,0.5);}
+
+.tecnico-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+  gap:8px;
+  max-height:300px;
+  overflow-y:auto;
+  padding:2px;
+}
+.tecnico-card{
+  border:1px solid var(--border);
+  background:var(--bg2);
+  border-radius:var(--radius-sm);
+  padding:12px 10px;
+  cursor:pointer;
+  font-size:13.5px;
+  color:#94a3b8;
+  text-align:center;
+  font-family:inherit;
+  transition:border-color .12s, background .12s, color .12s;
+}
+.tecnico-card:hover{border-color:rgba(26,107,255,0.4);color:var(--text);}
+.tecnico-card.selecionado{
+  background:var(--blue);
+  border-color:var(--blue);
+  color:#fff;
+  font-weight:600;
+  box-shadow:0 0 20px var(--blue-glow);
+}
+.vazio-busca{
+  grid-column:1/-1;
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+  padding:20px;
+}
+
+/* botao */
+.btn-primary{
+  display:flex; align-items:center; justify-content:center;
+  gap:8px; width:100%;
+  background:var(--blue); color:#fff;
+  padding:15px 26px; font-size:15px; font-weight:600;
+  border:none; border-radius:12px;
+  font-family:inherit;
+  cursor:pointer;
+  box-shadow:0 0 24px var(--blue-glow);
+  transition:background .2s, box-shadow .2s, transform .2s, opacity .2s;
+  margin-top:4px;
+}
+.btn-primary:hover:not(:disabled){background:#1558d6;box-shadow:0 0 36px var(--blue-glow);transform:translateY(-1px);}
+.btn-primary:disabled{background:rgba(255,255,255,0.06);color:var(--muted);box-shadow:none;cursor:not-allowed;}
+
+.aviso{
+  display:none;
+  margin-top:16px;
+  background:rgba(239,68,68,0.1);
+  border:1px solid rgba(239,68,68,0.3);
+  color:#ff6b6b;
+  border-radius:var(--radius-sm);
+  padding:13px 16px;
+  font-size:13.5px;
+  line-height:1.5;
+}
+.aviso.mostrar{display:block;}
+
+.resultado{
+  display:none;
+  margin-top:20px;
+  text-align:center;
+  padding:20px 16px 6px;
+}
+.resultado.mostrar{display:block;}
+.confirm-icon{
+  width:52px; height:52px; margin:0 auto 14px;
+  background:rgba(34,197,94,0.12);
+  border:1px solid rgba(34,197,94,0.3);
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+}
+.confirm-icon svg{width:22px;height:22px;fill:#22c55e;}
+.resultado p{color:#94a3b8;font-size:14px;line-height:1.6;}
+.resultado p b{color:var(--text);}
+
+.footer{
+  border-top:1px solid var(--border);
+  padding:40px 24px;
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+  position:relative; z-index:1;
+}
+.footer-logo{font-family:var(--font-hero);font-size:18px;letter-spacing:2px;}
+.footer-logo span{color:var(--blue);}
+.footer-copy{font-size:11.5px;color:#334155;}
+
+@media(max-width:640px){
+  .form-card{padding:26px 20px;margin-bottom:60px;}
+  .page-hero{padding:50px 20px 30px;}
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="logo">LUMINA <span>INTERACTIVE</span></div>
+</nav>
+
+<section class="page-hero container">
+  <p class="page-hero-label">LP Football</p>
+  <h1>Contrate seu <span class="accent">Técnico</span></h1>
+  <p>Envie a texture.ini do seu patch, escolha o técnico e baixe pronta pra jogar.</p>
+</section>
+
+<section class="container">
+  <div class="form-card">
+    <h2>Gerador</h2>
+    <p class="lead">Dois passos rápidos, sem complicação nenhuma.</p>
+
+    <div class="field">
+      <label class="campo-label">1. Texture.ini</label>
+      <label class="dropzone" id="dropzone" for="arquivo-input">
+        <input type="file" id="arquivo-input" accept=".ini,text/plain">
+        <span class="dz-text">Arraste o arquivo aqui ou <b>clique para escolher</b></span>
+      </label>
+      <div class="arquivo-ok" id="arquivo-ok">
+        <span class="dot-ok"></span>
+        <span id="arquivo-nome"></span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="campo-label">2. Técnico</label>
+      <input type="text" id="busca" placeholder="Buscar técnico...">
+      <div class="tecnico-grid" id="lista-tecnicos"></div>
+    </div>
+
+    <button class="btn-primary" id="gerar" disabled>Baixar texture.ini</button>
+
+    <div class="aviso" id="aviso"></div>
+
+    <div class="resultado" id="resultado">
+      <div class="confirm-icon">
+        <svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
+      </div>
+      <p>Prontinho! Sua <b>texture.ini</b> foi baixada com o técnico escolhido.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-logo">LUMINA <span>INTERACTIVE</span></div>
+  <p class="footer-copy">© Lumina Interactive</p>
+</footer>
+
+<script>
+  const TECNICOS = [
+    { nome: "Abel Ferreira",       pasta: "Abel Ferreira",       foto: "Abel.png" },
+    { nome: "Arthur Jorge",        pasta: "Arthur Jorge",        foto: "Arthur Jorge.png" },
+    { nome: "Cuca",                pasta: "Cuca",                foto: "Cuca.png" },
+    { nome: "Dorival Jr",          pasta: "Dorival Jr",          foto: "Dorival.png" },
+    { nome: "Eduardo Dominguez",   pasta: "Eduardo Dominguez",   foto: "Eduardo Dominguez.png" },
+    { nome: "F.Carvalho",          pasta: "F.Carvalho",          foto: "F.Carvalho.png" },
+    { nome: "Fernando Diniz",      pasta: "Fernando Diniz",      foto: "Diniz.png" },
+    { nome: "Fernando Seabra",     pasta: "Fernando Seabra",     foto: "Seabra.png" },
+    { nome: "Jair Ventura",        pasta: "Jair Ventura",        foto: "Jair Ventura.png" },
+    { nome: "Luís Castro",         pasta: "Luís Castro",         foto: "Luis Castro.png" },
+    { nome: "Luís Zubeldia",       pasta: "Luís Zubeldia",       foto: "Zubeldia.png" },
+    { nome: "Léo Jardim",          pasta: "Léo Jardim",          foto: "Leonardo Jardim.png" },
+    { nome: "Odair Hellmann",      pasta: "Odair Hellmann",      foto: "Odair.png" },
+    { nome: "Paulo Pezzolano",     pasta: "Paulo Pezzolano",     foto: "Paulo.png" },
+    { nome: "Pedro Emanuel",       pasta: "Pedro Emanuel",       foto: "Pedro Emanuel.png" },
+    { nome: "Rafael Guanaes",      pasta: "Rafael Guanaes",      foto: "Guanaes.png" },
+    { nome: "Rafael Lacerda",      pasta: "Rafael Lacerda",      foto: "Rafael Lacerda.png" },
+    { nome: "Rogério Ceni",        pasta: "Rogério Ceni",        foto: "Rogerio Ceni.png" },
+    { nome: "Vagner Mancini",      pasta: "Vagner Mancini",      foto: "Vagner Mancini.png" },
+  ];
+
+  const PREFIXO = "MLPRO/Tecnicos/Técnico de Clube/";
+
+  let iniTexto = null;
+  let tecnicoEscolhido = null;
+
+  const dropzone = document.getElementById('dropzone');
+  const arquivoInput = document.getElementById('arquivo-input');
+  const arquivoOk = document.getElementById('arquivo-ok');
+  const arquivoNome = document.getElementById('arquivo-nome');
+  const listaEl = document.getElementById('lista-tecnicos');
+  const buscaEl = document.getElementById('busca');
+  const btnGerar = document.getElementById('gerar');
+  const avisoEl = document.getElementById('aviso');
+  const resultadoEl = document.getElementById('resultado');
+
+  function renderLista(filtro){
+    const termo = (filtro || '').trim().toLowerCase();
+    const filtrados = TECNICOS.filter(t => t.nome.toLowerCase().includes(termo));
+    listaEl.innerHTML = '';
+    if(filtrados.length === 0){
+      listaEl.innerHTML = '<div class="vazio-busca">Nenhum técnico encontrado</div>';
+      return;
+    }
+    filtrados.forEach(t => {
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'tecnico-card' + (tecnicoEscolhido === t ? ' selecionado' : '');
+      card.textContent = t.nome;
+      card.addEventListener('click', () => {
+        tecnicoEscolhido = t;
+        renderLista(buscaEl.value);
+        atualizarBotao();
+      });
+      listaEl.appendChild(card);
+    });
+  }
+
+  buscaEl.addEventListener('input', () => renderLista(buscaEl.value));
+  renderLista('');
+
+  function lerArquivo(file){
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      iniTexto = e.target.result;
+      arquivoNome.textContent = (file.name || 'texture.ini') + ' carregado';
+      arquivoOk.classList.add('mostrar');
+      atualizarBotao();
+    };
+    reader.onerror = () => {
+      mostrarAviso('Não consegui abrir esse arquivo. Tenta enviar de novo.');
+    };
+    reader.readAsText(file, 'utf-8');
+  }
+
+  arquivoInput.addEventListener('change', (e) => lerArquivo(e.target.files[0]));
+
+  ['dragenter','dragover'].forEach(evt => {
+    dropzone.addEventListener(evt, (e) => { e.preventDefault(); dropzone.classList.add('ativa'); });
+  });
+  ['dragleave','drop'].forEach(evt => {
+    dropzone.addEventListener(evt, (e) => { e.preventDefault(); dropzone.classList.remove('ativa'); });
+  });
+  dropzone.addEventListener('drop', (e) => lerArquivo(e.dataTransfer.files[0]));
+
+  function atualizarBotao(){
+    btnGerar.disabled = !(iniTexto && tecnicoEscolhido);
+  }
+
+  function mostrarAviso(msg){
+    avisoEl.textContent = msg;
+    avisoEl.classList.add('mostrar');
+    resultadoEl.classList.remove('mostrar');
+  }
+
+  btnGerar.addEventListener('click', () => {
+    avisoEl.classList.remove('mostrar');
+    resultadoEl.classList.remove('mostrar');
+    if(!iniTexto || !tecnicoEscolhido) return;
+
+    const caminho = PREFIXO + tecnicoEscolhido.pasta + '/' + tecnicoEscolhido.foto;
+    const regex = /^([^\r\n=]*=)MLPRO\/Tecnicos\/\(alterar foto nesse arquivo\)\s*$/gm;
+
+    let trocas = 0;
+    const novoTexto = iniTexto.replace(regex, (match, chaveComIgual) => {
+      trocas++;
+      return chaveComIgual + caminho;
+    });
+
+    if(trocas === 0){
+      mostrarAviso('Não encontramos onde aplicar o técnico nesse arquivo. Confira se você enviou a texture.ini certa.');
+      return;
+    }
+
+    const blob = new Blob([novoTexto], { type: 'application/octet-stream' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'textures.ini';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+
+    resultadoEl.classList.add('mostrar');
+  });
+</script>
+</body>
+</html>
