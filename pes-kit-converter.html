@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conversor de Kits — PES 21 → PES 2013/14</title>
+<style>
+  :root{
+    --pitch-0:#0b1f14;
+    --pitch-1:#0f2a1b;
+    --line: rgba(233,255,238,0.14);
+    --chalk:#e9fff0;
+    --lime:#c8ff4d;
+    --lime-dim:#8fbf39;
+    --amber:#ffb454;
+    --panel:#0e2418;
+    --panel-edge: rgba(200,255,77,0.18);
+    --mono: 'IBM Plex Mono', 'Courier New', monospace;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      repeating-linear-gradient(
+        90deg,
+        var(--pitch-0) 0px,
+        var(--pitch-0) 64px,
+        var(--pitch-1) 64px,
+        var(--pitch-1) 128px
+      );
+    color:var(--chalk);
+    font-family:var(--sans);
+    padding:28px 16px 60px;
+  }
+
+  .wrap{
+    max-width:880px;
+    margin:0 auto;
+  }
+
+  header{
+    margin-bottom:28px;
+  }
+
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--lime);
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:10px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:8px;height:8px;
+    background:var(--lime);
+    display:inline-block;
+    border-radius:1px;
+  }
+
+  h1{
+    font-size:clamp(28px,5vw,42px);
+    line-height:1.05;
+    margin:0 0 10px;
+    letter-spacing:-0.01em;
+    font-weight:800;
+  }
+  h1 span{ color:var(--lime); }
+
+  .sub{
+    color:rgba(233,255,238,0.65);
+    font-size:15px;
+    line-height:1.55;
+    max-width:60ch;
+  }
+
+  .scoreboard{
+    display:flex;
+    gap:10px;
+    margin:22px 0 26px;
+    font-family:var(--mono);
+    font-size:12px;
+  }
+  .scoreboard span{
+    border:1px solid var(--panel-edge);
+    background:var(--panel);
+    padding:6px 10px;
+    border-radius:3px;
+    color:rgba(233,255,238,0.75);
+  }
+  .scoreboard b{ color:var(--lime); font-weight:600; }
+
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--panel-edge);
+    border-radius:8px;
+    padding:22px;
+    margin-bottom:20px;
+    position:relative;
+  }
+  .panel::before{
+    content:"";
+    position:absolute;
+    top:0; left:22px; right:22px;
+    height:1px;
+    background:linear-gradient(90deg, transparent, var(--panel-edge), transparent);
+  }
+
+  .dropzone{
+    border:1.5px dashed rgba(233,255,238,0.25);
+    border-radius:6px;
+    padding:36px 20px;
+    text-align:center;
+    cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .dropzone:hover, .dropzone.drag{
+    border-color:var(--lime);
+    background:rgba(200,255,77,0.04);
+  }
+  .dropzone input{ display:none; }
+  .dz-icon{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.1em;
+    color:var(--lime-dim);
+    text-transform:uppercase;
+    margin-bottom:10px;
+  }
+  .dz-main{ font-size:15px; color:var(--chalk); margin-bottom:6px; }
+  .dz-sub{ font-size:12.5px; color:rgba(233,255,238,0.45); }
+
+  .stage{
+    display:none;
+    margin-top:20px;
+  }
+  .stage.show{ display:block; }
+
+  .compare{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+    margin-bottom:18px;
+  }
+  @media (max-width:560px){
+    .compare{ grid-template-columns:1fr; }
+  }
+
+  .frame{
+    background:#081b10;
+    border:1px solid var(--panel-edge);
+    border-radius:6px;
+    overflow:hidden;
+  }
+  .frame-label{
+    font-family:var(--mono);
+    font-size:10.5px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    padding:9px 12px;
+    color:var(--lime-dim);
+    border-bottom:1px solid rgba(200,255,77,0.1);
+    display:flex;
+    justify-content:space-between;
+  }
+  .frame-label b{ color:var(--amber); font-weight:600; }
+  .frame-body{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:14px;
+    min-height:180px;
+  }
+  .frame-body canvas, .frame-body img{
+    max-width:100%;
+    height:auto;
+    image-rendering:pixelated;
+    display:block;
+  }
+
+  .progress-wrap{
+    display:none;
+    align-items:center;
+    gap:12px;
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--lime-dim);
+    margin:14px 0;
+  }
+  .progress-wrap.show{ display:flex; }
+  .bar{
+    flex:1;
+    height:6px;
+    background:rgba(233,255,238,0.08);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  .bar > i{
+    display:block;
+    height:100%;
+    width:0%;
+    background:var(--lime);
+    transition:width .08s linear;
+  }
+
+  .actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:18px;
+  }
+
+  button.btn{
+    font-family:var(--mono);
+    font-size:12.5px;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    padding:11px 18px;
+    border-radius:5px;
+    border:1px solid transparent;
+    cursor:pointer;
+    transition:transform .1s ease, opacity .1s ease;
+  }
+  button.btn:active{ transform:scale(0.97); }
+  button.btn:disabled{ opacity:.35; cursor:not-allowed; }
+
+  .btn-primary{
+    background:var(--lime);
+    color:#0b1f14;
+    font-weight:700;
+  }
+  .btn-primary:hover:not(:disabled){ background:#d6ff70; }
+
+  .btn-ghost{
+    background:transparent;
+    border-color:var(--panel-edge);
+    color:var(--chalk);
+  }
+  .btn-ghost:hover:not(:disabled){ border-color:var(--lime); color:var(--lime); }
+
+  .note{
+    font-size:12.5px;
+    color:rgba(233,255,238,0.45);
+    line-height:1.6;
+    margin-top:14px;
+  }
+  .note code{
+    font-family:var(--mono);
+    background:rgba(233,255,238,0.06);
+    padding:1px 5px;
+    border-radius:3px;
+    font-size:11.5px;
+  }
+
+  .howto{
+    font-size:13.5px;
+    color:rgba(233,255,238,0.6);
+    line-height:1.7;
+  }
+  .howto ol{ margin:8px 0 0; padding-left:20px; }
+  .howto li{ margin-bottom:4px; }
+  .howto strong{ color:var(--chalk); }
+
+  footer{
+    margin-top:34px;
+    font-family:var(--mono);
+    font-size:11px;
+    color:rgba(233,255,238,0.3);
+    text-align:center;
+    letter-spacing:.04em;
+  }
+
+  .err{
+    display:none;
+    background:rgba(255,90,90,0.08);
+    border:1px solid rgba(255,90,90,0.35);
+    color:#ffb0b0;
+    font-size:12.5px;
+    padding:10px 14px;
+    border-radius:5px;
+    margin-top:14px;
+  }
+  .err.show{ display:block; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Conversor de UV — malha PES 2021 → PES 2013/14</div>
+    <h1>Converte teu kit do <span>PES 21</span> pro molde do <span>PES 2013/14</span></h1>
+    <p class="sub">
+      Roda 100% no navegador — nenhum arquivo sobe pra nenhum servidor. O remapeamento usa
+      as coordenadas UV reais extraídas do projeto Blender original, aplicadas triângulo por triângulo
+      sobre a tua textura.
+    </p>
+  </header>
+
+  <div class="scoreboard">
+    <span>Triângulos: <b id="triCount">—</b></span>
+    <span>Motor: <b>Canvas 2D · afim por triângulo</b></span>
+    <span>Saída: <b>PNG 512×512</b></span>
+  </div>
+
+  <div class="panel">
+    <div class="dropzone" id="dropzone">
+      <input type="file" id="fileInput" accept="image/*">
+      <div class="dz-icon">Passo 1 · escalar</div>
+      <div class="dz-main">Solta aqui o kit do PES 21 (PNG/DDS exportado como imagem)</div>
+      <div class="dz-sub">ou clica pra escolher o arquivo</div>
+    </div>
+    <div class="err" id="err"></div>
+
+    <div class="progress-wrap" id="progressWrap">
+      <span id="progressLabel">processando…</span>
+      <div class="bar"><i id="progressBar"></i></div>
+    </div>
+
+    <div class="stage" id="stage">
+      <div class="compare">
+        <div class="frame">
+          <div class="frame-label">Entrada <b>PES 21</b></div>
+          <div class="frame-body"><img id="srcPreview" alt="kit original"></div>
+        </div>
+        <div class="frame">
+          <div class="frame-label">Saída <b>PES 2013/14</b></div>
+          <div class="frame-body"><canvas id="outCanvas" width="512" height="512"></canvas></div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="downloadBtn">Baixar PNG convertido</button>
+        <button class="btn btn-ghost" id="resetBtn">Converter outro kit</button>
+      </div>
+
+      <p class="note">
+        Esse resultado é um ponto de partida, não o arquivo final. Em algumas áreas (principalmente
+        mangas e colarinho), o UV do PES 2013/14 reaproveita um mesmo pedaço pequeno da textura
+        original para cobrir várias partes diferentes do kit — uma técnica normal para economizar
+        espaço em jogos dessa época. Um warp simples como esse não consegue desfazer essa sobreposição
+        sozinho, então essas áreas saem com ruído. O torso costuma sair limpo; mangas/colarinho quase
+        sempre precisam de uma passada de retoque manual em qualquer editor (Photoshop, GIMP, OPTPiX).
+        Se você precisar de 100% de fidelidade sem retoque, o método mais confiável continua sendo o
+        arquivo <code>.blend</code> original no Blender, que faz esse cálculo em 3D de verdade em vez
+        de aproximar em 2D.
+      </p>
+    </div>
+  </div>
+
+  <div class="panel howto">
+    <strong style="color:var(--lime); font-family:var(--mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase;">Como funciona (e onde isso esbarra)</strong>
+    <ol>
+      <li>O arquivo <code>.blend</code> original tem duas malhas idênticas em topologia — uma com UV do PES 21, outra com UV do PES 2013 — só a posição das costuras muda.</li>
+      <li>Extraí os <b id="triCount2">7309</b> triângulos e os pares de coordenada UV (2021 → 2013) direto da malha, sem precisar do Blender rodando. Validei matematicamente que não há nenhuma inconsistência nos dados extraídos.</li>
+      <li>Cada triângulo da tua imagem de entrada é deformado (transformação afim) pro formato do triângulo correspondente na saída — o mesmo princípio do bake, só que direto no <code>&lt;canvas&gt;</code>, em 2D.</li>
+      <li>A diferença é que o Blender faz esse cálculo com <em>ray-casting em 3D</em>: para cada pixel de destino, ele projeta um raio até a superfície real da malha e sempre acha o ponto certo, mesmo quando várias peças 3D compartilham a mesma área 2D de textura. Meu método 2D não tem essa informação de profundidade, então nessas áreas específicas ele pode amostrar o pedaço errado.</li>
+    </ol>
+  </div>
+
+  <footer>feito com dados extraídos do projeto original · roda localmente, sem upload</footer>
+</div>
+
+<script>
+let TRIANGLES = null;
+
+async function loadTriangles(){
+  const res = await fetch('uv_triangles.json');
+  TRIANGLES = await res.json();
+  document.getElementById('triCount').textContent = TRIANGLES.length;
+}
+loadTriangles();
+
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+const stage = document.getElementById('stage');
+const srcPreview = document.getElementById('srcPreview');
+const outCanvas = document.getElementById('outCanvas');
+const errBox = document.getElementById('err');
+const progressWrap = document.getElementById('progressWrap');
+const progressBar = document.getElementById('progressBar');
+const progressLabel = document.getElementById('progressLabel');
+const downloadBtn = document.getElementById('downloadBtn');
+const resetBtn = document.getElementById('resetBtn');
+
+const OUT_SIZE = 512;
+outCanvas.width = OUT_SIZE;
+outCanvas.height = OUT_SIZE;
+
+dropzone.addEventListener('click', () => fileInput.click());
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropzone.classList.remove('drag');
+  if (e.dataTransfer.files && e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', e => {
+  if (e.target.files && e.target.files[0]) handleFile(e.target.files[0]);
+});
+
+function showError(msg){
+  errBox.textContent = msg;
+  errBox.classList.add('show');
+}
+function clearError(){
+  errBox.classList.remove('show');
+  errBox.textContent = '';
+}
+
+async function handleFile(file){
+  clearError();
+  if (!file.type.startsWith('image/')){
+    showError('Esse arquivo não é uma imagem legível pelo navegador. Se o teu kit está em .dds/.ftex, exporta pra PNG antes (Photoshop, GIMP com plugin DDS, ou OPTPiX).');
+    return;
+  }
+  if (!TRIANGLES){
+    showError('Ainda carregando os dados de conversão, tenta de novo em um segundo.');
+    return;
+  }
+
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = () => {
+    srcPreview.src = url;
+    stage.classList.add('show');
+    convert(img);
+  };
+  img.onerror = () => showError('Não consegui abrir essa imagem.');
+  img.src = url;
+}
+
+// Internally render at 4x the final resolution, then downscale with high-quality
+// filtering. The PES 2013/14 mesh has some very thin, sharply-angled UV triangles
+// (mostly around sleeves/collar) where any small imprecision in a single-triangle
+// warp becomes visible noise. Rendering bigger first and shrinking down afterward
+// spreads that imprecision over many more source pixels, which softens it a lot
+// (though it won't fully disappear in the densest spots — see the note below).
+const SUPERSAMPLE = 3;
+const WORK_SIZE = OUT_SIZE * SUPERSAMPLE;
+
+function convert(img){
+  progressWrap.classList.add('show');
+  progressLabel.textContent = 'convertendo…';
+  progressBar.style.width = '0%';
+  downloadBtn.disabled = true;
+
+  // Source canvas at image's native resolution (so UVs map precisely)
+  const srcCanvas = document.createElement('canvas');
+  srcCanvas.width = img.naturalWidth;
+  srcCanvas.height = img.naturalHeight;
+  const sctx = srcCanvas.getContext('2d');
+  sctx.drawImage(img, 0, 0);
+
+  // High-resolution work canvas (off-screen)
+  const workCanvas = document.createElement('canvas');
+  workCanvas.width = WORK_SIZE;
+  workCanvas.height = WORK_SIZE;
+  const wctx = workCanvas.getContext('2d');
+  wctx.clearRect(0, 0, WORK_SIZE, WORK_SIZE);
+
+  const SW = srcCanvas.width, SH = srcCanvas.height;
+  const total = TRIANGLES.length;
+  let i = 0;
+
+  function step(){
+    const batchEnd = Math.min(i + 300, total);
+    for (; i < batchEnd; i++){
+      const t = TRIANGLES[i];
+      drawTriangle(wctx, srcCanvas, t.src, t.dst, SW, SH, WORK_SIZE);
+    }
+    progressBar.style.width = Math.round((i/total)*70) + '%';
+    if (i < total){
+      requestAnimationFrame(step);
+    } else {
+      progressLabel.textContent = 'fechando costuras…';
+      requestAnimationFrame(() => {
+        bleedMargin(wctx, WORK_SIZE, WORK_SIZE, 10);
+        progressBar.style.width = '90%';
+        progressLabel.textContent = 'finalizando…';
+        requestAnimationFrame(() => {
+          const octx = outCanvas.getContext('2d');
+          octx.clearRect(0, 0, OUT_SIZE, OUT_SIZE);
+          octx.imageSmoothingEnabled = true;
+          octx.imageSmoothingQuality = 'high';
+          octx.drawImage(workCanvas, 0, 0, WORK_SIZE, WORK_SIZE, 0, 0, OUT_SIZE, OUT_SIZE);
+          progressBar.style.width = '100%';
+          progressLabel.textContent = 'concluído';
+          setTimeout(() => progressWrap.classList.remove('show'), 400);
+          downloadBtn.disabled = false;
+        });
+      });
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+// Fills thin unpainted gaps between adjacent triangles (visible as a fine white/background
+// grid in the raw output) by spreading nearby painted pixel colors outward, the same role
+// Blender's texture-bake "Margin" setting plays. Runs `passes` rounds of a 1px dilation:
+// each pass, every fully-transparent pixel adjacent to an opaque one copies its color.
+// Restricted to the painted silhouette's bounding box (padded) so it stays fast even on
+// a large work canvas / on mobile.
+function bleedMargin(ctx, w, h, passes){
+  let imgData = ctx.getImageData(0, 0, w, h);
+  let data = imgData.data;
+
+  // Find bounding box of anything painted, to avoid scanning empty canvas area
+  let minX=w, minY=h, maxX=0, maxY=0;
+  for (let y = 0; y < h; y += 2){
+    for (let x = 0; x < w; x += 2){
+      if (data[(y*w+x)*4+3] > 0){
+        if (x<minX) minX=x; if (x>maxX) maxX=x;
+        if (y<minY) minY=y; if (y>maxY) maxY=y;
+      }
+    }
+  }
+  const pad = passes + 2;
+  minX = Math.max(0, minX-pad); minY = Math.max(0, minY-pad);
+  maxX = Math.min(w-1, maxX+pad); maxY = Math.min(h-1, maxY+pad);
+  if (maxX <= minX || maxY <= minY) return;
+
+  for (let p = 0; p < passes; p++){
+    const src = new Uint8ClampedArray(data);
+    for (let y = minY; y <= maxY; y++){
+      for (let x = minX; x <= maxX; x++){
+        const idx = (y*w + x) * 4;
+        if (src[idx+3] !== 0) continue; // already painted, leave as-is
+
+        // look at 4-neighborhood (plus diagonals) for a painted pixel to copy
+        let rs=0, gs=0, bs=0, count=0;
+        for (const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]){
+          const nx = x+dx, ny = y+dy;
+          if (nx<0 || nx>=w || ny<0 || ny>=h) continue;
+          const nidx = (ny*w + nx) * 4;
+          if (src[nidx+3] > 0){
+            rs += src[nidx]; gs += src[nidx+1]; bs += src[nidx+2];
+            count++;
+          }
+        }
+        if (count > 0){
+          data[idx] = Math.round(rs/count);
+          data[idx+1] = Math.round(gs/count);
+          data[idx+2] = Math.round(bs/count);
+          data[idx+3] = 255;
+        }
+      }
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+// Warp one source triangle onto the destination triangle using an affine transform,
+// clipping to the destination triangle so pieces tile without overlap artifacts.
+//
+// Adjacent triangles are drawn independently, so the destination triangle is expanded
+// slightly outward (in screen space) before clipping. This makes neighboring triangles
+// overlap by ~1px at shared edges, which hides the antialiasing seam that Canvas2D's
+// clip() otherwise leaves visible as a thin grid of lines between triangles.
+function expandTriangle(dx, dy, amount){
+  const cx = (dx[0] + dx[1] + dx[2]) / 3;
+  const cy = (dy[0] + dy[1] + dy[2]) / 3;
+  const ex = [], ey = [];
+  for (let i = 0; i < 3; i++){
+    const vx = dx[i] - cx, vy = dy[i] - cy;
+    const len = Math.sqrt(vx*vx + vy*vy) || 1;
+    ex.push(dx[i] + (vx/len) * amount);
+    ey.push(dy[i] + (vy/len) * amount);
+  }
+  return [ex, ey];
+}
+
+function drawTriangle(octx, srcCanvas, srcUV, dstUV, SW, SH, canvasSize){
+  const sx = srcUV.map(p => p[0] * SW);
+  const sy = srcUV.map(p => [1 - p[1]][0] * SH); // flip V (blender UV origin is bottom-left)
+  const dx = dstUV.map(p => p[0] * canvasSize);
+  const dy = dstUV.map(p => (1 - p[1]) * canvasSize);
+
+  // Solve affine transform mapping source triangle -> dest triangle
+  const denom = (sx[0]*(sy[1]-sy[2]) + sx[1]*(sy[2]-sy[0]) + sx[2]*(sy[0]-sy[1]));
+  if (Math.abs(denom) < 1e-8){
+    return;
+  }
+
+  const a = (dx[0]*(sy[1]-sy[2]) + dx[1]*(sy[2]-sy[0]) + dx[2]*(sy[0]-sy[1])) / denom;
+  const b = (dy[0]*(sy[1]-sy[2]) + dy[1]*(sy[2]-sy[0]) + dy[2]*(sy[0]-sy[1])) / denom;
+  const c = (dx[0]*(sx[2]-sx[1]) + dx[1]*(sx[0]-sx[2]) + dx[2]*(sx[1]-sx[0])) / denom;
+  const d = (dy[0]*(sx[2]-sx[1]) + dy[1]*(sx[0]-sx[2]) + dy[2]*(sx[1]-sx[0])) / denom;
+  const e = dx[0] - a*sx[0] - c*sy[0];
+  const f = dy[0] - b*sx[0] - d*sy[0];
+
+  const [edx, edy] = expandTriangle(dx, dy, 1.5 * (canvasSize / OUT_SIZE));
+
+  octx.save();
+  octx.beginPath();
+  octx.moveTo(edx[0], edy[0]);
+  octx.lineTo(edx[1], edy[1]);
+  octx.lineTo(edx[2], edy[2]);
+  octx.closePath();
+  octx.clip();
+
+  octx.setTransform(a, b, c, d, e, f);
+  octx.drawImage(srcCanvas, 0, 0);
+  octx.restore();
+}
+
+downloadBtn.addEventListener('click', () => {
+  const link = document.createElement('a');
+  link.download = 'kit_pes2013.png';
+  link.href = outCanvas.toDataURL('image/png');
+  link.click();
+});
+
+resetBtn.addEventListener('click', () => {
+  stage.classList.remove('show');
+  fileInput.value = '';
+  clearError();
+  const octx = outCanvas.getContext('2d');
+  octx.clearRect(0, 0, OUT_SIZE, OUT_SIZE);
+});
+</script>
+
+</body>
+</html>
